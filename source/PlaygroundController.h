@@ -23,6 +23,7 @@ public:
 private:
     const int innerHoverDistance = 5;
     const int outerHoverDistance = 10;
+    const int lineHoverDistance = 10;
 
     DelayGraph& delayGraph;
     void setHoveredPoint(const juce::Point<int>& mousePoint);

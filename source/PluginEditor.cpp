@@ -1,9 +1,9 @@
 #include "PluginEditor.h"
 
 PluginEditor::PluginEditor (PluginProcessor& p)
-    : AudioProcessorEditor (&p),  playgroundController(delayGraph), playgroundArea(delayGraph), processorRef (p)
+    : AudioProcessorEditor (&p),  playgroundController(p.delayGraph), playgroundArea(p.delayGraph), processorRef (p)
 {
-    playgroundArea.addMouseListener(&playgroundController, true);
+    playgroundArea.addMouseListener(&playgroundController, false);
 
     juce::ignoreUnused (processorRef);
 

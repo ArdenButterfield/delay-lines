@@ -8,28 +8,32 @@ void DelayGraph::addPoint(const GraphPoint& point, bool connectToSelected) {
     points.push_back(std::make_unique<GraphPoint>(point));
     if (connectToSelected) {
         auto added = points[points.size() - 1].get();
-        addLine({activePoint, added});
+        addLine(activePoint, added);
         activePoint = added;
-        activePointAction = creatingLine;
+        interactionState = creatingLine;
     }
 }
 const std::vector<std::unique_ptr<GraphPoint>>& DelayGraph::getPoints() {
     return points;
 }
 
-void DelayGraph::addLine (const GraphLine& line)
+void DelayGraph::addLine (GraphPoint* start, GraphPoint* end)
 {
-    lines.push_back(line);
+    lines.push_back(std::make_unique<GraphLine>(start, end));
+    if (processSpec) {
+        lines[lines.size() - 1]->prepareToPlay(processSpec.get());
+    }
 }
 
-const std::vector<GraphLine>& DelayGraph::getLines()
+std::vector<std::unique_ptr<GraphLine>>& DelayGraph::getLines()
 {
     return lines;
 }
+
 void DelayGraph::deletePoint (const GraphPoint* point)
 {
     for (auto iter = lines.begin(); iter != lines.end(); ) {
-        if (iter->start == point || iter->end == point) {
+        if (iter->get()->start == point || iter->get()->end == point) {
             iter = lines.erase(iter);
         } else {
             ++iter;
@@ -42,5 +46,23 @@ void DelayGraph::deletePoint (const GraphPoint* point)
             ++iter;
         }
     }
+}
 
+void DelayGraph::deleteLine (const GraphLine* line)
+{
+    for (auto iter = lines.begin(); iter != lines.end(); ) {
+        if (iter->get() == line) {
+            iter = lines.erase(iter);
+        } else {
+            ++iter;
+        }
+    }
+}
+
+void DelayGraph::prepareToPlay (juce::dsp::ProcessSpec& spec)
+{
+    processSpec = std::make_unique<juce::dsp::ProcessSpec>(spec);
+    for (auto& line : lines) {
+        line->prepareToPlay(processSpec.get());
+    }
 }

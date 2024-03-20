@@ -6,54 +6,51 @@
 #define DELAYLINES_DELAYGRAPH_H
 
 #include "juce_graphics/juce_graphics.h"
+#include "juce_dsp/juce_dsp.h"
 
-class GraphPoint : public juce::Point<int> {
-public:
-    explicit GraphPoint(const juce::Point<int>& p) : juce::Point<int>(p) {
-    }
-};
+#include "GraphPoint.h"
+#include "GraphLine.h"
 
-class GraphLine {
-public:
-    GraphLine(const GraphPoint* _start, const GraphPoint* _end) : start(_start), end(_end) {
-
-    }
-    const GraphPoint* start;
-    const GraphPoint* end;
-};
 
 class DelayGraph
 {
 public:
     DelayGraph() {
         activePoint = nullptr;
-        activePointAction = none;
+        interactionState = none;
     }
     ~DelayGraph() = default;
     void addPoint(const GraphPoint& point, bool connectToSelected=false);
     void deletePoint(const GraphPoint* point);
+    void deleteLine(const GraphLine* line);
     const std::vector<std::unique_ptr<GraphPoint>>& getPoints();
-    void addLine(const GraphLine& line);
+    void addLine(GraphPoint* start, GraphPoint* end);
 
-    const std::vector<GraphLine>& getLines();
+    std::vector<std::unique_ptr<GraphLine>>& getLines();
 
-    enum PointAction {
+    enum InteractionState {
         none,
         innerSelected,
         outerSelected,
         movingPoint,
-        creatingLine
+        creatingLine,
+        lineHover,
+        editingLine
     };
 
     juce::Point<int> lineInProgressEnd;
     GraphPoint* lineInProgressEndPoint;
 
     GraphPoint* activePoint;
-    PointAction activePointAction;
+    InteractionState interactionState;
 
+    GraphLine* activeLine;
+    void prepareToPlay(juce::dsp::ProcessSpec& spec);
 private:
+    std::unique_ptr<juce::dsp::ProcessSpec> processSpec;
+
     std::vector<std::unique_ptr<GraphPoint>> points;
-    std::vector<GraphLine> lines;
+    std::vector<std::unique_ptr<GraphLine>> lines;
 };
 
 #endif //DELAYLINES_DELAYGRAPH_H

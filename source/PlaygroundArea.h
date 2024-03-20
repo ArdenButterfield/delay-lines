@@ -7,6 +7,7 @@
 
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "DelayGraph.h"
+#include "LineEditor.h"
 
 class PlaygroundArea : public juce::Component, public juce::Timer
 {
@@ -16,8 +17,10 @@ public:
     void resized() override;
     void paint(juce::Graphics &g) override;
 private:
+    void makeLineEditorIfNeeded();
     void timerCallback() override;
     DelayGraph& delayGraph;
+    std::unique_ptr<LineEditor> lineEditor;
 };
 
 #endif //DELAYLINES_PLAYGROUNDAREA_H

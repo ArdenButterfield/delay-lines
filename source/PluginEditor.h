@@ -22,7 +22,6 @@ public:
 private:
     PlaygroundController playgroundController;
     PlaygroundArea playgroundArea;
-    DelayGraph delayGraph;
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     PluginProcessor& processorRef;
