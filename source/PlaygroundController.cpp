@@ -63,10 +63,10 @@ void PlaygroundController::mouseUp (const juce::MouseEvent& event)
         if (delayGraph.lineInProgressEndPoint) {
             delayGraph.addLine(delayGraph.activePoint, delayGraph.lineInProgressEndPoint);
         } else {
-            delayGraph.addPoint(GraphPoint(event.getPosition()), true);
+            delayGraph.addPoint(InnerPoint(event.getPosition()), true);
         }
     } else if (event.mouseWasClicked() && delayGraph.interactionState == DelayGraph::none) {
-        delayGraph.addPoint(GraphPoint(event.getPosition()));
+        delayGraph.addPoint(InnerPoint(event.getPosition()));
     } else if (event.mouseWasClicked() && delayGraph.interactionState == DelayGraph::lineHover) {
         delayGraph.interactionState = DelayGraph::editingLine;
     }

@@ -12,15 +12,17 @@
 
 class GraphLine {
 public:
-    GraphLine(const GraphPoint* _start, const GraphPoint* _end);
+    GraphLine(GraphPoint* const _start, GraphPoint* const _end);
 
     void setLength(float length);
     void setGain(float gain);
-    const GraphPoint* start;
-    const GraphPoint* end;
-    float processSample(float sample);
+    GraphPoint* const start;
+    GraphPoint* const end;
+    void pushSample(std::vector<float>& sample);
+    void popSample(std::vector<float>& sample);
     void prepareToPlay(juce::dsp::ProcessSpec* spec);
 private:
+    unsigned numChannels;
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Lagrange3rd> internalDelayLine;
     std::vector<juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative>> lengths;
 

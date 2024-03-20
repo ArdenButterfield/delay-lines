@@ -145,11 +145,16 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-        juce::ignoreUnused (channelData);
-        // ..do something to the data...
+    auto sample = std::vector<float>();
+    sample.resize(static_cast<unsigned long> (getTotalNumInputChannels()));
+    for (int s = 0; s < buffer.getNumSamples(); ++s) {
+        for (int channel = 0; channel < getTotalNumInputChannels(); ++channel) {
+            sample[channel] = buffer.getSample(channel, s);
+        }
+        delayGraph.processSample(sample);
+        for (int channel = 0; channel < getTotalNumInputChannels(); ++channel) {
+            buffer.setSample(channel, s, sample[channel]);
+        }
     }
 }
 

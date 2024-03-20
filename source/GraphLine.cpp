@@ -4,7 +4,7 @@
 
 #include "GraphLine.h"
 
-GraphLine::GraphLine(const GraphPoint* _start, const GraphPoint* _end)
+GraphLine::GraphLine(GraphPoint* const _start, GraphPoint* const _end)
     : start(_start), end(_end)
 {
 
@@ -22,6 +22,7 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
     }
     internalDelayLine.setMaximumDelayInSamples(spec->sampleRate * 5);
     internalDelayLine.prepare(*spec);
+    numChannels = spec->numChannels;
 }
 
 void GraphLine::setLength (float length)
@@ -37,7 +38,17 @@ void GraphLine::setGain (float gain)
         g.setTargetValue(gain);
     }
 }
-float GraphLine::processSample (float sample)
+
+void GraphLine::pushSample (std::vector<float>& sample)
 {
-    return 0;
+    for (unsigned channel = 0; channel < numChannels; ++channel) {
+        internalDelayLine.pushSample(channel, sample[channel]);
+    }
+}
+
+void GraphLine::popSample (std::vector<float>& sample)
+{
+    for (unsigned channel = 0; channel < numChannels; ++channel) {
+        sample[channel] += internalDelayLine.popSample(channel, lengths[channel].getNextValue()) * gains[channel].getNextValue();
+    }
 }

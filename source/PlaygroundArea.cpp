@@ -48,8 +48,13 @@ void PlaygroundArea::paint (juce::Graphics& g)
             } else if (delayGraph.interactionState == DelayGraph::movingPoint) {
                 g.setColour(juce::Colours::black);
             } else {
-                g.setColour(juce::Colours::red);
+                g.setColour(juce::Colours::orangered);
             }
+        } else if (point->pointType == GraphPoint::start) {
+            g.setColour(juce::Colours::green);
+        } else if (point->pointType == GraphPoint::end)
+        {
+            g.setColour (juce::Colours::red);
         } else {
             g.setColour(juce::Colours::brown);
         }

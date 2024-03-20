@@ -15,17 +15,13 @@
 class DelayGraph
 {
 public:
-    DelayGraph() {
-        activePoint = nullptr;
-        interactionState = none;
-    }
+    DelayGraph();
     ~DelayGraph() = default;
-    void addPoint(const GraphPoint& point, bool connectToSelected=false);
+    void addPoint(const juce::Point<int>& point, bool connectToSelected=false);
     void deletePoint(const GraphPoint* point);
     void deleteLine(const GraphLine* line);
     const std::vector<std::unique_ptr<GraphPoint>>& getPoints();
     void addLine(GraphPoint* start, GraphPoint* end);
-
     std::vector<std::unique_ptr<GraphLine>>& getLines();
 
     enum InteractionState {
@@ -42,10 +38,15 @@ public:
     GraphPoint* lineInProgressEndPoint;
 
     GraphPoint* activePoint;
+
+    GraphPoint* startPoint;
+    GraphPoint* endPoint;
+
     InteractionState interactionState;
 
     GraphLine* activeLine;
     void prepareToPlay(juce::dsp::ProcessSpec& spec);
+    void processSample(std::vector<float>& sample);
 private:
     std::unique_ptr<juce::dsp::ProcessSpec> processSpec;
 

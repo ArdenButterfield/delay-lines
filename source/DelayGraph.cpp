@@ -4,8 +4,21 @@
 
 #include "DelayGraph.h"
 
-void DelayGraph::addPoint(const GraphPoint& point, bool connectToSelected) {
-    points.push_back(std::make_unique<GraphPoint>(point));
+DelayGraph::DelayGraph()
+{
+    activePoint = nullptr;
+    interactionState = none;
+
+    points.push_back(std::make_unique<StartPoint>(juce::Point<int>(0,0)));
+    startPoint = points.back().get();
+    points.push_back(std::make_unique<EndPoint>(juce::Point<int>(100,100)));
+    endPoint = points.back().get();
+    addLine(points[0].get(), points[1].get());
+}
+
+void DelayGraph::addPoint(const juce::Point<int>& point, bool connectToSelected) {
+    points.push_back(std::make_unique<InnerPoint>(point));
+    points.back()->prepareToPlay(processSpec.get());
     if (connectToSelected) {
         auto added = points[points.size() - 1].get();
         addLine(activePoint, added);
@@ -13,6 +26,7 @@ void DelayGraph::addPoint(const GraphPoint& point, bool connectToSelected) {
         interactionState = creatingLine;
     }
 }
+
 const std::vector<std::unique_ptr<GraphPoint>>& DelayGraph::getPoints() {
     return points;
 }
@@ -21,7 +35,7 @@ void DelayGraph::addLine (GraphPoint* start, GraphPoint* end)
 {
     lines.push_back(std::make_unique<GraphLine>(start, end));
     if (processSpec) {
-        lines[lines.size() - 1]->prepareToPlay(processSpec.get());
+        lines.back()->prepareToPlay(processSpec.get());
     }
 }
 
@@ -64,5 +78,26 @@ void DelayGraph::prepareToPlay (juce::dsp::ProcessSpec& spec)
     processSpec = std::make_unique<juce::dsp::ProcessSpec>(spec);
     for (auto& line : lines) {
         line->prepareToPlay(processSpec.get());
+    }
+    for (auto& point : points) {
+        point->prepareToPlay(processSpec.get());
+    }
+}
+void DelayGraph::processSample (std::vector<float>& sample)
+{
+    for (unsigned channel = 0; channel < processSpec->numChannels; ++channel) {
+        startPoint->samples[channel] += sample[channel];
+    }
+    for (auto& line : lines) {
+        line->pushSample(line->start->samples);
+    }
+    for (auto& point : points) {
+        std::fill(point->samples.begin(), point->samples.end(), 0);
+    }
+    for (auto& line : lines) {
+        line->popSample(line->end->samples);
+    }
+    for (unsigned channel = 0; channel < processSpec->numChannels; ++channel) {
+        sample[channel] = endPoint->samples[channel];
     }
 }
