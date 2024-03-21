@@ -48,8 +48,8 @@ public:
     GraphLine* activeLine;
     void prepareToPlay(juce::dsp::ProcessSpec& spec);
     void processSample(std::vector<float>& sample);
-    juce::CriticalSection criticalSection;
 private:
+    juce::CriticalSection criticalSection;
     std::unique_ptr<juce::dsp::ProcessSpec> processSpec;
 
     std::vector<std::unique_ptr<GraphPoint>> points;

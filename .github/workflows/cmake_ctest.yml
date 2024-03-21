@@ -103,12 +103,12 @@ jobs:
     - name: Cache the build
       uses: mozilla-actions/sccache-action@v0.0.3
 
-    - name: Import Certificates (macOS)
-      uses: apple-actions/import-codesign-certs@v2 # only exists as a tag right now
-      if: ${{ matrix.name == 'macOS' }}
-      with:
-        p12-file-base64: ${{ secrets.DEV_ID_APP_CERT }}
-        p12-password: ${{ secrets.DEV_ID_APP_PASSWORD }}
+#    - name: Import Certificates (macOS)
+#      uses: apple-actions/import-codesign-certs@v2 # only exists as a tag right now
+#      if: ${{ matrix.name == 'macOS' }}
+#      with:
+#        p12-file-base64: ${{ secrets.DEV_ID_APP_CERT }}
+#        p12-password: ${{ secrets.DEV_ID_APP_PASSWORD }}
 
     - name: Configure
       shell: bash
@@ -189,9 +189,9 @@ jobs:
         
         # Run appdmg to create the .dmg
         cd packaging && appdmg dmg.json "${{ env.ARTIFACT_NAME}}.dmg"
-        codesign -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" --timestamp -i ${{ env.BUNDLE_ID }} --force "${{ env.ARTIFACT_NAME }}.dmg"
-        xcrun notarytool submit "${{ env.ARTIFACT_NAME }}.dmg" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
-        xcrun stapler staple "${{ env.ARTIFACT_NAME }}.dmg"
+#        codesign -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" --timestamp -i ${{ env.BUNDLE_ID }} --force "${{ env.ARTIFACT_NAME }}.dmg"
+#        xcrun notarytool submit "${{ env.ARTIFACT_NAME }}.dmg" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
+#        xcrun stapler staple "${{ env.ARTIFACT_NAME }}.dmg"
 
     - name: Zip
       if: ${{ matrix.name == 'Linux' }}
@@ -205,7 +205,7 @@ jobs:
         iscc "packaging\installer.iss"
         mv "packaging/Output/${{ env.ARTIFACT_NAME }}.exe" "${{ env.ARTIFACTS_PATH }}/"
         dotnet tool install --global AzureSignTool 
-        AzureSignTool sign -kvu "${{ secrets.AZURE_KEY_VAULT_URI }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc ${{ secrets.AZURE_CERT_NAME }} -tr http://timestamp.digicert.com -v "${{ env.ARTIFACTS_PATH }}/${{ env.ARTIFACT_NAME }}.exe"
+#        AzureSignTool sign -kvu "${{ secrets.AZURE_KEY_VAULT_URI }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc ${{ secrets.AZURE_CERT_NAME }} -tr http://timestamp.digicert.com -v "${{ env.ARTIFACTS_PATH }}/${{ env.ARTIFACT_NAME }}.exe"
 
     - name: Upload Exe (Windows)
       if: ${{ matrix.name == 'Windows' }}
