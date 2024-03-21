@@ -46,6 +46,7 @@ std::vector<std::unique_ptr<GraphLine>>& DelayGraph::getLines()
 
 void DelayGraph::deletePoint (const GraphPoint* point)
 {
+    criticalSection.enter();
     for (auto iter = lines.begin(); iter != lines.end(); ) {
         if (iter->get()->start == point || iter->get()->end == point) {
             iter = lines.erase(iter);
@@ -60,10 +61,12 @@ void DelayGraph::deletePoint (const GraphPoint* point)
             ++iter;
         }
     }
+    criticalSection.exit();
 }
 
 void DelayGraph::deleteLine (const GraphLine* line)
 {
+    criticalSection.enter();
     for (auto iter = lines.begin(); iter != lines.end(); ) {
         if (iter->get() == line) {
             iter = lines.erase(iter);
@@ -71,6 +74,7 @@ void DelayGraph::deleteLine (const GraphLine* line)
             ++iter;
         }
     }
+    criticalSection.exit();
 }
 
 void DelayGraph::prepareToPlay (juce::dsp::ProcessSpec& spec)
@@ -88,9 +92,11 @@ void DelayGraph::processSample (std::vector<float>& sample)
     for (unsigned channel = 0; channel < processSpec->numChannels; ++channel) {
         startPoint->samples[channel] += sample[channel];
     }
+    criticalSection.enter();
     for (auto& line : lines) {
         line->pushSample(line->start->samples);
     }
+
     for (auto& point : points) {
         std::fill(point->samples.begin(), point->samples.end(), 0);
     }
@@ -100,4 +106,5 @@ void DelayGraph::processSample (std::vector<float>& sample)
     for (unsigned channel = 0; channel < processSpec->numChannels; ++channel) {
         sample[channel] = endPoint->samples[channel];
     }
+    criticalSection.exit();
 }

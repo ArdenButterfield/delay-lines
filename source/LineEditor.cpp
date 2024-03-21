@@ -15,8 +15,16 @@ LineEditor::LineEditor(GraphLine& _graphLine) : graphLine(_graphLine)
     timeSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 0, 0);
     gainSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 0, 0);
 
+    timeSlider.setValue(graphLine.userLength);
+    gainSlider.setValue(graphLine.userGain);
+
     addAndMakeVisible(timeSlider);
     addAndMakeVisible(gainSlider);
+    
+    timeSlider.addListener(this);
+    gainSlider.addListener(this);
+
+    startTimerHz(60);
 }
 
 void LineEditor::resized()
@@ -33,3 +41,16 @@ void LineEditor::paint (juce::Graphics& g)
     g.drawRect(getLocalBounds(), 3);
 }
 
+void LineEditor::sliderValueChanged (juce::Slider* slider)
+{
+    if (slider == &timeSlider) {
+        graphLine.setLength(timeSlider.getValue());
+    } else if (slider == &gainSlider) {
+        graphLine.setGain(gainSlider.getValue());
+    }
+}
+void LineEditor::timerCallback()
+{
+    timeSlider.setValue(graphLine.userLength);
+    gainSlider.setValue(graphLine.userGain);
+}

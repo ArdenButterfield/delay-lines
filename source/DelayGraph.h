@@ -7,6 +7,7 @@
 
 #include "juce_graphics/juce_graphics.h"
 #include "juce_dsp/juce_dsp.h"
+#include "juce_core/juce_core.h"
 
 #include "GraphPoint.h"
 #include "GraphLine.h"
@@ -47,6 +48,7 @@ public:
     GraphLine* activeLine;
     void prepareToPlay(juce::dsp::ProcessSpec& spec);
     void processSample(std::vector<float>& sample);
+    juce::CriticalSection criticalSection;
 private:
     std::unique_ptr<juce::dsp::ProcessSpec> processSpec;
 

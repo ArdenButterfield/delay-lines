@@ -9,13 +9,15 @@
 
 #include "DelayGraph.h"
 
-class LineEditor : public juce::Component
+class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::Timer
 {
 public:
     LineEditor(GraphLine& graphLine);
     void resized() override;
     void paint(juce::Graphics &g) override;
 private:
+    void sliderValueChanged(juce::Slider* slider) override;
+    void timerCallback() override;
     GraphLine& graphLine;
     juce::Slider timeSlider;
     juce::Slider gainSlider;
