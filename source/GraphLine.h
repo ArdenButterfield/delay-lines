@@ -23,6 +23,8 @@ public:
     void prepareToPlay(juce::dsp::ProcessSpec* spec);
     float userLength;
     float userGain;
+    void toggleEnabled();
+    bool isEnabled;
 private:
     unsigned numChannels;
     float sampleRate;

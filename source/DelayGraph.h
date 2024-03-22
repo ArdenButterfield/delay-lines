@@ -26,13 +26,13 @@ public:
     std::vector<std::unique_ptr<GraphLine>>& getLines();
 
     enum InteractionState {
-        none,
-        innerSelected,
-        outerSelected,
-        movingPoint,
-        creatingLine,
-        lineHover,
-        editingLine
+        none = 0,
+        innerSelected = 1,
+        outerSelected = 2,
+        movingPoint = 3,
+        creatingLine = 4,
+        lineHover = 5,
+        editingLine = 6
     };
 
     juce::Point<int> lineInProgressEnd;

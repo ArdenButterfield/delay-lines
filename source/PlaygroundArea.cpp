@@ -22,7 +22,12 @@ void PlaygroundArea::paint (juce::Graphics& g)
             g.setColour(juce::Colours::pink);
             g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 10);
         }
-        g.setColour(juce::Colours::brown);
+
+        if (line->isEnabled) {
+            g.setColour(juce::Colours::brown);
+        } else {
+            g.setColour(juce::Colours::brown.withAlpha(0.5f));
+        }
         g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
     }
 

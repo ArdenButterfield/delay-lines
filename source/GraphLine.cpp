@@ -9,6 +9,7 @@ GraphLine::GraphLine(GraphPoint* const _start, GraphPoint* const _end)
 {
     userLength = defaultLength;
     userGain = defaultGain;
+    isEnabled = true;
 }
 
 void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
@@ -53,6 +54,18 @@ void GraphLine::pushSample (std::vector<float>& sample)
 void GraphLine::popSample (std::vector<float>& sample)
 {
     for (unsigned channel = 0; channel < numChannels; ++channel) {
-        sample[channel] += internalDelayLine.popSample(channel, lengths[channel].getNextValue()) * gains[channel].getNextValue();
+        auto s = internalDelayLine.popSample(channel, lengths[channel].getNextValue()) * gains[channel].getNextValue();
+        if (isEnabled) {
+            sample[channel] += s;
+        }
+    }
+}
+void GraphLine::toggleEnabled()
+{
+    if (isEnabled) {
+        isEnabled = false;
+    } else {
+        isEnabled = true;
+        internalDelayLine.reset();
     }
 }

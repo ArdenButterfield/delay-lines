@@ -20,15 +20,16 @@ void PlaygroundController::mouseDown (const juce::MouseEvent& event)
     if (event.mods.isRightButtonDown()) {
         return;
     }
-    if (event.mouseWasClicked() && delayGraph.interactionState == DelayGraph::editingLine) {
-        delayGraph.interactionState = DelayGraph::none;
-    }
-    if (delayGraph.interactionState == DelayGraph::innerSelected) {
-        delayGraph.interactionState = DelayGraph::movingPoint;
-    } else if (delayGraph.interactionState == DelayGraph::outerSelected) {
-        delayGraph.interactionState = DelayGraph::creatingLine;
-        delayGraph.lineInProgressEnd = event.getPosition();
-        delayGraph.lineInProgressEndPoint = nullptr;
+    switch (delayGraph.interactionState) {
+        case DelayGraph::innerSelected:
+            delayGraph.interactionState = DelayGraph::movingPoint;
+            break;
+        case DelayGraph::outerSelected:
+            delayGraph.interactionState = DelayGraph::creatingLine;
+            delayGraph.lineInProgressEnd = event.getPosition();
+            delayGraph.lineInProgressEndPoint = nullptr;
+            break;
+        default: break;
     }
 }
 
@@ -53,30 +54,55 @@ void PlaygroundController::mouseDrag (const juce::MouseEvent& event)
 
 void PlaygroundController::mouseUp (const juce::MouseEvent& event)
 {
-    if (event.mouseWasClicked() && event.mods.isRightButtonDown()) {
-        if (delayGraph.interactionState == DelayGraph::innerSelected) {
-            delayGraph.deletePoint(delayGraph.activePoint);
-        } else if (delayGraph.interactionState == DelayGraph::lineHover) {
-            delayGraph.deleteLine(delayGraph.activeLine);
-        }
-    } else if (delayGraph.interactionState == DelayGraph::creatingLine) {
-        if (delayGraph.lineInProgressEndPoint) {
-            delayGraph.addLine(delayGraph.activePoint, delayGraph.lineInProgressEndPoint);
-        } else {
-            delayGraph.addPoint(InnerPoint(event.getPosition()), true);
-        }
-    } else if (event.mouseWasClicked() && delayGraph.interactionState == DelayGraph::none) {
-        delayGraph.addPoint(InnerPoint(event.getPosition()));
-    } else if (event.mouseWasClicked() && delayGraph.interactionState == DelayGraph::lineHover) {
-        delayGraph.interactionState = DelayGraph::editingLine;
+    switch (delayGraph.interactionState) {
+        case DelayGraph::none:
+            if (event.mouseWasClicked()) {
+                delayGraph.addPoint(InnerPoint(event.getPosition()));
+            }
+            break;
+        case DelayGraph::innerSelected:
+            if (event.mouseWasClicked() && event.mods.isRightButtonDown()) {
+                delayGraph.deletePoint(delayGraph.activePoint);
+            }
+            break;
+        case DelayGraph::lineHover:
+            if (event.mouseWasClicked() && event.mods.isRightButtonDown()) {
+                delayGraph.activeLine->toggleEnabled();
+            } else if (event.mouseWasClicked()) {
+                delayGraph.interactionState = DelayGraph::editingLine;
+            }
+            break;
+        case DelayGraph::creatingLine:
+            if (delayGraph.lineInProgressEndPoint) {
+                delayGraph.addLine(delayGraph.activePoint, delayGraph.lineInProgressEndPoint);
+            } else {
+                delayGraph.addPoint(InnerPoint(event.getPosition()), true);
+            }
+            break;
+        case DelayGraph::editingLine:
+            if (event.mouseWasClicked()) {
+                delayGraph.interactionState = DelayGraph::none;
+            }
+            break;
+        default: break;
     }
+
     setHoveredPoint(event.getPosition());
 }
 
 void PlaygroundController::mouseDoubleClick (const juce::MouseEvent& event)
 {
-    if (delayGraph.interactionState == DelayGraph::innerSelected) {
-        delayGraph.deletePoint(delayGraph.activePoint);
+    switch (delayGraph.interactionState) {
+        case DelayGraph::innerSelected:
+            if (delayGraph.activePoint->pointType == GraphPoint::inner) {
+                delayGraph.deletePoint(delayGraph.activePoint);
+            }
+            break;
+        case DelayGraph::lineHover:
+        case DelayGraph::editingLine:
+            delayGraph.deleteLine(delayGraph.activeLine);
+            break;
+        default: break;
     }
 }
 
