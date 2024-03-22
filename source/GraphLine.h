@@ -10,9 +10,11 @@
 #include "juce_audio_basics/juce_audio_basics.h"
 
 
-class GraphLine {
+class GraphLine : public juce::Timer {
 public:
     GraphLine(GraphPoint* const _start, GraphPoint* const _end);
+
+    void timerCallback() override;
 
     void setLength(float length);
     void setGain(float gain);

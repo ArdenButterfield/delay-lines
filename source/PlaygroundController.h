@@ -26,7 +26,7 @@ private:
     const int lineHoverDistance = 10;
 
     DelayGraph& delayGraph;
-    void setHoveredPoint(const juce::Point<int>& mousePoint);
+    void setHoveredPoint(const juce::Point<float>& mousePoint);
 };
 
 #endif //DELAYLINES_PLAYGROUNDCONTROLLER_H

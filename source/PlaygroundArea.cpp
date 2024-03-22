@@ -64,6 +64,10 @@ void PlaygroundArea::paint (juce::Graphics& g)
             g.setColour(juce::Colours::brown);
         }
         g.drawEllipse(point->x - 5, point->y - 5, 10, 10, 3);
+        if (point->offset.getDistanceSquaredFromOrigin() > 0) {
+            g.setColour(juce::Colours::magenta);
+            g.drawEllipse(point->x + point->offset.x - 5, point->y + point->offset.y - 5, 10, 10, 3);
+        }
     }
 
 }
@@ -72,6 +76,7 @@ void PlaygroundArea::timerCallback()
 {
     repaint();
 }
+
 void PlaygroundArea::makeLineEditorIfNeeded()
 {
     if ((!lineEditor) && (delayGraph.interactionState == DelayGraph::editingLine)) {

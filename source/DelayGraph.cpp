@@ -9,14 +9,14 @@ DelayGraph::DelayGraph()
     activePoint = nullptr;
     interactionState = none;
 
-    points.push_back(std::make_unique<StartPoint>(juce::Point<int>(0,0)));
+    points.push_back(std::make_unique<StartPoint>(juce::Point<float>(0,0)));
     startPoint = points.back().get();
-    points.push_back(std::make_unique<EndPoint>(juce::Point<int>(100,100)));
+    points.push_back(std::make_unique<EndPoint>(juce::Point<float>(100,100)));
     endPoint = points.back().get();
     addLine(points[0].get(), points[1].get());
 }
 
-void DelayGraph::addPoint(const juce::Point<int>& point, bool connectToSelected) {
+void DelayGraph::addPoint(const juce::Point<float>& point, bool connectToSelected) {
     points.push_back(std::make_unique<InnerPoint>(point));
     points.back()->prepareToPlay(processSpec.get());
     if (connectToSelected) {

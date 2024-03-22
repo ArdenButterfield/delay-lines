@@ -10,6 +10,8 @@ GraphLine::GraphLine(GraphPoint* const _start, GraphPoint* const _end)
     userLength = defaultLength;
     userGain = defaultGain;
     isEnabled = true;
+
+    startTimerHz(60);
 }
 
 void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
@@ -31,8 +33,15 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
 void GraphLine::setLength (float length)
 {
     userLength = length;
+
+    auto lineVector = end->getDistanceFrom(*start);
+    auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
+    auto currentLength = (length * sampleRate) * realLineVector / lineVector;
+    currentLength = std::min(currentLength, (float)internalDelayLine.getMaximumDelayInSamples());
+    currentLength = std::max(currentLength, 0.f);
+
     for (auto& l : lengths) {
-        l.setTargetValue(length * sampleRate); // TODO: figure this out
+        l.setTargetValue(currentLength);
     }
 }
 
@@ -68,4 +77,8 @@ void GraphLine::toggleEnabled()
         isEnabled = true;
         internalDelayLine.reset();
     }
+}
+void GraphLine::timerCallback()
+{
+    setLength(userLength);
 }

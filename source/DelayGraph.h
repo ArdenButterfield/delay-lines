@@ -18,7 +18,7 @@ class DelayGraph
 public:
     DelayGraph();
     ~DelayGraph() = default;
-    void addPoint(const juce::Point<int>& point, bool connectToSelected=false);
+    void addPoint(const juce::Point<float>& point, bool connectToSelected=false);
     void deletePoint(const GraphPoint* point);
     void deleteLine(const GraphLine* line);
     const std::vector<std::unique_ptr<GraphPoint>>& getPoints();
@@ -32,10 +32,11 @@ public:
         movingPoint = 3,
         creatingLine = 4,
         lineHover = 5,
-        editingLine = 6
+        editingLine = 6,
+        stretchingPoint = 7
     };
 
-    juce::Point<int> lineInProgressEnd;
+    juce::Point<float> lineInProgressEnd;
     GraphPoint* lineInProgressEndPoint;
 
     GraphPoint* activePoint;
@@ -48,6 +49,7 @@ public:
     GraphLine* activeLine;
     void prepareToPlay(juce::dsp::ProcessSpec& spec);
     void processSample(std::vector<float>& sample);
+    void updateDelayLinesForStretch();
 private:
     juce::CriticalSection criticalSection;
     std::unique_ptr<juce::dsp::ProcessSpec> processSpec;
