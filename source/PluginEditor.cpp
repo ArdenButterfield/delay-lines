@@ -1,13 +1,13 @@
 #include "PluginEditor.h"
 
 PluginEditor::PluginEditor (PluginProcessor& p)
-    : AudioProcessorEditor (&p),  playgroundController(p.delayGraph), playgroundArea(p.delayGraph), processorRef (p)
+    : AudioProcessorEditor (&p),  playgroundController(p.delayGraph), playgroundView(p.delayGraph), processorRef (p)
 {
-    playgroundArea.addMouseListener(&playgroundController, false);
+    playgroundView.addMouseListener(&playgroundController, false);
 
     juce::ignoreUnused (processorRef);
 
-    addAndMakeVisible(playgroundArea);
+    addAndMakeVisible(playgroundView);
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -28,5 +28,5 @@ void PluginEditor::paint (juce::Graphics& g)
 void PluginEditor::resized()
 {
     // layout the positions of your child components here
-    playgroundArea.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 20));
+    playgroundView.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 20));
 }

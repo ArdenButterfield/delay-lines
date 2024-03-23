@@ -1,10 +1,9 @@
 #pragma once
 
-#include "PluginProcessor.h"
 #include "BinaryData.h"
-#include "PlaygroundArea.h"
 #include "PlaygroundController.h"
-
+#include "PlaygroundView.h"
+#include "PluginProcessor.h"
 
 #include "melatonin_inspector/melatonin_inspector.h"
 
@@ -21,7 +20,7 @@ public:
 
 private:
     PlaygroundController playgroundController;
-    PlaygroundArea playgroundArea;
+    PlaygroundView playgroundView;
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     PluginProcessor& processorRef;

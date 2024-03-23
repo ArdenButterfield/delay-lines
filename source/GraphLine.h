@@ -31,6 +31,8 @@ private:
     unsigned numChannels;
     float sampleRate;
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Lagrange3rd> internalDelayLine;
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> envelopeDelayLine;
+    juce::dsp::BallisticsFilter<float> envelopeFilter;
     std::vector<juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>> lengths;
 
     std::vector<juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>> gains;

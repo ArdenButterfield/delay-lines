@@ -30,9 +30,15 @@ void PlaygroundController::mouseDown (const juce::MouseEvent& event)
             }
             break;
         case DelayGraph::outerSelected:
-            delayGraph.interactionState = DelayGraph::creatingLine;
-            delayGraph.lineInProgressEnd = event.position;
-            delayGraph.lineInProgressEndPoint = nullptr;
+            if (event.mods.isShiftDown())
+            {
+                delayGraph.interactionState = DelayGraph::stretchingPoint;
+                delayGraph.activePoint->draggingOffset = true;
+            } else {
+                delayGraph.interactionState = DelayGraph::creatingLine;
+                delayGraph.lineInProgressEnd = event.position;
+                delayGraph.lineInProgressEndPoint = nullptr;
+            }
             break;
         default: break;
     }
