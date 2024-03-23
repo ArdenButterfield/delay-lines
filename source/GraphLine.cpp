@@ -42,7 +42,7 @@ void GraphLine::setLength (float length)
     auto lineVector = end->getDistanceFrom(*start);
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
     auto currentLength = (length * sampleRate) * realLineVector / lineVector;
-    currentLength = std::min(currentLength, (float)internalDelayLine.getMaximumDelayInSamples());
+    currentLength = std::min(currentLength, (float)internalDelayLine.getMaximumDelayInSamples() - 1);
     currentLength = std::max(currentLength, 0.f);
 
     for (auto& l : lengths) {
@@ -70,7 +70,8 @@ void GraphLine::pushSample (std::vector<float>& sample)
 void GraphLine::popSample (std::vector<float>& sample)
 {
     for (unsigned channel = 0; channel < numChannels; ++channel) {
-        auto length = lengths[channel].getNextValue();
+
+        auto length = std::min(lengths[channel].getNextValue(), (float)internalDelayLine.getMaximumDelayInSamples() - 1);
         auto s = internalDelayLine.popSample(channel, length) * gains[channel].getNextValue();
         envelopeDelayLine.popSample(channel, length);
         if (isEnabled) {
