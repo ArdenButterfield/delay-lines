@@ -3,6 +3,7 @@
 //
 
 #include "PlaygroundView.h"
+#include <numbers>
 
 void PlaygroundView::resized()
 {
