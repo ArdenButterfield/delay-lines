@@ -6,6 +6,7 @@
 #define DELAYLINES_PLAYGROUNDVIEW_H
 
 #include "juce_gui_basics/juce_gui_basics.h"
+#include "juce_graphics/juce_graphics.h"
 #include "DelayGraph.h"
 #include "LineEditor.h"
 

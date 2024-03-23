@@ -46,6 +46,9 @@ std::vector<std::unique_ptr<GraphLine>>& DelayGraph::getLines()
 
 void DelayGraph::deletePoint (const GraphPoint* point)
 {
+    if (point->pointType == GraphPoint::start || point->pointType == GraphPoint::end) {
+        return;
+    }
     criticalSection.enter();
     for (auto iter = lines.begin(); iter != lines.end(); ) {
         if (iter->get()->start == point || iter->get()->end == point) {

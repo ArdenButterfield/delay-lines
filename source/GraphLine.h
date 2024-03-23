@@ -27,11 +27,13 @@ public:
     float userGain;
     void toggleEnabled();
     bool isEnabled;
+
+    void getEnvelope(float proportion, float& left, float& right);
 private:
     unsigned numChannels;
     float sampleRate;
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Lagrange3rd> internalDelayLine;
-    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> envelopeDelayLine;
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::None> envelopeDelayLine;
     juce::dsp::BallisticsFilter<float> envelopeFilter;
     std::vector<juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>> lengths;
 

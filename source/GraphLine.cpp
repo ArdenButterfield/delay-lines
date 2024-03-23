@@ -25,7 +25,12 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
         g.reset(spec->sampleRate, 0.2);
     }
     internalDelayLine.setMaximumDelayInSamples(spec->sampleRate * 5);
+    envelopeDelayLine.setMaximumDelayInSamples(spec->sampleRate * 5);
+
     internalDelayLine.prepare(*spec);
+    envelopeDelayLine.prepare(*spec);
+    envelopeFilter.prepare(*spec);
+
     numChannels = spec->numChannels;
     sampleRate = spec->sampleRate;
 }
@@ -57,18 +62,23 @@ void GraphLine::pushSample (std::vector<float>& sample)
 {
     for (unsigned channel = 0; channel < numChannels; ++channel) {
         internalDelayLine.pushSample(channel, sample[channel]);
+        auto envelope = envelopeFilter.processSample(channel, sample[channel]);
+        envelopeDelayLine.pushSample(channel, envelope);
     }
 }
 
 void GraphLine::popSample (std::vector<float>& sample)
 {
     for (unsigned channel = 0; channel < numChannels; ++channel) {
-        auto s = internalDelayLine.popSample(channel, lengths[channel].getNextValue()) * gains[channel].getNextValue();
+        auto length = lengths[channel].getNextValue();
+        auto s = internalDelayLine.popSample(channel, length) * gains[channel].getNextValue();
+        envelopeDelayLine.popSample(channel, length);
         if (isEnabled) {
             sample[channel] += s;
         }
     }
 }
+
 void GraphLine::toggleEnabled()
 {
     if (isEnabled) {
@@ -76,9 +86,21 @@ void GraphLine::toggleEnabled()
     } else {
         isEnabled = true;
         internalDelayLine.reset();
+        envelopeDelayLine.reset();
     }
 }
+
 void GraphLine::timerCallback()
 {
     setLength(userLength);
+}
+
+void GraphLine::getEnvelope (float proportion, float& left, float& right)
+{
+    left = envelopeDelayLine.popSample(0, internalDelayLine.getDelay() * proportion, false);
+    if (numChannels > 1) {
+        right = envelopeDelayLine.popSample(1, internalDelayLine.getDelay() * proportion, false);
+    } else {
+        right = left;
+    }
 }

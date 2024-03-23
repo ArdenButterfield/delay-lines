@@ -9,6 +9,15 @@ void PlaygroundView::resized()
 
 }
 
+juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point<float> end, int channel) {
+    auto transform = juce::AffineTransform();
+    transform = transform.scaled(start.getDistanceFrom(end), channel ? 50 : -50);
+    transform = transform.rotated(start.getAngleToPoint(end) - std::numbers::pi / 2);
+    transform = transform.translated(start);
+    return transform;
+}
+
+
 void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line)
 {
     if (delayGraph.interactionState == DelayGraph::lineHover && delayGraph.activeLine == line) {
@@ -24,6 +33,24 @@ void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line)
     } else {
         g.setColour(juce::Colours::brown.withAlpha(0.5f));
     }
+    auto leftLinePath = juce::Path();
+    auto rightLinePath = juce::Path();
+    leftLinePath.startNewSubPath(0,0);
+    rightLinePath.startNewSubPath(0,0);
+    float l,r;
+    for (float p = 0; p < 1; p += 1 / line->start->getDistanceFrom(*line->end)) {
+        line->getEnvelope(p, l, r);
+        leftLinePath.lineTo(p, l);
+        rightLinePath.lineTo(p, r);
+    }
+    leftLinePath.lineTo(1,0);
+    rightLinePath.lineTo(1,0);
+    leftLinePath.closeSubPath();
+    rightLinePath.closeSubPath();
+
+
+    g.fillPath(leftLinePath, makeTransform(*line->start + line->start->offset, *line->end + line->end->offset, 0));
+    g.fillPath(rightLinePath, makeTransform(*line->start + line->start->offset, *line->end + line->end->offset, 1));
     g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
 }
 
