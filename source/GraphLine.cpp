@@ -9,8 +9,8 @@ GraphLine::GraphLine(GraphPoint* const _start, GraphPoint* const _end)
 {
     parameters.length = defaultLength;
     parameters.gain = defaultGain;
-
-    isEnabled = true;
+    parameters.distortion = 0;
+    parameters.mute = false;
 
     startTimerHz(60);
 }
@@ -42,7 +42,7 @@ void GraphLine::setLength (float length)
 
     auto lineVector = end->getDistanceFrom(*start);
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
-    auto currentLength = (length * sampleRate) * realLineVector / lineVector;
+    auto currentLength = (length * sampleRate / 1000) * realLineVector / lineVector;
     currentLength = std::min(currentLength, (float)internalDelayLine.getMaximumDelayInSamples() - 1);
     currentLength = std::max(currentLength, 0.f);
 
@@ -68,17 +68,23 @@ void GraphLine::pushSample (std::vector<float>& sample)
     }
 }
 
+float GraphLine::distortSample (float samp)
+{
+    auto distorted = juce::dsp::FastMathApproximations::tanh(samp * parameters.distortion * 5);
+    return parameters.distortion * distorted + (1 - parameters.distortion) * samp;
+}
+
 void GraphLine::popSample (std::vector<float>& sample)
 {
     for (unsigned channel = 0; channel < numChannels; ++channel) {
 
         auto length = std::min(lengths[channel].getNextValue(), (float)internalDelayLine.getMaximumDelayInSamples() - 1);
         auto s = internalDelayLine.popSample(channel, length) * gains[channel].getNextValue();
-
+        s = parameters.distortion ? distortSample(s) : s;
         s *= parameters.invert ? -1 : 1;
 
         envelopeDelayLine.popSample(channel, length);
-        if (isEnabled) {
+        if (!parameters.mute) {
             sample[channel] += s;
         }
     }
@@ -86,13 +92,7 @@ void GraphLine::popSample (std::vector<float>& sample)
 
 void GraphLine::toggleEnabled()
 {
-    if (isEnabled) {
-        isEnabled = false;
-    } else {
-        isEnabled = true;
-        internalDelayLine.reset();
-        envelopeDelayLine.reset();
-    }
+    setMute(!parameters.mute);
 }
 
 void GraphLine::timerCallback()
@@ -116,6 +116,10 @@ void GraphLine::setBypass (bool bypass)
 
 void GraphLine::setMute (bool mute)
 {
+    if (parameters.mute && !mute) {
+        internalDelayLine.reset();
+        envelopeDelayLine.reset();
+    }
     parameters.mute = mute;
 }
 

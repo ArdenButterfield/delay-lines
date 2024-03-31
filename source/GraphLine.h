@@ -42,7 +42,6 @@ public:
     float userLength;
     float userGain;
     void toggleEnabled();
-    bool isEnabled;
 
     void getEnvelope(float proportion, float& left, float& right);
     struct Parameters {
@@ -74,5 +73,7 @@ private:
     std::vector<juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>> gains;
     const float defaultGain = 1.0;
     const float defaultLength = 1.0;
+
+    float distortSample(float samp);
 };
 #endif //DELAYLINES_GRAPHLINE_H

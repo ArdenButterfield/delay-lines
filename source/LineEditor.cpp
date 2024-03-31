@@ -15,7 +15,7 @@ LineEditor::LineEditor(GraphLine& _graphLine) : graphLine(_graphLine)
 
     modRateSlider.setRange(0.1,30);
 
-    distortionSlider.setRange(0, 100);
+    distortionSlider.setRange(0, 1);
 
     loCutSlider.setRange(0, 2000);
 
@@ -114,8 +114,22 @@ void LineEditor::sliderValueChanged (juce::Slider* slider)
     } else if (slider == &gainSlider) {
         graphLine.setGain(gainSlider.getValue());
     } else if (slider == &timeEnvelopeFollowSlider) {
+        graphLine.setLengthEnvelopeFollow(timeEnvelopeFollowSlider.getValue());
+    } else if (slider == &modRateSlider) {
+        graphLine.setModRate(modRateSlider.getValue());
+    } else if (slider == &modDepthSlider) {
+        graphLine.setModDepth (modDepthSlider.getValue());
+    } else if (slider == &distortionSlider) {
+        graphLine.setDistortionAmount(distortionSlider.getValue());
+    } else if (slider == &loCutSlider) {
+        graphLine.setLowCutFilter(loCutSlider.getValue());
+    } else if (slider == &hiCutSlider) {
+        graphLine.setHighCutFilter(hiCutSlider.getValue());
+    } else if (slider == &gainEnvelopeFollowSlider) {
+        graphLine.setGainEnvelopeFollow(gainEnvelopeFollowSlider.getValue());
     }
 }
+
 void LineEditor::timerCallback()
 {
     timeSlider.setValue(graphLine.parameters.length);
@@ -130,6 +144,7 @@ void LineEditor::timerCallback()
     muteButton.setToggleState(graphLine.parameters.mute, juce::dontSendNotification);
     bypassButton.setToggleState(graphLine.parameters.bypass, juce::dontSendNotification);
 }
+
 void LineEditor::mouseDown (const juce::MouseEvent& event)
 {
     if (topBar.contains(event.getPosition())) {

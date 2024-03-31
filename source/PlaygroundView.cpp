@@ -29,10 +29,10 @@ void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line)
         g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 10);
     }
 
-    if (line->isEnabled) {
-        g.setColour(juce::Colours::brown);
-    } else {
+    if (line->parameters.mute) {
         g.setColour(juce::Colours::brown.withAlpha(0.5f));
+    } else {
+        g.setColour(juce::Colours::brown);
     }
     auto leftLinePath = juce::Path();
     auto rightLinePath = juce::Path();
