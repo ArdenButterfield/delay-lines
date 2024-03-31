@@ -3,7 +3,7 @@
 //
 
 #include "PlaygroundView.h"
-#include <numbers>
+#include <numbers> 
 
 void PlaygroundView::resized()
 {
@@ -13,7 +13,7 @@ void PlaygroundView::resized()
 juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point<float> end, int channel) {
     auto transform = juce::AffineTransform();
     transform = transform.scaled(start.getDistanceFrom(end), channel ? 50 : -50);
-    transform = transform.rotated(start.getAngleToPoint(end) - std::numbers::pi / 2);
+    transform = transform.rotated(start.getAngleToPoint(end) - juce::MathConstants<float>::halfPi);
     transform = transform.translated(start);
     return transform;
 }
@@ -124,7 +124,7 @@ void PlaygroundView::makeLineEditorIfNeeded()
     if ((!lineEditor) && (delayGraph.interactionState == DelayGraph::editingLine)) {
         lineEditor = std::make_unique<LineEditor>(*(delayGraph.activeLine));
         addAndMakeVisible(lineEditor.get());
-        lineEditor->setBounds(10,10,100,100);
+        lineEditor->setBounds(10,10,400,300);
     } else if ((lineEditor) && (delayGraph.interactionState != DelayGraph::editingLine)) {
         removeChildComponent(lineEditor.get());
         auto ed = lineEditor.release();

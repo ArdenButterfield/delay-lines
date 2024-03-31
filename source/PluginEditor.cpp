@@ -13,7 +13,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (800, 600);
 }
 
 PluginEditor::~PluginEditor()
@@ -32,3 +32,4 @@ void PluginEditor::resized()
     // layout the positions of your child components here
     playgroundView.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 20));
 }
+

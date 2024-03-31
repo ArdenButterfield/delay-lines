@@ -7,8 +7,9 @@
 GraphLine::GraphLine(GraphPoint* const _start, GraphPoint* const _end)
     : start(_start), end(_end)
 {
-    userLength = defaultLength;
-    userGain = defaultGain;
+    parameters.length = defaultLength;
+    parameters.gain = defaultGain;
+
     isEnabled = true;
 
     startTimerHz(60);
@@ -37,7 +38,7 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
 
 void GraphLine::setLength (float length)
 {
-    userLength = length;
+    parameters.length = length;
 
     auto lineVector = end->getDistanceFrom(*start);
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
@@ -52,7 +53,7 @@ void GraphLine::setLength (float length)
 
 void GraphLine::setGain (float gain)
 {
-    userGain = gain;
+    parameters.gain = gain;
     for (auto& g : gains) {
         g.setTargetValue(gain);
     }
@@ -73,6 +74,9 @@ void GraphLine::popSample (std::vector<float>& sample)
 
         auto length = std::min(lengths[channel].getNextValue(), (float)internalDelayLine.getMaximumDelayInSamples() - 1);
         auto s = internalDelayLine.popSample(channel, length) * gains[channel].getNextValue();
+
+        s *= parameters.invert ? -1 : 1;
+
         envelopeDelayLine.popSample(channel, length);
         if (isEnabled) {
             sample[channel] += s;
@@ -93,7 +97,7 @@ void GraphLine::toggleEnabled()
 
 void GraphLine::timerCallback()
 {
-    setLength(userLength);
+    setLength(parameters.length);
 }
 
 void GraphLine::getEnvelope (float proportion, float& left, float& right)
@@ -104,4 +108,53 @@ void GraphLine::getEnvelope (float proportion, float& left, float& right)
     } else {
         right = left;
     }
+}
+void GraphLine::setBypass (bool bypass)
+{
+    parameters.bypass = bypass;
+}
+
+void GraphLine::setMute (bool mute)
+{
+    parameters.mute = mute;
+}
+
+void GraphLine::setLengthEnvelopeFollow (float amt)
+{
+    parameters.lengthEnvelopeFollow = amt;
+}
+
+void GraphLine::setModDepth (float depth)
+{
+    parameters.modDepth = depth;
+}
+
+void GraphLine::setModRate (float rate)
+{
+    parameters.modRate = rate;
+}
+
+void GraphLine::setDistortionAmount (float amt)
+{
+    parameters.distortion = amt;
+}
+
+void GraphLine::setLowCutFilter (float freq)
+{
+    parameters.loCut = freq;
+}
+
+void GraphLine::setHighCutFilter (float freq)
+{
+    parameters.hiCut = freq;
+}
+
+void GraphLine::setInvert (bool invert)
+{
+    parameters.invert = invert;
+}
+
+void GraphLine::setGainEnvelopeFollow (float amt)
+{
+    parameters.gainEnvelopeFollow = amt;
 }

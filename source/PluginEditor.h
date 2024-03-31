@@ -19,6 +19,8 @@ public:
     void resized() override;
 
 private:
+
+
     PlaygroundController playgroundController;
     PlaygroundView playgroundView;
     // This reference is provided as a quick way for your editor to

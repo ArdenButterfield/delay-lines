@@ -12,12 +12,28 @@
 
 class GraphLine : public juce::Timer {
 public:
-    GraphLine(GraphPoint* const _start, GraphPoint* const _end);
+    GraphLine(GraphPoint* start, GraphPoint* end);
 
     void timerCallback() override;
 
+    void setBypass(bool bypass);
+    void setMute(bool mute);
+
     void setLength(float length);
+    void setLengthEnvelopeFollow(float amt);
+    void setModDepth(float depth);
+    void setModRate(float rate);
+    void setDistortionAmount(float amt);
+    void setLowCutFilter(float freq);
+    void setHighCutFilter(float freq);
+
     void setGain(float gain);
+    void setInvert(bool invert);
+    void setGainEnvelopeFollow(float amt);
+
+
+
+
     GraphPoint* const start;
     GraphPoint* const end;
     void pushSample(std::vector<float>& sample);
@@ -29,7 +45,25 @@ public:
     bool isEnabled;
 
     void getEnvelope(float proportion, float& left, float& right);
+    struct Parameters {
+        bool bypass;
+        bool mute;
+        float length;
+        float lengthEnvelopeFollow;
+        float modDepth;
+        float modRate;
+        float distortion;
+        float hiCut;
+        float loCut;
+        float gain;
+        bool invert;
+        float gainEnvelopeFollow;
+    };
+
+    Parameters parameters;
+
 private:
+
     unsigned numChannels;
     float sampleRate;
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Lagrange3rd> internalDelayLine;
