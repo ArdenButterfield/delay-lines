@@ -31,9 +31,11 @@ void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line)
 
     if (line->parameters.mute) {
         g.setColour(juce::Colours::brown.withAlpha(0.5f));
-    } else {
-        g.setColour(juce::Colours::brown);
+        g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
+        return;
     }
+
+    g.setColour(juce::Colours::brown);
     auto leftLinePath = juce::Path();
     auto rightLinePath = juce::Path();
     leftLinePath.startNewSubPath(0,0);
@@ -113,12 +115,13 @@ void PlaygroundView::paint (juce::Graphics& g)
     for (const auto& point : delayGraph.getPoints()) {
         drawPoint(g, point.get());
     }
-
 }
+
 void PlaygroundView::timerCallback()
 {
     repaint();
 }
+
 void PlaygroundView::makeLineEditorIfNeeded()
 {
     if ((!lineEditor) && (delayGraph.interactionState == DelayGraph::editingLine)) {

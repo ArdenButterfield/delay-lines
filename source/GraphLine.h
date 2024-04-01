@@ -39,8 +39,6 @@ public:
     void pushSample(std::vector<float>& sample);
     void popSample(std::vector<float>& sample);
     void prepareToPlay(juce::dsp::ProcessSpec* spec);
-    float userLength;
-    float userGain;
     void toggleEnabled();
 
     void getEnvelope(float proportion, float& left, float& right);
@@ -74,7 +72,7 @@ public:
     };
 
     Parameters parameters;
-
+    std::vector<GraphPoint*> popDestinations;
 private:
 
     unsigned numChannels;
@@ -92,5 +90,7 @@ private:
 
     std::vector<juce::IIRFilter> loCutFilters;
     std::vector<juce::IIRFilter> hiCutFilters;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> modDepth;
+    juce::dsp::Oscillator<float> modOscillator;
 };
 #endif //DELAYLINES_GRAPHLINE_H

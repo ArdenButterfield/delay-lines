@@ -7,7 +7,6 @@
 LineEditor::LineEditor(GraphLine& _graphLine) : graphLine(_graphLine)
 {
     timeSlider.setRange(0, 5000);
-    timeSlider.setValue(graphLine.userLength);
 
     timeEnvelopeFollowSlider.setRange(-1, 1);
 
@@ -22,7 +21,6 @@ LineEditor::LineEditor(GraphLine& _graphLine) : graphLine(_graphLine)
     hiCutSlider.setRange(100,20000);
 
     gainSlider.setRange(0,2);
-    gainSlider.setValue(graphLine.userGain);
 
     gainEnvelopeFollowSlider.setRange(-1,1);
 
@@ -59,6 +57,7 @@ LineEditor::LineEditor(GraphLine& _graphLine) : graphLine(_graphLine)
     }
 
     startTimerHz(60);
+    timerCallback();
 }
 
 void LineEditor::resized()

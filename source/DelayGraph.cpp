@@ -69,6 +69,7 @@ void DelayGraph::deletePoint (const GraphPoint* point)
 
 void DelayGraph::deleteLine (const GraphLine* line)
 {
+    std::cout << "deleting line\n";
     criticalSection.enter();
     for (auto iter = lines.begin(); iter != lines.end(); ) {
         if (iter->get() == line) {
@@ -90,6 +91,7 @@ void DelayGraph::prepareToPlay (juce::dsp::ProcessSpec& spec)
         point->prepareToPlay(processSpec.get());
     }
 }
+
 void DelayGraph::processSample (std::vector<float>& sample)
 {
     for (unsigned channel = 0; channel < processSpec->numChannels; ++channel) {

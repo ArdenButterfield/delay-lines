@@ -3,15 +3,17 @@
 //
 
 #include "GraphLine.h"
+#include "juce_core/juce_core.h"
 
 GraphLine::GraphLine(GraphPoint* const _start, GraphPoint* const _end)
     : start(_start), end(_end)
 {
-
+    modOscillator.initialise([] (float x) {return std::sin(x);}, 128);
 }
 
 void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
 {
+    std::cout << "prepare line\n";
     lengths.resize(spec->numChannels, juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>(defaultLength * spec->sampleRate));
     gains.resize(spec->numChannels, juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>(defaultGain));
     for (auto& l : lengths) {
@@ -20,6 +22,10 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
     for (auto& g : gains) {
         g.reset(spec->sampleRate, 0.2);
     }
+    modDepth.reset(512);
+    numChannels = spec->numChannels;
+    sampleRate = spec->sampleRate;
+
     internalDelayLine.setMaximumDelayInSamples(spec->sampleRate * 5);
     envelopeDelayLine.setMaximumDelayInSamples(spec->sampleRate * 5);
 
@@ -30,8 +36,7 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
     hiCutFilters.resize(spec->numChannels);
     loCutFilters.resize(spec->numChannels);
 
-    numChannels = spec->numChannels;
-    sampleRate = spec->sampleRate;
+    modOscillator.prepare(*spec);
 
     startTimerHz(60);
 }
@@ -76,9 +81,11 @@ float GraphLine::distortSample (float samp)
 
 void GraphLine::popSample (std::vector<float>& sample)
 {
+    auto mod = 1 + modDepth.getNextValue() * modOscillator.processSample(0) / (parameters.modRate * juce::MathConstants<float>::twoPi * 10);
+
     for (unsigned channel = 0; channel < numChannels; ++channel) {
 
-        auto length = std::min(lengths[channel].getNextValue(), (float)internalDelayLine.getMaximumDelayInSamples() - 1);
+        auto length = std::min(lengths[channel].getNextValue() * mod, (float)internalDelayLine.getMaximumDelayInSamples() - 1);
         auto s = internalDelayLine.popSample(channel, length) * gains[channel].getNextValue();
         s = parameters.distortion ? distortSample(s) : s;
         s *= parameters.invert ? -1 : 1;
@@ -134,11 +141,13 @@ void GraphLine::setLengthEnvelopeFollow (float amt)
 void GraphLine::setModDepth (float depth)
 {
     parameters.modDepth = depth;
+    modDepth.setTargetValue(depth);
 }
 
 void GraphLine::setModRate (float rate)
 {
     parameters.modRate = rate;
+    modOscillator.setFrequency(rate);
 }
 
 void GraphLine::setDistortionAmount (float amt)
