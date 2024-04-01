@@ -7,12 +7,7 @@
 GraphLine::GraphLine(GraphPoint* const _start, GraphPoint* const _end)
     : start(_start), end(_end)
 {
-    parameters.length = defaultLength;
-    parameters.gain = defaultGain;
-    parameters.distortion = 0;
-    parameters.mute = false;
 
-    startTimerHz(60);
 }
 
 void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
@@ -32,8 +27,13 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
     envelopeDelayLine.prepare(*spec);
     envelopeFilter.prepare(*spec);
 
+    hiCutFilters.resize(spec->numChannels);
+    loCutFilters.resize(spec->numChannels);
+
     numChannels = spec->numChannels;
     sampleRate = spec->sampleRate;
+
+    startTimerHz(60);
 }
 
 void GraphLine::setLength (float length)
@@ -82,6 +82,9 @@ void GraphLine::popSample (std::vector<float>& sample)
         auto s = internalDelayLine.popSample(channel, length) * gains[channel].getNextValue();
         s = parameters.distortion ? distortSample(s) : s;
         s *= parameters.invert ? -1 : 1;
+
+        s = parameters.loCut > 5 ? loCutFilters[channel].processSingleSampleRaw(s) : s;
+        s = parameters.hiCut < 19999 ? hiCutFilters[channel].processSingleSampleRaw(s) : s;
 
         envelopeDelayLine.popSample(channel, length);
         if (!parameters.mute) {
@@ -145,12 +148,22 @@ void GraphLine::setDistortionAmount (float amt)
 
 void GraphLine::setLowCutFilter (float freq)
 {
-    parameters.loCut = freq;
+    if (freq != parameters.loCut) {
+        parameters.loCut = freq;
+        for (auto& f : loCutFilters) {
+            f.setCoefficients(juce::IIRCoefficients::makeHighPass(sampleRate, std::max(freq, 5.f)));
+        }
+    }
 }
 
 void GraphLine::setHighCutFilter (float freq)
 {
-    parameters.hiCut = freq;
+    if (freq != parameters.hiCut) {
+        parameters.hiCut = freq;
+        for (auto& f : hiCutFilters) {
+            f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, std::min(freq, sampleRate / 2)));
+        }
+    }
 }
 
 void GraphLine::setInvert (bool invert)

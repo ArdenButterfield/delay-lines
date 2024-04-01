@@ -45,6 +45,20 @@ public:
 
     void getEnvelope(float proportion, float& left, float& right);
     struct Parameters {
+        Parameters() {
+            bypass = false;
+            mute = false;
+            length = 1000;
+            lengthEnvelopeFollow = 0;
+            modDepth = 0;
+            modRate = 1;
+            distortion = 0;
+            hiCut = 20000;
+            loCut = 0;
+            gain = 1;
+            invert = false;
+            gainEnvelopeFollow = 0;
+        }
         bool bypass;
         bool mute;
         float length;
@@ -75,5 +89,8 @@ private:
     const float defaultLength = 1.0;
 
     float distortSample(float samp);
+
+    std::vector<juce::IIRFilter> loCutFilters;
+    std::vector<juce::IIRFilter> hiCutFilters;
 };
 #endif //DELAYLINES_GRAPHLINE_H
