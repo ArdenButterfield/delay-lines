@@ -94,6 +94,15 @@ void GraphLine::popSample (std::vector<float>& sample)
         s = parameters.hiCut < 19999 ? hiCutFilters[channel].processSingleSampleRaw(s) : s;
 
         envelopeDelayLine.popSample(channel, length);
+        auto inputEnvelope = envelopeDelayLine.popSample(static_cast<int>(channel), 0, false);
+
+        float gain;
+        if (parameters.gainEnvelopeFollow > 0) {
+            gain = (1 - parameters.gainEnvelopeFollow) + parameters.gainEnvelopeFollow * inputEnvelope;
+        } else {
+            gain = 1 + inputEnvelope * parameters.gainEnvelopeFollow;
+        }
+        s *= gain;
         if (!parameters.mute) {
             sample[channel] += s;
         }
