@@ -22,9 +22,10 @@ void PlaygroundController::mouseDown (const juce::MouseEvent& event)
     }
     switch (delayGraph.interactionState) {
         case DelayGraph::innerSelected:
+            delayGraph.activePoint->draggingOffset = true;
+
             if (event.mods.isShiftDown()) {
                 delayGraph.interactionState = DelayGraph::stretchingPoint;
-                delayGraph.activePoint->draggingOffset = true;
             } else {
                 delayGraph.interactionState = DelayGraph::movingPoint;
             }
@@ -51,9 +52,6 @@ void PlaygroundController::mouseDrag (const juce::MouseEvent& event)
     }
 
     switch (delayGraph.interactionState) {
-        case DelayGraph::movingPoint:
-            delayGraph.activePoint->setXY(event.position.x, event.position.y);
-            break;
         case DelayGraph::creatingLine:
             delayGraph.lineInProgressEnd = event.position;
             delayGraph.lineInProgressEndPoint = nullptr;
@@ -63,14 +61,15 @@ void PlaygroundController::mouseDrag (const juce::MouseEvent& event)
                 }
             }
             break;
+        case DelayGraph::movingPoint:
         case DelayGraph::stretchingPoint:
             delayGraph.activePoint->offset = event.position - *delayGraph.activePoint;
-
+            break;
+        default:
+            break;
     }
 
-    if (delayGraph.interactionState == DelayGraph::movingPoint) {
-        delayGraph.activePoint->setXY(event.position.x, event.position.y);
-    } else if (delayGraph.interactionState == DelayGraph::creatingLine) {
+    if (delayGraph.interactionState == DelayGraph::creatingLine) {
         delayGraph.lineInProgressEnd = event.position;
         delayGraph.lineInProgressEndPoint = nullptr;
         for (const auto& point : delayGraph.getPoints()) {
@@ -116,6 +115,10 @@ void PlaygroundController::mouseUp (const juce::MouseEvent& event)
         case DelayGraph::stretchingPoint:
             delayGraph.interactionState = DelayGraph::none;
             delayGraph.activePoint->draggingOffset = false;
+            break;
+        case DelayGraph::movingPoint:
+            delayGraph.interactionState = DelayGraph::none;
+            delayGraph.bakeOffsets();
             break;
         default: break;
     }

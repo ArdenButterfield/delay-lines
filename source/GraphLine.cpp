@@ -193,3 +193,11 @@ void GraphLine::setGainEnvelopeFollow (float amt)
 {
     parameters.gainEnvelopeFollow = amt;
 }
+void GraphLine::bakeOffset()
+{
+    auto lineVector = end->getDistanceFrom(*start);
+    auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
+
+    setLength(parameters.length * (realLineVector / lineVector));
+
+}

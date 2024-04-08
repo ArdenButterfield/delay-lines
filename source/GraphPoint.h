@@ -30,6 +30,13 @@ public:
         }
     }
 
+    void bakeOffset() {
+        this->x += offset.x;
+        this->y += offset.y;
+        offset.x = 0;
+        offset.y = 0;
+    }
+
     const PointType pointType;
 
     void prepareToPlay(juce::dsp::ProcessSpec* spec) {

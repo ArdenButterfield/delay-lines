@@ -117,3 +117,14 @@ void DelayGraph::processSample (std::vector<float>& sample)
     }
     criticalSection.exit();
 }
+
+void DelayGraph::bakeOffsets()
+{
+    for (auto& line : lines) {
+        line->bakeOffset();
+    }
+    for (auto& point : points) {
+        point->bakeOffset();
+    }
+
+}

@@ -50,6 +50,9 @@ public:
     void prepareToPlay(juce::dsp::ProcessSpec& spec);
     void processSample(std::vector<float>& sample);
     void updateDelayLinesForStretch();
+
+    void bakeOffsets();
+
 private:
     juce::CriticalSection criticalSection;
     std::unique_ptr<juce::dsp::ProcessSpec> processSpec;

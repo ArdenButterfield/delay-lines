@@ -31,9 +31,6 @@ public:
     void setInvert(bool invert);
     void setGainEnvelopeFollow(float amt);
 
-
-
-
     GraphPoint* const start;
     GraphPoint* const end;
     void pushSample(std::vector<float>& sample);
@@ -42,6 +39,9 @@ public:
     void toggleEnabled();
 
     void getEnvelope(float proportion, float& left, float& right);
+
+    void bakeOffset();
+
     struct Parameters {
         Parameters() {
             bypass = false;
