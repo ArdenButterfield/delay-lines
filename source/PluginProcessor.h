@@ -1,6 +1,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_dsp/juce_dsp.h>
 
 #include "DelayGraph.h"
 
@@ -8,7 +9,7 @@
 #include "ipps.h"
 #endif
 
-class PluginProcessor : public juce::AudioProcessor
+class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     PluginProcessor();
@@ -42,7 +43,15 @@ public:
 
     DelayGraph delayGraph;
 
+    juce::AudioProcessorValueTreeState& getValueTreeState();
 
 private:
+    bool parametersNeedUpdating;
+    void updateParameters();
+    void parameterChanged(const juce::String &parameterID, float newValue) override;
+
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> mix;
+    juce::AudioProcessorValueTreeState parameters;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

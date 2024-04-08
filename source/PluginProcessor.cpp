@@ -2,6 +2,15 @@
 #include "PluginEditor.h"
 
 //==============================================================================
+juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
+{
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {"mix", 1}, "mix", 0.f, 100.f, 50.f));
+    return {parameters.begin(), parameters.end()};
+}
+
 PluginProcessor::PluginProcessor()
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -10,12 +19,16 @@ PluginProcessor::PluginProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ),
+      parameters(*this, nullptr, juce::Identifier("DELAY LINE PARAMETERS"), makeParameters())
 {
+    parameters.addParameterListener("mix", this);
+    parametersNeedUpdating = true;
 }
 
 PluginProcessor::~PluginProcessor()
 {
+    parameters.removeParameterListener("mix", this);
 }
 
 //==============================================================================
@@ -121,9 +134,20 @@ bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
   #endif
 }
 
+void PluginProcessor::updateParameters()
+{
+    parametersNeedUpdating = false;
+    mix.setCurrentAndTargetValue(((juce::AudioParameterFloat*)parameters.getParameter("mix"))->get() * 0.01);
+
+}
+
 void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                               juce::MidiBuffer& midiMessages)
 {
+    if (parametersNeedUpdating) {
+        updateParameters();
+    }
+
     juce::ignoreUnused (midiMessages);
 
     juce::ScopedNoDenormals noDenormals;
@@ -148,12 +172,15 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto sample = std::vector<float>();
     sample.resize(static_cast<unsigned long> (getTotalNumInputChannels()));
     for (int s = 0; s < buffer.getNumSamples(); ++s) {
+        auto wetGain = mix.getNextValue();
         for (int channel = 0; channel < getTotalNumInputChannels(); ++channel) {
             sample[channel] = buffer.getSample(channel, s);
         }
         delayGraph.processSample(sample);
         for (int channel = 0; channel < getTotalNumInputChannels(); ++channel) {
-            buffer.setSample(channel, s, sample[channel]);
+            auto dry = buffer.getSample(channel, s) * (1 - wetGain);
+            auto wet = sample[channel] * wetGain;
+            buffer.setSample(channel, s, dry + wet);
         }
     }
 }
@@ -190,4 +217,13 @@ void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new PluginProcessor();
+}
+
+void PluginProcessor::parameterChanged (const juce::String& parameterID, float newValue)
+{
+    parametersNeedUpdating = true;
+}
+juce::AudioProcessorValueTreeState& PluginProcessor::getValueTreeState()
+{
+    return parameters;
 }

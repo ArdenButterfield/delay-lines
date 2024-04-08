@@ -13,6 +13,7 @@ class LineEditor : public juce::Component, public juce::Slider::Listener, public
 {
 public:
     LineEditor(GraphLine& graphLine);
+    ~LineEditor() override;
     void resized() override;
     void paint(juce::Graphics &g) override;
 

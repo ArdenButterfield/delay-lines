@@ -6,6 +6,8 @@
 
 LineEditor::LineEditor(GraphLine& _graphLine) : graphLine(_graphLine)
 {
+    std::cout << "construct editor\n";
+    graphLine.editorAttached = true;
     timeSlider.setRange(0, 5000);
 
     timeEnvelopeFollowSlider.setRange(-1, 1);
@@ -59,6 +61,13 @@ LineEditor::LineEditor(GraphLine& _graphLine) : graphLine(_graphLine)
     startTimerHz(60);
     timerCallback();
 }
+
+LineEditor::~LineEditor()
+{
+    std::cout << "destruct editor\n";
+    graphLine.editorAttached = false;
+}
+
 
 void LineEditor::resized()
 {

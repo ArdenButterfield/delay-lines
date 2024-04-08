@@ -69,6 +69,10 @@ void DelayGraph::deletePoint (const GraphPoint* point)
 
 void DelayGraph::deleteLine (const GraphLine* line)
 {
+    if (line->editorAttached) {
+        return;
+        // TODO: handle this more gracefully: how can we alert the editor(s) (if they exists) that we have deleted the line?
+    }
     std::cout << "deleting line\n";
     criticalSection.enter();
     for (auto iter = lines.begin(); iter != lines.end(); ) {

@@ -73,6 +73,8 @@ public:
 
     Parameters parameters;
     std::vector<GraphPoint*> popDestinations;
+
+    bool editorAttached;
 private:
 
     unsigned numChannels;
