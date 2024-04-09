@@ -12,7 +12,7 @@
 class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::ToggleButton::Listener, public juce::Timer
 {
 public:
-    LineEditor(GraphLine& graphLine);
+    LineEditor(DelayGraph& delayGraph, const juce::Identifier& line);
     ~LineEditor() override;
     void resized() override;
     void paint(juce::Graphics &g) override;
@@ -31,7 +31,8 @@ private:
 
     void timerCallback() override;
 
-    GraphLine& graphLine;
+    DelayGraph& delayGraph;
+    const juce::Identifier& graphLine;
 
     juce::ToggleButton bypassButton;
     juce::ToggleButton muteButton;

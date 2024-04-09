@@ -5,15 +5,14 @@
 #include "GraphLine.h"
 #include "juce_core/juce_core.h"
 
-GraphLine::GraphLine(GraphPoint* const _start, GraphPoint* const _end)
-    : start(_start), end(_end)
+GraphLine::GraphLine(GraphPoint* const _start, GraphPoint* const _end, const juce::Identifier& id)
+    : start(_start), end(_end), identifier(id)
 {
     modOscillator.initialise([] (float x) {return std::sin(x);}, 128);
 }
 
 void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
 {
-    std::cout << "prepare line\n";
     lengths.resize(spec->numChannels, juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>(defaultLength * spec->sampleRate));
     gains.resize(spec->numChannels, juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>(defaultGain));
     for (auto& l : lengths) {

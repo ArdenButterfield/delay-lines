@@ -125,7 +125,7 @@ void PlaygroundView::timerCallback()
 void PlaygroundView::makeLineEditorIfNeeded()
 {
     if ((!lineEditor) && (delayGraph.interactionState == DelayGraph::editingLine)) {
-        lineEditor = std::make_unique<LineEditor>(*(delayGraph.activeLine));
+        lineEditor = std::make_unique<LineEditor>(delayGraph, delayGraph.activeLine->identifier);
         addAndMakeVisible(lineEditor.get());
         lineEditor->setBounds(10,10,400,300);
     } else if ((lineEditor) && (delayGraph.interactionState != DelayGraph::editingLine)) {

@@ -22,8 +22,8 @@ void PlaygroundController::mouseDown (const juce::MouseEvent& event)
     }
     switch (delayGraph.interactionState) {
         case DelayGraph::innerSelected:
-            delayGraph.activePoint->draggingOffset = true;
 
+            delayGraph.activePoint->draggingOffset = true;
             if (event.mods.isShiftDown()) {
                 delayGraph.interactionState = DelayGraph::stretchingPoint;
             } else {
@@ -137,6 +137,7 @@ void PlaygroundController::mouseDoubleClick (const juce::MouseEvent& event)
         case DelayGraph::lineHover:
         case DelayGraph::editingLine:
             delayGraph.deleteLine(delayGraph.activeLine);
+            delayGraph.interactionState = DelayGraph::none;
             break;
         default: break;
     }

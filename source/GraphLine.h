@@ -12,7 +12,7 @@
 
 class GraphLine : public juce::Timer {
 public:
-    GraphLine(GraphPoint* start, GraphPoint* end);
+    GraphLine(GraphPoint* start, GraphPoint* end, const juce::Identifier& id);
 
     void timerCallback() override;
 
@@ -75,6 +75,8 @@ public:
     std::vector<GraphPoint*> popDestinations;
 
     bool editorAttached;
+
+    const juce::Identifier identifier;
 private:
 
     unsigned numChannels;

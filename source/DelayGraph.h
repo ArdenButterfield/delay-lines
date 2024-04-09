@@ -53,6 +53,10 @@ public:
 
     void bakeOffsets();
 
+    int line_id;
+
+    GraphLine* getLine(const juce::Identifier& id);
+
 private:
     juce::CriticalSection criticalSection;
     std::unique_ptr<juce::dsp::ProcessSpec> processSpec;

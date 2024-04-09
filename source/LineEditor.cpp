@@ -4,10 +4,8 @@
 
 #include "LineEditor.h"
 
-LineEditor::LineEditor(GraphLine& _graphLine) : graphLine(_graphLine)
+LineEditor::LineEditor (DelayGraph& _delayGraph, const juce::Identifier& _line) : delayGraph(_delayGraph), graphLine(_line)
 {
-    std::cout << "construct editor\n";
-    graphLine.editorAttached = true;
     timeSlider.setRange(0, 5000);
 
     timeEnvelopeFollowSlider.setRange(-1, 1);
@@ -64,8 +62,6 @@ LineEditor::LineEditor(GraphLine& _graphLine) : graphLine(_graphLine)
 
 LineEditor::~LineEditor()
 {
-    std::cout << "destruct editor\n";
-    graphLine.editorAttached = false;
 }
 
 
@@ -117,40 +113,48 @@ void LineEditor::paint (juce::Graphics& g)
 
 void LineEditor::sliderValueChanged (juce::Slider* slider)
 {
+    auto line = delayGraph.getLine(graphLine);
+    if (!line) {
+        return;
+    }
     if (slider == &timeSlider) {
-        graphLine.setLength(timeSlider.getValue());
+        line->setLength(timeSlider.getValue());
     } else if (slider == &gainSlider) {
-        graphLine.setGain(gainSlider.getValue());
+        line->setGain(gainSlider.getValue());
     } else if (slider == &timeEnvelopeFollowSlider) {
-        graphLine.setLengthEnvelopeFollow(timeEnvelopeFollowSlider.getValue());
+        line->setLengthEnvelopeFollow(timeEnvelopeFollowSlider.getValue());
     } else if (slider == &modRateSlider) {
-        graphLine.setModRate(modRateSlider.getValue());
+        line->setModRate(modRateSlider.getValue());
     } else if (slider == &modDepthSlider) {
-        graphLine.setModDepth (modDepthSlider.getValue());
+        line->setModDepth (modDepthSlider.getValue());
     } else if (slider == &distortionSlider) {
-        graphLine.setDistortionAmount(distortionSlider.getValue());
+        line->setDistortionAmount(distortionSlider.getValue());
     } else if (slider == &loCutSlider) {
-        graphLine.setLowCutFilter(loCutSlider.getValue());
+        line->setLowCutFilter(loCutSlider.getValue());
     } else if (slider == &hiCutSlider) {
-        graphLine.setHighCutFilter(hiCutSlider.getValue());
+        line->setHighCutFilter(hiCutSlider.getValue());
     } else if (slider == &gainEnvelopeFollowSlider) {
-        graphLine.setGainEnvelopeFollow(gainEnvelopeFollowSlider.getValue());
+        line->setGainEnvelopeFollow(gainEnvelopeFollowSlider.getValue());
     }
 }
 
 void LineEditor::timerCallback()
 {
-    timeSlider.setValue(graphLine.parameters.length);
-    timeEnvelopeFollowSlider.setValue(graphLine.parameters.lengthEnvelopeFollow);
-    modDepthSlider.setValue(graphLine.parameters.modDepth);
-    modRateSlider.setValue(graphLine.parameters.modRate);
-    distortionSlider.setValue(graphLine.parameters.distortion);
-    loCutSlider.setValue(graphLine.parameters.loCut);
-    hiCutSlider.setValue(graphLine.parameters.hiCut);
-    gainSlider.setValue(graphLine.parameters.gain);
-    invertButton.setToggleState(graphLine.parameters.invert, juce::dontSendNotification);
-    muteButton.setToggleState(graphLine.parameters.mute, juce::dontSendNotification);
-    bypassButton.setToggleState(graphLine.parameters.bypass, juce::dontSendNotification);
+    auto line = delayGraph.getLine(graphLine);
+    if (!line) {
+        return;
+    }
+    timeSlider.setValue(line->parameters.length);
+    timeEnvelopeFollowSlider.setValue(line->parameters.lengthEnvelopeFollow);
+    modDepthSlider.setValue(line->parameters.modDepth);
+    modRateSlider.setValue(line->parameters.modRate);
+    distortionSlider.setValue(line->parameters.distortion);
+    loCutSlider.setValue(line->parameters.loCut);
+    hiCutSlider.setValue(line->parameters.hiCut);
+    gainSlider.setValue(line->parameters.gain);
+    invertButton.setToggleState(line->parameters.invert, juce::dontSendNotification);
+    muteButton.setToggleState(line->parameters.mute, juce::dontSendNotification);
+    bypassButton.setToggleState(line->parameters.bypass, juce::dontSendNotification);
 }
 
 void LineEditor::mouseDown (const juce::MouseEvent& event)
@@ -178,11 +182,15 @@ void LineEditor::buttonStateChanged (juce::Button*)
 }
 void LineEditor::buttonClicked (juce::Button* button)
 {
+    auto line = delayGraph.getLine(graphLine);
+    if (!line) {
+        return;
+    }
     if (button == &muteButton) {
-        graphLine.setMute(muteButton.getToggleState());
+        line->setMute(muteButton.getToggleState());
     } else if (button == &bypassButton) {
-        graphLine.setBypass(bypassButton.getToggleState());
+        line->setBypass(bypassButton.getToggleState());
     } else if (button == &invertButton) {
-        graphLine.setInvert(invertButton.getToggleState());
+        line->setInvert(invertButton.getToggleState());
     }
 }

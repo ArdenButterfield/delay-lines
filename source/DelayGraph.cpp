@@ -3,6 +3,7 @@
 //
 
 #include "DelayGraph.h"
+#include <string>
 
 DelayGraph::DelayGraph()
 {
@@ -33,7 +34,7 @@ const std::vector<std::unique_ptr<GraphPoint>>& DelayGraph::getPoints() {
 
 void DelayGraph::addLine (GraphPoint* start, GraphPoint* end)
 {
-    lines.push_back(std::make_unique<GraphLine>(start, end));
+    lines.push_back(std::make_unique<GraphLine>(start, end, juce::Identifier(std::to_string(line_id++))));
     if (processSpec) {
         lines.back()->prepareToPlay(processSpec.get());
     }
@@ -69,11 +70,6 @@ void DelayGraph::deletePoint (const GraphPoint* point)
 
 void DelayGraph::deleteLine (const GraphLine* line)
 {
-    if (line->editorAttached) {
-        return;
-        // TODO: handle this more gracefully: how can we alert the editor(s) (if they exists) that we have deleted the line?
-    }
-    std::cout << "deleting line\n";
     criticalSection.enter();
     for (auto iter = lines.begin(); iter != lines.end(); ) {
         if (iter->get() == line) {
@@ -127,4 +123,13 @@ void DelayGraph::bakeOffsets()
         point->bakeOffset();
     }
 
+}
+GraphLine* DelayGraph::getLine (const juce::Identifier& id)
+{
+    for (auto& line : lines) {
+        if (line->identifier == id) {
+            return line.get();
+        }
+    }
+    return nullptr;
 }
