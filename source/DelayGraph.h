@@ -57,7 +57,10 @@ public:
 
     GraphLine* getLine(const juce::Identifier& id);
 
+    void setRealOutputs();
+
 private:
+    std::set<GraphPoint*> realGlobalInputs;
     juce::CriticalSection criticalSection;
     std::unique_ptr<juce::dsp::ProcessSpec> processSpec;
 

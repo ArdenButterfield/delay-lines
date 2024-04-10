@@ -30,6 +30,11 @@ void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line)
     }
 
     if (line->parameters.mute) {
+        g.setColour(juce::Colours::brown.withAlpha(0.1f));
+        g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
+        return;
+    }
+    if (line->parameters.bypass) {
         g.setColour(juce::Colours::brown.withAlpha(0.5f));
         g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
         return;

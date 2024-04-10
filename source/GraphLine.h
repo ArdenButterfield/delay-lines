@@ -80,6 +80,8 @@ public:
     bool editorAttached;
 
     const juce::Identifier identifier;
+
+    std::set<GraphPoint*> realOutputs;
 private:
 
     unsigned numChannels;

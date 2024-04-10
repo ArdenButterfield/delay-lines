@@ -4,6 +4,7 @@
 
 #include "DelayGraph.h"
 #include <string>
+#include <algorithm>
 
 DelayGraph::DelayGraph()
 {
@@ -132,4 +133,37 @@ GraphLine* DelayGraph::getLine (const juce::Identifier& id)
         }
     }
     return nullptr;
+}
+
+void DelayGraph::setRealOutputs()
+{
+    // the real outputs of a line are the points that can be reached from its endpoint traversing only
+    // bypassed lines. We also need to treat any point reachable from the start point through bypassed
+    // lines as a start point, and give it the input values.
+    for (auto& line : lines) {
+        std::set<GraphPoint*> potentialOutputs;
+        line->realOutputs.clear();
+        potentialOutputs.insert(line->end);
+        while (!potentialOutputs.empty()) {
+            auto point = *potentialOutputs.begin();
+            potentialOutputs.erase(potentialOutputs.begin());
+            line->realOutputs.insert(point);
+            for (auto& l : lines) {
+                if ((l->start == point)
+                    && l->parameters.bypass
+                    && (potentialOutputs.find(l->end) == potentialOutputs.end())
+                    && (line->realOutputs.find(l->end) == line->realOutputs.end())) {
+                    potentialOutputs.insert(l->end);
+                }
+            }
+        }
+    }
+
+    realGlobalInputs.clear();
+    realGlobalInputs.insert(startPoint);
+    for (auto& line : lines) {
+        if ((line->start == startPoint) && (line->parameters.bypass)) {
+            realGlobalInputs.insert(line->realOutputs.begin(), line->realOutputs.end());
+        }
+    }
 }

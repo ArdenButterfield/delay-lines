@@ -199,6 +199,7 @@ void LineEditor::buttonClicked (juce::Button* button)
         line->setMute(muteButton.getToggleState());
     } else if (button == &bypassButton) {
         line->setBypass(bypassButton.getToggleState());
+        delayGraph.setRealOutputs();
     } else if (button == &invertButton) {
         line->setInvert(invertButton.getToggleState());
     }

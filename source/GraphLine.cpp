@@ -208,5 +208,4 @@ void GraphLine::bakeOffset()
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
 
     setLength(parameters.length * (realLineVector / lineVector));
-
 }
