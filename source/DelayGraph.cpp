@@ -170,7 +170,6 @@ void DelayGraph::setRealOutputs()
     criticalSection.enter();
     realGlobalInputs.clear();
     realGlobalInputs.insert(startPoint);
-    std::cout << "inserting\n";
     for (auto& line : lines) {
         if ((line->start == startPoint) && (line->parameters.bypass)) {
             realGlobalInputs.insert(line->realOutputs.begin(), line->realOutputs.end());

@@ -70,7 +70,7 @@ void GraphLine::setGain (float gain)
 
 void GraphLine::pushSample (std::vector<float>& sample)
 {
-    if (!prepared) {
+    if ((!prepared) || (parameters.muteBypass == Parameters::mute)) {
         return;
     }
     for (unsigned channel = 0; channel < numChannels; ++channel) {
@@ -151,22 +151,22 @@ void GraphLine::getEnvelope (float proportion, float& left, float& right)
 }
 void GraphLine::setBypass (bool bypass)
 {
-    parameters.bypass = bypass;
     if (bypass) {
-        parameters.mute = false;
+        parameters.muteBypass = Parameters::bypass;
+    } else if (parameters.muteBypass == Parameters::bypass) {
+        parameters.muteBypass = Parameters::none;
     }
 }
 
 void GraphLine::setMute (bool mute)
 {
     if (mute) {
-        parameters.bypass = false;
-    }
-    if (parameters.mute && !mute) {
-        internalDelayLine.reset();
+        parameters.muteBypass = Parameters::mute;
         envelopeDelayLine.reset();
+        internalDelayLine.reset();
+    } else if (parameters.muteBypass == Parameters::mute) {
+        parameters.muteBypass = Parameters::none;
     }
-    parameters.mute = mute;
 }
 
 void GraphLine::setLengthEnvelopeFollow (float amt)
@@ -193,7 +193,7 @@ void GraphLine::setDistortionAmount (float amt)
 
 void GraphLine::setLowCutFilter (float freq)
 {
-    if (freq != parameters.loCut) {
+    if (!juce::approximatelyEqual(freq, (float)parameters.loCut)) {
         parameters.loCut = freq;
         for (auto& f : loCutFilters) {
             f.setCoefficients(juce::IIRCoefficients::makeHighPass(sampleRate, std::max(freq, 5.f)));
@@ -203,7 +203,7 @@ void GraphLine::setLowCutFilter (float freq)
 
 void GraphLine::setHighCutFilter (float freq)
 {
-    if (freq != parameters.hiCut) {
+    if (!juce::approximatelyEqual(freq, (float)parameters.loCut)) {
         parameters.hiCut = freq;
         for (auto& f : hiCutFilters) {
             f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, std::min(freq, sampleRate / 2)));

@@ -8,6 +8,7 @@
 #include "GraphPoint.h"
 #include "juce_dsp/juce_dsp.h"
 #include "juce_audio_basics/juce_audio_basics.h"
+#include "juce_audio_processors/juce_audio_processors.h"
 
 struct DelayLength {
     DelayLength() : samplesLength(0), millisecondsLength(500), hertz(10), midiNote(100), beatLength({1,4}), mode(ms) {}
@@ -72,34 +73,38 @@ struct DelayLength {
 
 
 struct Parameters {
-    Parameters() {
-        bypass = false;
-        mute = false;
-        length = 1000;
-        lengthEnvelopeFollow = 0;
-        modDepth = 0;
-        modRate = 1;
-        distortion = 0;
-        hiCut = 20000;
-        loCut = 0;
-        gain = 1;
-        invert = false;
-        gainEnvelopeFollow = 0;
-        feedback = 0;
-    }
-    bool bypass;
-    bool mute;
-    float length;
-    float lengthEnvelopeFollow;
-    float modDepth;
-    float modRate;
-    float distortion;
-    float hiCut;
-    float loCut;
-    float gain;
-    bool invert;
-    float gainEnvelopeFollow;
-    float feedback;
+    Parameters() : muteBypass("mutebypass", "mute bypass", {"none", "mute", "bypass"}, 0),
+                   length("length", "length", 0, 5000, 500),
+                   lengthEnvelopeFollow("lengthenvelopefollow", "length envelope follow", -1, 1, 0),
+                   modDepth("moddepth", "mod depth", 0, 1, 0),
+                   modRate("modrate", "mod rate", 0.1, 30, 1),
+                   distortion("distortion", "distortion", 0, 1, 0),
+                   hiCut("hicut", "hi cut", 100, 20000, 20000),
+                   loCut("locut", "lo cut", 0, 2000, 0),
+                   gain("gain", "gain", 0, 2, 1),
+                   invert("invert", "invert", false),
+                   gainEnvelopeFollow("gainenvelopefollow", "gain envelope follow", -1, 1, 0),
+                   feedback("feedback", "feedback", 0, 1, 0)
+    {}
+
+    enum MuteBypassOptions {
+        none = 0,
+        mute = 1,
+        bypass = 2
+    };
+
+    juce::AudioParameterChoice muteBypass;
+    juce::AudioParameterFloat length;
+    juce::AudioParameterFloat lengthEnvelopeFollow;
+    juce::AudioParameterFloat modDepth;
+    juce::AudioParameterFloat modRate;
+    juce::AudioParameterFloat distortion;
+    juce::AudioParameterFloat hiCut;
+    juce::AudioParameterFloat loCut;
+    juce::AudioParameterFloat gain;
+    juce::AudioParameterBool invert;
+    juce::AudioParameterFloat gainEnvelopeFollow;
+    juce::AudioParameterFloat feedback;
 };
 
 
