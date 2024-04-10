@@ -35,7 +35,7 @@ public:
     GraphPoint* const start;
     GraphPoint* const end;
     void pushSample(std::vector<float>& sample);
-    void popSample(std::vector<float>& sample);
+    void popSample();
     void prepareToPlay(juce::dsp::ProcessSpec* spec);
     void toggleEnabled();
 

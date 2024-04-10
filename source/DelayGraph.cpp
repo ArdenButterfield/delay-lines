@@ -91,23 +91,29 @@ void DelayGraph::prepareToPlay (juce::dsp::ProcessSpec& spec)
     for (auto& point : points) {
         point->prepareToPlay(processSpec.get());
     }
+    setRealOutputs();
+    startTimerHz(60);
 }
 
 void DelayGraph::processSample (std::vector<float>& sample)
 {
-    for (unsigned channel = 0; channel < processSpec->numChannels; ++channel) {
-        startPoint->samples[channel] += sample[channel];
-    }
     criticalSection.enter();
+    for (auto& point : points) {
+        std::fill(point->samples.begin(), point->samples.end(), 0);
+    }
+
+    for (unsigned channel = 0; channel < processSpec->numChannels; ++channel) {
+        for (auto point : realGlobalInputs) {
+            point->samples[channel] += sample[channel];
+        }
+    }
+
     for (auto& line : lines) {
         line->pushSample(line->start->samples);
     }
 
-    for (auto& point : points) {
-        std::fill(point->samples.begin(), point->samples.end(), 0);
-    }
     for (auto& line : lines) {
-        line->popSample(line->end->samples);
+        line->popSample();
     }
     for (unsigned channel = 0; channel < processSpec->numChannels; ++channel) {
         sample[channel] = endPoint->samples[channel];
@@ -141,6 +147,7 @@ void DelayGraph::setRealOutputs()
     // bypassed lines. We also need to treat any point reachable from the start point through bypassed
     // lines as a start point, and give it the input values.
     for (auto& line : lines) {
+        criticalSection.enter();
         std::set<GraphPoint*> potentialOutputs;
         line->realOutputs.clear();
         potentialOutputs.insert(line->end);
@@ -157,13 +164,22 @@ void DelayGraph::setRealOutputs()
                 }
             }
         }
+        criticalSection.exit();
     }
 
+    criticalSection.enter();
     realGlobalInputs.clear();
     realGlobalInputs.insert(startPoint);
+    std::cout << "inserting\n";
     for (auto& line : lines) {
         if ((line->start == startPoint) && (line->parameters.bypass)) {
             realGlobalInputs.insert(line->realOutputs.begin(), line->realOutputs.end());
         }
     }
+    criticalSection.exit();
+}
+
+void DelayGraph::timerCallback()
+{
+    setRealOutputs();
 }

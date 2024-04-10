@@ -87,7 +87,7 @@ float GraphLine::distortSample (float samp)
     return parameters.distortion * distorted + (1 - parameters.distortion) * samp;
 }
 
-void GraphLine::popSample (std::vector<float>& sample)
+void GraphLine::popSample ()
 {
     if (!prepared) {
         return;
@@ -115,8 +115,10 @@ void GraphLine::popSample (std::vector<float>& sample)
             gain = 1 + inputEnvelope * parameters.gainEnvelopeFollow;
         }
         s *= gain;
-        if (!parameters.mute) {
-            sample[channel] += s;
+        if (!(parameters.mute || parameters.bypass)) {
+            for (auto point : realOutputs) {
+                point->samples[channel] += s;
+            }
             lastSample[channel] = s;
         }
     }
@@ -150,10 +152,16 @@ void GraphLine::getEnvelope (float proportion, float& left, float& right)
 void GraphLine::setBypass (bool bypass)
 {
     parameters.bypass = bypass;
+    if (bypass) {
+        parameters.mute = false;
+    }
 }
 
 void GraphLine::setMute (bool mute)
 {
+    if (mute) {
+        parameters.bypass = false;
+    }
     if (parameters.mute && !mute) {
         internalDelayLine.reset();
         envelopeDelayLine.reset();

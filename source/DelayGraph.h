@@ -13,7 +13,7 @@
 #include "GraphLine.h"
 
 
-class DelayGraph
+class DelayGraph : public juce::Timer
 {
 public:
     DelayGraph();
@@ -59,6 +59,7 @@ public:
 
     void setRealOutputs();
 
+    void timerCallback() override;
 private:
     std::set<GraphPoint*> realGlobalInputs;
     juce::CriticalSection criticalSection;
