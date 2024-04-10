@@ -30,6 +30,7 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const juce::Identifier& _line) 
 
     invertButton.setButtonText("Invert");
 
+    feedbackSlider.setRange(0,1);
 
     for (auto slider : {
              &timeSlider,
@@ -40,7 +41,8 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const juce::Identifier& _line) 
              &loCutSlider,
              &hiCutSlider,
              &gainSlider,
-             &gainEnvelopeFollowSlider}) {
+             &gainEnvelopeFollowSlider,
+             &feedbackSlider}) {
         slider->setSliderStyle(juce::Slider::RotaryVerticalDrag);
         slider->setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 60, 20);
         addAndMakeVisible(slider);
@@ -91,7 +93,11 @@ void LineEditor::resized()
     gainSlider.setBounds(panels[2].withHeight(panels[2].getWidth()));
 
     invertButton.setBounds(panels[2].withTop(gainSlider.getBottom()).withHeight(50));
-    gainEnvelopeFollowSlider.setBounds(panels[2].withTop(invertButton.getBottom()));
+
+    auto bottomOfPanelTwo = panels[2].withTop(invertButton.getBottom());
+
+    gainEnvelopeFollowSlider.setBounds(bottomOfPanelTwo.withWidth(bottomOfPanelTwo.getWidth() / 2));
+    feedbackSlider.setBounds(bottomOfPanelTwo.withLeft(gainEnvelopeFollowSlider.getRight()));
 
     bypassButton.setBounds(topBar);
     bypassButton.changeWidthToFitText();
@@ -135,6 +141,8 @@ void LineEditor::sliderValueChanged (juce::Slider* slider)
         line->setHighCutFilter(hiCutSlider.getValue());
     } else if (slider == &gainEnvelopeFollowSlider) {
         line->setGainEnvelopeFollow(gainEnvelopeFollowSlider.getValue());
+    } else if (slider == &feedbackSlider) {
+        line->setFeedback(feedbackSlider.getValue());
     }
 }
 
@@ -144,14 +152,15 @@ void LineEditor::timerCallback()
     if (!line) {
         return;
     }
-    timeSlider.setValue(line->parameters.length);
-    timeEnvelopeFollowSlider.setValue(line->parameters.lengthEnvelopeFollow);
-    modDepthSlider.setValue(line->parameters.modDepth);
-    modRateSlider.setValue(line->parameters.modRate);
-    distortionSlider.setValue(line->parameters.distortion);
-    loCutSlider.setValue(line->parameters.loCut);
-    hiCutSlider.setValue(line->parameters.hiCut);
-    gainSlider.setValue(line->parameters.gain);
+    timeSlider.setValue(line->parameters.length, juce::dontSendNotification);
+    timeEnvelopeFollowSlider.setValue(line->parameters.lengthEnvelopeFollow, juce::dontSendNotification);
+    modDepthSlider.setValue(line->parameters.modDepth, juce::dontSendNotification);
+    modRateSlider.setValue(line->parameters.modRate, juce::dontSendNotification);
+    distortionSlider.setValue(line->parameters.distortion, juce::dontSendNotification);
+    loCutSlider.setValue(line->parameters.loCut, juce::dontSendNotification);
+    hiCutSlider.setValue(line->parameters.hiCut, juce::dontSendNotification);
+    gainSlider.setValue(line->parameters.gain, juce::dontSendNotification);
+    feedbackSlider.setValue(line->parameters.feedback, juce::dontSendNotification);
     invertButton.setToggleState(line->parameters.invert, juce::dontSendNotification);
     muteButton.setToggleState(line->parameters.mute, juce::dontSendNotification);
     bypassButton.setToggleState(line->parameters.bypass, juce::dontSendNotification);

@@ -50,6 +50,8 @@ private:
     juce::ToggleButton invertButton;
     juce::Slider gainEnvelopeFollowSlider;
 
+    juce::Slider feedbackSlider;
+
     juce::Rectangle<int> topBar;
     juce::Rectangle<int> mainSection;
     std::array<juce::Rectangle<int>, 3> panels;

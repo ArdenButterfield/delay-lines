@@ -38,6 +38,8 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
     modOscillator.prepare(*spec);
 
     startTimerHz(60);
+
+    lastSample.resize(spec->numChannels, 0);
 }
 
 void GraphLine::setLength (float length)
@@ -66,8 +68,9 @@ void GraphLine::setGain (float gain)
 void GraphLine::pushSample (std::vector<float>& sample)
 {
     for (unsigned channel = 0; channel < numChannels; ++channel) {
-        internalDelayLine.pushSample(channel, sample[channel]);
-        auto envelope = envelopeFilter.processSample(channel, sample[channel]);
+        auto val = sample[channel] + parameters.feedback * lastSample[channel];
+        internalDelayLine.pushSample(channel, val);
+        auto envelope = envelopeFilter.processSample(channel, val);
         envelopeDelayLine.pushSample(channel, envelope);
     }
 }
@@ -104,6 +107,7 @@ void GraphLine::popSample (std::vector<float>& sample)
         s *= gain;
         if (!parameters.mute) {
             sample[channel] += s;
+            lastSample[channel] = s;
         }
     }
 }
@@ -192,6 +196,12 @@ void GraphLine::setGainEnvelopeFollow (float amt)
 {
     parameters.gainEnvelopeFollow = amt;
 }
+
+void GraphLine::setFeedback (float amt)
+{
+    parameters.feedback = amt;
+}
+
 void GraphLine::bakeOffset()
 {
     auto lineVector = end->getDistanceFrom(*start);

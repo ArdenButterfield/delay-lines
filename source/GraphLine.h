@@ -30,6 +30,7 @@ public:
     void setGain(float gain);
     void setInvert(bool invert);
     void setGainEnvelopeFollow(float amt);
+    void setFeedback(float amt);
 
     GraphPoint* const start;
     GraphPoint* const end;
@@ -56,6 +57,7 @@ public:
             gain = 1;
             invert = false;
             gainEnvelopeFollow = 0;
+            feedback = 0;
         }
         bool bypass;
         bool mute;
@@ -69,6 +71,7 @@ public:
         float gain;
         bool invert;
         float gainEnvelopeFollow;
+        float feedback;
     };
 
     Parameters parameters;
@@ -91,7 +94,7 @@ private:
     const float defaultLength = 1.0;
 
     float distortSample(float samp);
-
+    std::vector<float> lastSample;
     std::vector<juce::IIRFilter> loCutFilters;
     std::vector<juce::IIRFilter> hiCutFilters;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> modDepth;

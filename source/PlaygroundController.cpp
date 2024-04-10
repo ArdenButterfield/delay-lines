@@ -178,4 +178,3 @@ void PlaygroundController::setHoveredPoint (const juce::Point<float>& mousePoint
     delayGraph.activePoint = nullptr;
     delayGraph.interactionState = DelayGraph::none;
 }
-
