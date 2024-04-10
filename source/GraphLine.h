@@ -9,6 +9,99 @@
 #include "juce_dsp/juce_dsp.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 
+struct DelayLength {
+    DelayLength() : samplesLength(0), millisecondsLength(500), hertz(10), midiNote(100), beatLength({1,4}), mode(ms) {}
+    float samplesLength;
+    float millisecondsLength;
+    float hertz;
+    int midiNote;
+    std::array<int, 2> beatLength;
+
+    enum Mode {
+        ms,
+        samps,
+        hz,
+        note,
+        beat
+    };
+
+    Mode mode;
+
+    float getLengthInSamples(float samplerate, float bpm) {
+        switch (mode)
+        {
+            case ms:
+                return millisecondsLength * 1000.f / samplerate;
+            case samps:
+                return samplesLength;
+            case hz:
+                return samplerate / hertz;
+            case note:
+                return samplerate / static_cast<float>(juce::MidiMessage::getMidiNoteInHertz(midiNote));
+            case beat:
+                return (static_cast<float>(beatLength[0]) / static_cast<float>(beatLength[1])) * 60 * samplerate / bpm;
+        }
+    }
+
+    void setSamplesLength(float l) {
+        samplesLength = l;
+        mode = samps;
+    }
+
+    void setMillisecondsLength(float l) {
+        millisecondsLength = l;
+        mode = ms;
+    }
+
+    void setHertz(float h) {
+        hertz = h;
+        mode = hz;
+    }
+
+    void setMidiNote(int n) {
+        midiNote = n;
+        mode = note;
+    }
+
+    void setBeat(int numerator, int denominator) {
+        beatLength[0] = numerator;
+        beatLength[1] = denominator;
+        mode = beat;
+    }
+};
+
+
+struct Parameters {
+    Parameters() {
+        bypass = false;
+        mute = false;
+        length = 1000;
+        lengthEnvelopeFollow = 0;
+        modDepth = 0;
+        modRate = 1;
+        distortion = 0;
+        hiCut = 20000;
+        loCut = 0;
+        gain = 1;
+        invert = false;
+        gainEnvelopeFollow = 0;
+        feedback = 0;
+    }
+    bool bypass;
+    bool mute;
+    float length;
+    float lengthEnvelopeFollow;
+    float modDepth;
+    float modRate;
+    float distortion;
+    float hiCut;
+    float loCut;
+    float gain;
+    bool invert;
+    float gainEnvelopeFollow;
+    float feedback;
+};
+
 
 class GraphLine : public juce::Timer {
 public:
@@ -42,37 +135,6 @@ public:
     void getEnvelope(float proportion, float& left, float& right);
 
     void bakeOffset();
-
-    struct Parameters {
-        Parameters() {
-            bypass = false;
-            mute = false;
-            length = 1000;
-            lengthEnvelopeFollow = 0;
-            modDepth = 0;
-            modRate = 1;
-            distortion = 0;
-            hiCut = 20000;
-            loCut = 0;
-            gain = 1;
-            invert = false;
-            gainEnvelopeFollow = 0;
-            feedback = 0;
-        }
-        bool bypass;
-        bool mute;
-        float length;
-        float lengthEnvelopeFollow;
-        float modDepth;
-        float modRate;
-        float distortion;
-        float hiCut;
-        float loCut;
-        float gain;
-        bool invert;
-        float gainEnvelopeFollow;
-        float feedback;
-    };
 
     Parameters parameters;
     std::vector<GraphPoint*> popDestinations;
