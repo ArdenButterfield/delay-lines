@@ -9,6 +9,8 @@ GraphLine::GraphLine(GraphPoint* const _start, GraphPoint* const _end, const juc
     : start(_start), end(_end), identifier(id)
 {
     modOscillator.initialise([] (float x) {return std::sin(x);}, 128);
+    prepared = false;
+
 }
 
 void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
@@ -40,6 +42,7 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
     startTimerHz(60);
 
     lastSample.resize(spec->numChannels, 0);
+    prepared = true;
 }
 
 void GraphLine::setLength (float length)
@@ -67,6 +70,9 @@ void GraphLine::setGain (float gain)
 
 void GraphLine::pushSample (std::vector<float>& sample)
 {
+    if (!prepared) {
+        return;
+    }
     for (unsigned channel = 0; channel < numChannels; ++channel) {
         auto val = sample[channel] + parameters.feedback * lastSample[channel];
         internalDelayLine.pushSample(channel, val);
@@ -83,6 +89,10 @@ float GraphLine::distortSample (float samp)
 
 void GraphLine::popSample (std::vector<float>& sample)
 {
+    if (!prepared) {
+        return;
+    }
+
     auto mod = 1 + modDepth.getNextValue() * modOscillator.processSample(0) / (parameters.modRate * juce::MathConstants<float>::twoPi * 10);
 
     for (unsigned channel = 0; channel < numChannels; ++channel) {
@@ -124,6 +134,12 @@ void GraphLine::timerCallback()
 
 void GraphLine::getEnvelope (float proportion, float& left, float& right)
 {
+    if (!prepared) {
+        left = 0;
+        right = 0;
+        return;
+    }
+
     left = envelopeDelayLine.popSample(0, internalDelayLine.getDelay() * proportion, false);
     if (numChannels > 1) {
         right = envelopeDelayLine.popSample(1, internalDelayLine.getDelay() * proportion, false);

@@ -78,6 +78,7 @@ public:
     std::vector<GraphPoint*> popDestinations;
 
     bool editorAttached;
+    bool prepared;
 
     const juce::Identifier identifier;
 
