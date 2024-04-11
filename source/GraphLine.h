@@ -11,7 +11,7 @@
 #include "juce_audio_processors/juce_audio_processors.h"
 
 struct DelayLength {
-    DelayLength() : samplesLength(0), millisecondsLength(500), hertz(10), midiNote(100), beatLength({1,4}), mode(ms) {}
+    DelayLength() : mode(ms), samplesLength(0), millisecondsLength(500), hertz(10), midiNote(100), beatLength({1,4}) {}
 
     enum Mode {
         ms,
@@ -33,9 +33,9 @@ struct DelayLength {
             case hz:
                 return samplerate / hertz;
             case note:
-                return samplerate / static_cast<float>(juce::MidiMessage::getMidiNoteInHertz(midiNote));
+                return samplerate / static_cast<float>(juce::MidiMessage::getMidiNoteInHertz(static_cast<int>(std::round(midiNote))));
             case beat:
-                return (static_cast<float>(beatLength[0]) / static_cast<float>(beatLength[1])) * 60 * samplerate / bpm;
+                return (std::round(beatLength[0]) / std::round(beatLength[1])) * 60 * samplerate / bpm;
         }
     }
 
@@ -50,6 +50,11 @@ struct DelayLength {
             case hz:
                 hertz /= proportion;
                 break;
+            case note:
+                // TODO
+                break;
+            case beat:
+                beatLength[0] *= proportion;
         }
     }
 
@@ -79,27 +84,27 @@ struct DelayLength {
         mode = beat;
     }
 
-    float getSamplesLength() const {
+    [[nodiscard]] float getSamplesLength() const {
         return samplesLength;
     }
 
-    float getMillisecondsLength() const {
+    [[nodiscard]] float getMillisecondsLength() const {
         return millisecondsLength;
     }
 
-    float getHertz() const {
+    [[nodiscard]] float getHertz() const {
         return hertz;
     }
 
-    int getMidiNote() const {
+    [[nodiscard]] int getMidiNote() const {
         return static_cast<int>(std::round(midiNote));
     }
 
-    int getNumerator() const {
+    [[nodiscard]] int getNumerator() const {
         return static_cast<int>(std::round(beatLength[0]));
     }
 
-    int getDenominator() const {
+    [[nodiscard]] int getDenominator() const {
         return static_cast<int>(std::round(beatLength[1]));
     }
 

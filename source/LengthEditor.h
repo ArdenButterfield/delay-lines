@@ -21,15 +21,19 @@ public:
     void comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) override;
     void sliderValueChanged(juce::Slider *slider) override;
 private:
+    void updateSliders();
+    void updateUnitSelector();
+
     juce::ComboBox unitSelector;
 
     juce::Slider samplesSlider;
     juce::Slider millisecondsSlider;
     juce::Slider hertzSlider;
     juce::Slider noteSlider;
+    juce::Slider pitchSlider;
 
-    juce::TextEditor beatNumerator;
-    juce::TextEditor beatDenominator;
+    juce::Slider beatNumerator;
+    juce::Slider beatDenominator;
 
     DelayGraph& delayGraph;
     const juce::Identifier& graphLine;

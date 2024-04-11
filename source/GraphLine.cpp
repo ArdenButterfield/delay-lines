@@ -73,9 +73,9 @@ void GraphLine::pushSample (std::vector<float>& sample)
 
     for (unsigned channel = 0; channel < numChannels; ++channel) {
         auto val = sample[channel] + parameters.feedback * lastSample[channel];
-        internalDelayLine.pushSample(channel, val);
-        auto envelope = envelopeFilter.processSample(channel, val);
-        envelopeDelayLine.pushSample(channel, envelope);
+        internalDelayLine.pushSample(static_cast<int>(channel), val);
+        auto envelope = envelopeFilter.processSample(static_cast<int>(channel), val);
+        envelopeDelayLine.pushSample(static_cast<int>(channel), envelope);
     }
 }
 
@@ -87,7 +87,7 @@ float GraphLine::distortSample (float samp)
 
 void GraphLine::popSample ()
 {
-    if (!prepared) {
+    if (!prepared || (parameters.isMuted())) {
         return;
     }
 
@@ -113,7 +113,7 @@ void GraphLine::popSample ()
             gain = 1 + inputEnvelope * parameters.gainEnvelopeFollow;
         }
         s *= gain;
-        if (!(parameters.isMuted() || parameters.isBypassed())) {
+        if (!parameters.isBypassed()) {
             for (auto point : realOutputs) {
                 point->samples[channel] += s;
             }
@@ -226,7 +226,6 @@ void GraphLine::setFeedback (float amt)
 
 void GraphLine::bakeOffset()
 {
-    std::cout << "bake offset\n";
     auto lineVector = end->getDistanceFrom(*start);
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
 

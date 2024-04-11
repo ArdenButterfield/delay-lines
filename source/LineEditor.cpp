@@ -58,7 +58,6 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const juce::Identifier& _line) 
     }
 
     startTimerHz(60);
-    timerCallback();
 }
 
 LineEditor::~LineEditor()

@@ -16,7 +16,7 @@ public:
         end
     };
 
-    explicit GraphPoint(const juce::Point<float>& p, PointType pt) : juce::Point<float>(p), pointType(pt) {
+    explicit GraphPoint(const juce::Point<float>& p, PointType pt) : juce::Point<float>(p), pointType(pt), draggingOffset(false) {
         offset.setXY(0,0);
         startTimerHz(30);
     }
