@@ -8,6 +8,7 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 
 #include "DelayGraph.h"
+#include "LengthEditor.h"
 
 class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::ToggleButton::Listener, public juce::Timer
 {
@@ -37,7 +38,8 @@ private:
     juce::ToggleButton bypassButton;
     juce::ToggleButton muteButton;
 
-    juce::Slider timeSlider;
+    LengthEditor lengthEditor;
+
     juce::Slider modDepthSlider;
     juce::Slider modRateSlider;
     juce::Slider timeEnvelopeFollowSlider;

@@ -1,0 +1,151 @@
+//
+// Created by arden on 4/10/24.
+//
+
+#include "LengthEditor.h"
+
+
+LengthEditor::LengthEditor (DelayGraph& _delayGraph, const juce::Identifier& _line) : delayGraph(_delayGraph), graphLine(_line)
+{
+    startTimerHz(60);
+    unitSelector.addItemList({"Milliseconds", "Samples", "Hertz", "Pitch", "Beat"}, 1); // offset must start at 1: 0 is reserved for undefined
+    unitSelector.addListener(this);
+
+    samplesSlider.setNormalisableRange({0,200});
+    samplesSlider.setSkewFactorFromMidPoint(30);
+
+    millisecondsSlider.setNormalisableRange({0,5000});
+    millisecondsSlider.setSkewFactorFromMidPoint(500);
+
+    hertzSlider.setNormalisableRange({1, 20000});
+    hertzSlider.setSkewFactorFromMidPoint(100);
+
+    beatNumerator.setInputRestrictions(4, "1234567890");
+    beatDenominator.setInputRestrictions(4, "1234567890");
+
+    addAndMakeVisible(samplesSlider);
+    addAndMakeVisible(millisecondsSlider);
+    addAndMakeVisible(hertzSlider);
+    addAndMakeVisible(unitSelector);
+    addAndMakeVisible(beatNumerator);
+    addAndMakeVisible(beatDenominator);
+
+    for (auto slider : {
+             &samplesSlider,
+             &millisecondsSlider,
+             &hertzSlider}) {
+        slider->setSliderStyle(juce::Slider::RotaryVerticalDrag);
+        slider->setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 60, 20);
+        addAndMakeVisible(slider);
+        slider->addListener(this);
+    }
+
+}
+
+void LengthEditor::resized()
+{
+    unitSelector.setBounds(getLocalBounds().withHeight(30));
+    auto sliderZone = getLocalBounds().withTop(unitSelector.getBottom());
+
+    samplesSlider.setBounds(sliderZone);
+    millisecondsSlider.setBounds(sliderZone);
+    hertzSlider.setBounds(sliderZone);
+
+    beatNumerator.setBounds(sliderZone.withWidth(unitSelector.getWidth() / 2));
+    beatDenominator.setBounds(beatNumerator.getBounds().withX(beatNumerator.getRight()));
+
+}
+
+void LengthEditor::paint (juce::Graphics& g)
+{
+    g.fillAll(juce::Colours::mediumaquamarine);
+}
+
+void LengthEditor::timerCallback()
+{
+    auto line = delayGraph.getLine(graphLine);
+    if (!line) {
+        return;
+    }
+    switch (line->parameters.length.mode) {
+        case DelayLength::ms:
+            unitSelector.setSelectedId(1);
+            break;
+        case DelayLength::samps:
+            unitSelector.setSelectedId(2);
+            break;
+        case DelayLength::hz:
+            unitSelector.setSelectedId(3);
+            break;
+        case DelayLength::note:
+            unitSelector.setSelectedId(4);
+            break;
+        case DelayLength::beat:
+            unitSelector.setSelectedId(5);
+            break;
+        default: break;
+    }
+
+    samplesSlider.setValue(line->parameters.length.getSamplesLength());
+    millisecondsSlider.setValue(line->parameters.length.getMillisecondsLength());
+    hertzSlider.setValue(line->parameters.length.getHertz());
+
+    beatNumerator.setText(std::to_string(line->parameters.length.getNumerator()));
+    beatDenominator.setText(std::to_string(line->parameters.length.getDenominator()));
+}
+
+void LengthEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
+{
+    if (comboBoxThatHasChanged == &unitSelector) {
+        millisecondsSlider.setVisible(false);
+        samplesSlider.setVisible(false);
+        hertzSlider.setVisible(false);
+        beatNumerator.setVisible(false);
+        beatDenominator.setVisible(false);
+
+        auto line = delayGraph.getLine(graphLine);
+        if (!line) {
+            return;
+        }
+
+
+        switch (unitSelector.getSelectedId())
+        {
+            case 1:
+                millisecondsSlider.setVisible(true);
+                line->parameters.length.mode = DelayLength::ms;
+                break;
+            case 2:
+                samplesSlider.setVisible(true);
+                line->parameters.length.mode = DelayLength::samps;
+                break;
+            case 3:
+                hertzSlider.setVisible(true);
+                line->parameters.length.mode = DelayLength::hz;
+                break;
+            case 4:
+                // PITCH
+                break;
+            case 5:
+                beatNumerator.setVisible(true);
+                beatDenominator.setVisible(true);
+                line->parameters.length.mode = DelayLength::beat;
+                break;
+            default: break;
+        }
+    }
+}
+void LengthEditor::sliderValueChanged (juce::Slider* slider)
+{
+    auto line = delayGraph.getLine(graphLine);
+    if (!line) {
+        return;
+    }
+    if (slider == &millisecondsSlider) {
+        line->parameters.length.setMillisecondsLength(millisecondsSlider.getValue());
+    } else if (slider == &samplesSlider) {
+        line->parameters.length.setSamplesLength(samplesSlider.getValue());
+    } else if (slider == &hertzSlider) {
+        line->parameters.length.setHertz(hertzSlider.getValue());
+    }
+}

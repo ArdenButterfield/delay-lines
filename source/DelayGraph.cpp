@@ -19,6 +19,8 @@ DelayGraph::DelayGraph()
 }
 
 void DelayGraph::addPoint(const juce::Point<float>& point, bool connectToSelected) {
+    criticalSection.enter();
+
     points.push_back(std::make_unique<InnerPoint>(point));
     points.back()->prepareToPlay(processSpec.get());
     if (connectToSelected) {
@@ -27,6 +29,8 @@ void DelayGraph::addPoint(const juce::Point<float>& point, bool connectToSelecte
         activePoint = added;
         interactionState = creatingLine;
     }
+    criticalSection.exit();
+
 }
 
 const std::vector<std::unique_ptr<GraphPoint>>& DelayGraph::getPoints() {
@@ -35,10 +39,13 @@ const std::vector<std::unique_ptr<GraphPoint>>& DelayGraph::getPoints() {
 
 void DelayGraph::addLine (GraphPoint* start, GraphPoint* end)
 {
+    criticalSection.enter();
     lines.push_back(std::make_unique<GraphLine>(start, end, juce::Identifier(std::to_string(line_id++))));
     if (processSpec) {
         lines.back()->prepareToPlay(processSpec.get());
     }
+    criticalSection.exit();
+
 }
 
 std::vector<std::unique_ptr<GraphLine>>& DelayGraph::getLines()
@@ -129,8 +136,8 @@ void DelayGraph::bakeOffsets()
     for (auto& point : points) {
         point->bakeOffset();
     }
-
 }
+
 GraphLine* DelayGraph::getLine (const juce::Identifier& id)
 {
     for (auto& line : lines) {
@@ -157,7 +164,7 @@ void DelayGraph::setRealOutputs()
             line->realOutputs.insert(point);
             for (auto& l : lines) {
                 if ((l->start == point)
-                    && l->parameters.bypass
+                    && l->parameters.isBypassed()
                     && (potentialOutputs.find(l->end) == potentialOutputs.end())
                     && (line->realOutputs.find(l->end) == line->realOutputs.end())) {
                     potentialOutputs.insert(l->end);
@@ -171,7 +178,7 @@ void DelayGraph::setRealOutputs()
     realGlobalInputs.clear();
     realGlobalInputs.insert(startPoint);
     for (auto& line : lines) {
-        if ((line->start == startPoint) && (line->parameters.bypass)) {
+        if ((line->start == startPoint) && (line->parameters.isBypassed())) {
             realGlobalInputs.insert(line->realOutputs.begin(), line->realOutputs.end());
         }
     }

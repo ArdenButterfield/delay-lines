@@ -29,12 +29,12 @@ void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line)
         g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 10);
     }
 
-    if (line->parameters.mute) {
+    if (line->parameters.isMuted()) {
         g.setColour(juce::Colours::brown.withAlpha(0.1f));
         g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
         return;
     }
-    if (line->parameters.bypass) {
+    if (line->parameters.isBypassed()) {
         g.setColour(juce::Colours::brown.withAlpha(0.5f));
         g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
         return;

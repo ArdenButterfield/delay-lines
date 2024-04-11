@@ -4,10 +4,8 @@
 
 #include "LineEditor.h"
 
-LineEditor::LineEditor (DelayGraph& _delayGraph, const juce::Identifier& _line) : delayGraph(_delayGraph), graphLine(_line)
+LineEditor::LineEditor (DelayGraph& _delayGraph, const juce::Identifier& _line) : delayGraph(_delayGraph), graphLine(_line), lengthEditor(_delayGraph, _line)
 {
-    timeSlider.setRange(0, 5000);
-
     timeEnvelopeFollowSlider.setRange(-1, 1);
 
     modDepthSlider.setRange(0,1);
@@ -33,7 +31,6 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const juce::Identifier& _line) 
     feedbackSlider.setRange(0,1);
 
     for (auto slider : {
-             &timeSlider,
              &timeEnvelopeFollowSlider,
              &modDepthSlider,
              &modRateSlider,
@@ -48,6 +45,8 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const juce::Identifier& _line) 
         addAndMakeVisible(slider);
         slider->addListener(this);
     }
+
+    addAndMakeVisible(lengthEditor);
 
     for (auto button : {
              &bypassButton,
@@ -76,8 +75,8 @@ void LineEditor::resized()
     panels[1] = panels[0].withX(mainSection.getWidth() / 3);
     panels[2] = mainSection.withTrimmedLeft(panels[1].getRight());
 
-    timeSlider.setBounds(panels[0].withHeight(panels[0].getWidth()));
-    timeEnvelopeFollowSlider.setBounds(panels[0].withTop(timeSlider.getBottom()).withHeight(50));
+    lengthEditor.setBounds(panels[0].withHeight(panels[0].getWidth()));
+    timeEnvelopeFollowSlider.setBounds(panels[0].withTop(lengthEditor.getBottom()).withHeight(50));
 
     auto modZone = panels[0].withTop(timeEnvelopeFollowSlider.getBottom());
 
@@ -123,9 +122,7 @@ void LineEditor::sliderValueChanged (juce::Slider* slider)
     if (!line) {
         return;
     }
-    if (slider == &timeSlider) {
-        line->setLength(timeSlider.getValue());
-    } else if (slider == &gainSlider) {
+    if (slider == &gainSlider) {
         line->setGain(gainSlider.getValue());
     } else if (slider == &timeEnvelopeFollowSlider) {
         line->setLengthEnvelopeFollow(timeEnvelopeFollowSlider.getValue());
@@ -152,7 +149,6 @@ void LineEditor::timerCallback()
     if (!line) {
         return;
     }
-    timeSlider.setValue(line->parameters.length, juce::dontSendNotification);
     timeEnvelopeFollowSlider.setValue(line->parameters.lengthEnvelopeFollow, juce::dontSendNotification);
     modDepthSlider.setValue(line->parameters.modDepth, juce::dontSendNotification);
     modRateSlider.setValue(line->parameters.modRate, juce::dontSendNotification);
@@ -162,8 +158,8 @@ void LineEditor::timerCallback()
     gainSlider.setValue(line->parameters.gain, juce::dontSendNotification);
     feedbackSlider.setValue(line->parameters.feedback, juce::dontSendNotification);
     invertButton.setToggleState(line->parameters.invert, juce::dontSendNotification);
-    muteButton.setToggleState(line->parameters.mute, juce::dontSendNotification);
-    bypassButton.setToggleState(line->parameters.bypass, juce::dontSendNotification);
+    muteButton.setToggleState(line->parameters.isMuted(), juce::dontSendNotification);
+    bypassButton.setToggleState(line->parameters.isBypassed(), juce::dontSendNotification);
 }
 
 void LineEditor::mouseDown (const juce::MouseEvent& event)
@@ -185,10 +181,12 @@ void LineEditor::mouseUp (const juce::MouseEvent& event)
 {
     dragging = false;
 }
+
 void LineEditor::buttonStateChanged (juce::Button*)
 {
     // gets called on every mouse over
 }
+
 void LineEditor::buttonClicked (juce::Button* button)
 {
     auto line = delayGraph.getLine(graphLine);

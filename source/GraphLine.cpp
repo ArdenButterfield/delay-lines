@@ -45,16 +45,13 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
     prepared = true;
 }
 
-void GraphLine::setLength (float length)
+void GraphLine::calculateInternalLength()
 {
-    parameters.length = length;
-
     auto lineVector = end->getDistanceFrom(*start);
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
-    auto currentLength = (length * sampleRate / 1000) * realLineVector / lineVector;
+    auto currentLength = parameters.length.getLengthInSamples(sampleRate, 120) * realLineVector / lineVector; // TODO: BPM
     currentLength = std::min(currentLength, (float)internalDelayLine.getMaximumDelayInSamples() - 1);
     currentLength = std::max(currentLength, 0.f);
-
     for (auto& l : lengths) {
         l.setTargetValue(currentLength);
     }
@@ -70,9 +67,10 @@ void GraphLine::setGain (float gain)
 
 void GraphLine::pushSample (std::vector<float>& sample)
 {
-    if ((!prepared) || (parameters.muteBypass == Parameters::mute)) {
+    if ((!prepared) || (parameters.isMuted())) {
         return;
     }
+
     for (unsigned channel = 0; channel < numChannels; ++channel) {
         auto val = sample[channel] + parameters.feedback * lastSample[channel];
         internalDelayLine.pushSample(channel, val);
@@ -115,7 +113,7 @@ void GraphLine::popSample ()
             gain = 1 + inputEnvelope * parameters.gainEnvelopeFollow;
         }
         s *= gain;
-        if (!(parameters.mute || parameters.bypass)) {
+        if (!(parameters.isMuted() || parameters.isBypassed())) {
             for (auto point : realOutputs) {
                 point->samples[channel] += s;
             }
@@ -126,12 +124,12 @@ void GraphLine::popSample ()
 
 void GraphLine::toggleEnabled()
 {
-    setMute(!parameters.mute);
+    setMute(!parameters.isMuted());
 }
 
 void GraphLine::timerCallback()
 {
-    setLength(parameters.length);
+    calculateInternalLength();
 }
 
 void GraphLine::getEnvelope (float proportion, float& left, float& right)
@@ -228,8 +226,10 @@ void GraphLine::setFeedback (float amt)
 
 void GraphLine::bakeOffset()
 {
+    std::cout << "bake offset\n";
     auto lineVector = end->getDistanceFrom(*start);
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
 
-    setLength(parameters.length * (realLineVector / lineVector));
+    parameters.length.rescale(realLineVector / lineVector);
+    calculateInternalLength();
 }

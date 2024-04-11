@@ -17,7 +17,6 @@ class DelayGraph : public juce::Timer
 {
 public:
     DelayGraph();
-    ~DelayGraph() = default;
     void addPoint(const juce::Point<float>& point, bool connectToSelected=false);
     void deletePoint(const GraphPoint* point);
     void deleteLine(const GraphLine* line);
@@ -49,7 +48,6 @@ public:
     GraphLine* activeLine;
     void prepareToPlay(juce::dsp::ProcessSpec& spec);
     void processSample(std::vector<float>& sample);
-    void updateDelayLinesForStretch();
 
     void bakeOffsets();
 
