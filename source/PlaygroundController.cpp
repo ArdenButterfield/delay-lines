@@ -85,7 +85,7 @@ void PlaygroundController::mouseUp (const juce::MouseEvent& event)
     switch (delayGraph.interactionState) {
         case DelayGraph::none:
             if (event.mouseWasClicked()) {
-                delayGraph.addPoint(InnerPoint(event.position));
+                delayGraph.addPoint(event.position);
             }
             break;
         case DelayGraph::innerSelected:
@@ -104,7 +104,7 @@ void PlaygroundController::mouseUp (const juce::MouseEvent& event)
             if (delayGraph.lineInProgressEndPoint) {
                 delayGraph.addLine(delayGraph.activePoint, delayGraph.lineInProgressEndPoint);
             } else {
-                delayGraph.addPoint(InnerPoint(event.position), true);
+                delayGraph.addPoint(event.position, true);
             }
             break;
         case DelayGraph::editingLine:
