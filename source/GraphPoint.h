@@ -16,7 +16,7 @@ public:
         end
     };
 
-    explicit GraphPoint(const juce::Point<float>& p, PointType pt) : juce::Point<float>(p), pointType(pt), draggingOffset(false) {
+    explicit GraphPoint(const juce::Point<float>& p, PointType pt, const juce::Identifier& id) : juce::Point<float>(p), pointType(pt), draggingOffset(false), identifier(id) {
         offset.setXY(0,0);
         startTimerHz(30);
     }
@@ -47,23 +47,28 @@ public:
 
     std::vector<float> samples;
     juce::Point<float> offset;
+
+    const juce::Identifier identifier;
+
+    juce::XmlElement exportToXml(juce::XmlElement* parent);
+    bool importFromXml(juce::XmlElement* parent);
 };
 
 class InnerPoint : public GraphPoint {
 public:
-    explicit InnerPoint(const juce::Point<float>& p) : GraphPoint(p, inner) {
+    explicit InnerPoint(const juce::Point<float>& p, const juce::Identifier& id) : GraphPoint(p, inner, id) {
     }
 };
 
 class StartPoint : public GraphPoint {
 public:
-    explicit StartPoint(const juce::Point<float>& p) : GraphPoint(p, start) {
+    explicit StartPoint(const juce::Point<float>& p, const juce::Identifier& id) : GraphPoint(p, start, id) {
     }
 };
 
 class EndPoint : public GraphPoint {
 public:
-    explicit EndPoint(const juce::Point<float>& p) : GraphPoint(p, end) {
+    explicit EndPoint(const juce::Point<float>& p, const juce::Identifier& id) : GraphPoint(p, end, id) {
     }
 };
 

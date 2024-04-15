@@ -232,3 +232,22 @@ void GraphLine::bakeOffset()
     parameters.length.rescale(realLineVector / lineVector);
     calculateInternalLength();
 }
+
+void GraphLine::exportToXml(juce::XmlElement* parent)
+{
+    auto element = parent->createNewChildElement(identifier);
+    parameters.exportToXml(element);
+    element->setAttribute("start", start->identifier.toString());
+    element->setAttribute("end", end->identifier.toString());
+}
+
+bool GraphLine::importFromXml (juce::XmlElement* parent)
+{
+    auto element = parent->getChildByName(identifier);
+    if (element) {
+        // TODO: set start and end points
+        parameters.importFromXml(element);
+        return true;
+    }
+    return false;
+}

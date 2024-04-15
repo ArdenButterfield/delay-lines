@@ -6,6 +6,7 @@
 #include "PluginProcessor.h"
 
 #include "melatonin_inspector/melatonin_inspector.h"
+#include "juce_audio_processors/juce_audio_processors.h"
 
 //==============================================================================
 class PluginEditor : public juce::AudioProcessorEditor
@@ -19,8 +20,6 @@ public:
     void resized() override;
 
 private:
-
-
     PlaygroundController playgroundController;
     PlaygroundView playgroundView;
     // This reference is provided as a quick way for your editor to

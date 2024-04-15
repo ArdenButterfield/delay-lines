@@ -8,6 +8,7 @@
 #include "juce_graphics/juce_graphics.h"
 #include "juce_dsp/juce_dsp.h"
 #include "juce_core/juce_core.h"
+#include "juce_events/juce_events.h"
 
 #include "GraphPoint.h"
 #include "GraphLine.h"
@@ -51,13 +52,14 @@ public:
 
     void bakeOffsets();
 
-    int line_id;
-
     GraphLine* getLine(const juce::Identifier& id);
 
     void setRealOutputs();
 
     void timerCallback() override;
+
+    void exportToXml(juce::XmlElement* parent);
+    bool importFromXml(juce::XmlElement* parent);
 private:
     std::set<GraphPoint*> realGlobalInputs;
     juce::CriticalSection criticalSection;
@@ -65,6 +67,9 @@ private:
 
     std::vector<std::unique_ptr<GraphPoint>> points;
     std::vector<std::unique_ptr<GraphLine>> lines;
+
+    juce::Identifier findUniqueLineId();
+    juce::Identifier findUniquePointId();
 };
 
 #endif //DELAYLINES_DELAYGRAPH_H
