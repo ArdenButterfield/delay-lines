@@ -93,13 +93,16 @@ void LengthEditor::sliderValueChanged (juce::Slider* slider)
         line->parameters.length.setBeat(beatNumerator.getValue(), beatDenominator.getValue());
     }
 }
+
 void LengthEditor::updateSliders()
 {
     auto line = delayGraph.getLine(graphLine);
     if (!line) {
         return;
     }
-    switch (line->parameters.length.mode) {
+
+
+    switch (line->parameters.length.getMode()) {
         case DelayLength::ms:
             unitSelector.setSelectedId(1);
             break;
@@ -118,15 +121,20 @@ void LengthEditor::updateSliders()
         default: break;
     }
 
-    samplesSlider.setValue(line->parameters.length.getSamplesLength());
-    millisecondsSlider.setValue(line->parameters.length.getMillisecondsLength());
-    hertzSlider.setValue(line->parameters.length.getHertz());
-    pitchSlider.setValue(line->parameters.length.getMidiNote());
-    beatNumerator.setValue(line->parameters.length.getNumerator());
-    beatDenominator.setValue(line->parameters.length.getDenominator());
+    samplesSlider.setValue(line->parameters.length.getSamplesLength(), juce::dontSendNotification);
+    millisecondsSlider.setValue(line->parameters.length.getMillisecondsLength(), juce::dontSendNotification);
+    hertzSlider.setValue(line->parameters.length.getHertz(), juce::dontSendNotification);
+    pitchSlider.setValue(line->parameters.length.getMidiNote(), juce::dontSendNotification);
+    beatNumerator.setValue(line->parameters.length.getNumerator(), juce::dontSendNotification);
+    beatDenominator.setValue(line->parameters.length.getDenominator(), juce::dontSendNotification);
 }
 void LengthEditor::updateUnitSelector()
 {
+    auto line = delayGraph.getLine(graphLine);
+    if (!line) {
+        return;
+    }
+
     millisecondsSlider.setVisible(false);
     samplesSlider.setVisible(false);
     hertzSlider.setVisible(false);
@@ -134,33 +142,28 @@ void LengthEditor::updateUnitSelector()
     beatNumerator.setVisible(false);
     beatDenominator.setVisible(false);
 
-    auto line = delayGraph.getLine(graphLine);
-    if (!line) {
-        return;
-    }
-
     switch (unitSelector.getSelectedId())
     {
         case 1:
             millisecondsSlider.setVisible(true);
-            line->parameters.length.mode = DelayLength::ms;
+            line->parameters.length.setMode(DelayLength::ms);
             break;
         case 2:
             samplesSlider.setVisible(true);
-            line->parameters.length.mode = DelayLength::samps;
+            line->parameters.length.setMode(DelayLength::samps);
             break;
         case 3:
             hertzSlider.setVisible(true);
-            line->parameters.length.mode = DelayLength::hz;
+            line->parameters.length.setMode(DelayLength::hz);
             break;
         case 4:
             pitchSlider.setVisible(true);
-            line->parameters.length.mode = DelayLength::note;
+            line->parameters.length.setMode(DelayLength::note);
             break;
         case 5:
             beatNumerator.setVisible(true);
             beatDenominator.setVisible(true);
-            line->parameters.length.mode = DelayLength::beat;
+            line->parameters.length.setMode(DelayLength::beat);
             break;
         default: break;
     }

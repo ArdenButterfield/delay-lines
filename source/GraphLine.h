@@ -21,7 +21,6 @@ struct DelayLength {
         beat
     };
 
-    Mode mode;
 
     float getLengthInSamples(float samplerate, float bpm) {
         switch (mode)
@@ -56,6 +55,10 @@ struct DelayLength {
             case beat:
                 beatLength[0] *= proportion;
         }
+    }
+
+    void setMode(Mode m) {
+        mode = m;
     }
 
     void setSamplesLength(float l) {
@@ -108,7 +111,13 @@ struct DelayLength {
         return static_cast<int>(std::round(beatLength[1]));
     }
 
+    [[nodiscard]] Mode getMode() const {
+        return mode;
+    }
+
 private:
+    Mode mode;
+
     float samplesLength;
     float millisecondsLength;
     float hertz;
