@@ -17,10 +17,10 @@ public:
     ~PresetBrowser();
     void paint(juce::Graphics &g) override;
     void resized() override;
+    juce::ComboBox presetMenu;
 private:
     void comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) override;
     DelayGraph& delayGraph;
-    juce::ComboBox presetMenu;
     std::unique_ptr<juce::XmlElement> presets;
 };
 

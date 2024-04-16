@@ -22,14 +22,13 @@ public:
 
     juce::TextButton printXmlButton;
 
-private:
-    void buttonClicked(juce::Button *) override;
-    void buttonStateChanged(juce::Button*) override;
-
+    PresetBrowser presetBrowser;
     PlaygroundController playgroundController;
     PlaygroundView playgroundView;
+private:
+    void buttonClicked(juce::Button *) override;
 
-    PresetBrowser presetBrowser;
+    void buttonStateChanged(juce::Button*) override;
 
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.

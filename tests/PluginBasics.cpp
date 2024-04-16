@@ -1,5 +1,6 @@
 #include "helpers/test_helpers.h"
 #include <PluginProcessor.h>
+#include <PluginEditor.h>
 #include <DelayGraph.h>
 
 #include <catch2/catch_test_macros.hpp>
@@ -39,7 +40,6 @@ TEST_CASE("Export XML", "[exportxml]")
     auto xml = juce::XmlElement("plugin-state");
     delayGraph.exportToXml(&xml);
 
-    std::cout << xml.toString();
 
     auto point  = xml.getChildByName("graph")->getChildByName("points")->getChildElement(0);
     point->setAttribute("x", 50.0);
@@ -92,6 +92,57 @@ TEST_CASE("Import XML", "[importxml]")
     REQUIRE( xmlElement->isEquivalentTo(&finalXml, true));
 }
 
+TEST_CASE( "set preset", "[setpreset]")
+{
+    // This lets us use JUCE's MessageManager without leaking.
+    // PluginProcessor might need this if you use the APVTS for example.
+    // You'll also need it for tests that rely on juce::Graphics, juce::Timer, etc.
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+
+    PluginProcessor testPlugin;
+    auto p = PresetBrowser(testPlugin.delayGraph);
+    p.presetMenu.setSelectedId(2, juce::NotificationType::sendNotificationSync);
+    auto finalXml = juce::XmlElement("plugin-state");
+    testPlugin.delayGraph.exportToXml(&finalXml);
+    // std::cout << finalXml.toString();
+    auto desired = juce::parseXML(R"(<?xml version="1.0" encoding="UTF-8"?>
+                   <plugin-state>
+                   <graph>
+                   <points>
+                   <point id="1" x="564.0" y="68.0" type="1"/>
+                   <point id="2" x="277.0" y="116.0" type="2"/>
+                   <point id="3" x="539.0" y="281.0" type="0"/>
+                   </points>
+                   <lines>
+                   <line id="1" start="1" end="2">
+                   <parameters mutebypass="0.0" lengthenvelopefollow="0.5" moddepth="0.0" modrate="0.03010033443570137"
+                       distortion="0.0" hicut="1.0" locut="0.0" gain="0.5" invert="0.0"
+                       gainenvelopefollow="0.5" feedback="0.0">
+                   <delayLength mode="0" samples="0.0" milliseconds="1028.791870117188" hertz="10.0"
+                       pitch="100.0" numerator="1.0" denominator="4.0"/>
+                   </parameters>
+                   </line>
+                   <line id="3" start="2" end="3">
+                   <parameters mutebypass="0.0" lengthenvelopefollow="0.5" moddepth="0.0" modrate="0.03010033443570137"
+                       distortion="0.0" hicut="1.0" locut="0.0" gain="0.5" invert="0.0"
+                       gainenvelopefollow="0.5" feedback="0.0">
+                   <delayLength mode="0" samples="0.0" milliseconds="500.0" hertz="10.0" pitch="100.0"
+                       numerator="1.0" denominator="4.0"/>
+                   </parameters>
+                   </line>
+                   <line id="2" start="3" end="1">
+                   <parameters mutebypass="0.0" lengthenvelopefollow="0.5" moddepth="0.0" modrate="0.03010033443570137"
+                       distortion="0.0" hicut="1.0" locut="0.0" gain="0.5" invert="0.0"
+                       gainenvelopefollow="0.5" feedback="0.0">
+                   <delayLength mode="0" samples="0.0" milliseconds="500.0" hertz="10.0" pitch="100.0"
+                       numerator="1.0" denominator="4.0"/>
+                   </parameters>
+                   </line>
+                   </lines>
+                   </graph>
+               </plugin-state>)");
+    REQUIRE( desired->isEquivalentTo(&finalXml, true));
+}
 
 #ifdef PAMPLEJUCE_IPP
     #include <ipp.h>
