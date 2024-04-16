@@ -5,14 +5,16 @@ PluginEditor::PluginEditor (PluginProcessor& p)
       playgroundController(p.delayGraph),
       playgroundView(p.delayGraph),
       processorRef (p),
+      printXmlButton("Print XML"),
       mixAttachment(p.getValueTreeState(), "mix", mixSlider)
 {
     playgroundView.addMouseListener(&playgroundController, false);
 
-    juce::ignoreUnused (processorRef);
+    printXmlButton.addListener(this);
 
     addAndMakeVisible(playgroundView);
     addAndMakeVisible(mixSlider);
+    addAndMakeVisible(printXmlButton);
 
     setResizable(true, true);
 
@@ -37,5 +39,15 @@ void PluginEditor::resized()
     // layout the positions of your child components here
     playgroundView.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 150));
     mixSlider.setBounds(getLocalBounds().withTop(playgroundView.getBottom() + 10));
+    printXmlButton.setBounds(10,10, 100, 30);
 }
 
+void PluginEditor::buttonClicked (juce::Button* button)
+{
+    if (button == &printXmlButton) {
+        processorRef.printXml();
+    }
+}
+void PluginEditor::buttonStateChanged (juce::Button*)
+{
+}

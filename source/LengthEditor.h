@@ -13,7 +13,7 @@
 class LengthEditor : public juce::Component, public juce::Timer, public juce::ComboBox::Listener, public juce::Slider::Listener
 {
 public:
-    LengthEditor(DelayGraph& delayGraph, const juce::Identifier& line);
+    LengthEditor(DelayGraph& delayGraph, const int& line);
 
     void resized() override;
     void paint(juce::Graphics &g) override;
@@ -36,7 +36,7 @@ private:
     juce::Slider beatDenominator;
 
     DelayGraph& delayGraph;
-    const juce::Identifier& graphLine;
+    const int& graphLine;
 };
 
 #endif //DELAYLINES_LENGTHEDITOR_H

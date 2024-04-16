@@ -227,3 +227,9 @@ juce::AudioProcessorValueTreeState& PluginProcessor::getValueTreeState()
 {
     return parameters;
 }
+void PluginProcessor::printXml()
+{
+    auto xml = juce::XmlElement("plugin-state");
+    delayGraph.exportToXml(&xml);
+    std::cout << xml.toString();
+}

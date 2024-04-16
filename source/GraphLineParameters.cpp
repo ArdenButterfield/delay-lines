@@ -3,6 +3,12 @@
 //
 #include "GraphLineParameters.h"
 
+DelayLength::DelayLength (juce::XmlElement* parent) : DelayLength()
+{
+    importFromXml(parent);
+}
+
+
 void DelayLength::exportToXml (juce::XmlElement* parent)
 {
     auto delayLength = parent->createNewChildElement("delayLength");
@@ -29,6 +35,12 @@ bool DelayLength::importFromXml (juce::XmlElement* parent)
         return true;
     }
     return false;
+}
+
+
+Parameters::Parameters (juce::XmlElement* parent) : Parameters()
+{
+    importFromXml(parent);
 }
 
 

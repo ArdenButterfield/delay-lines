@@ -11,6 +11,7 @@
 
 struct DelayLength {
     DelayLength() : mode(ms), samplesLength(0), millisecondsLength(500), hertz(10), midiNote(100), beatLength({1,4}) {}
+    DelayLength(juce::XmlElement* parent);
 
     enum Mode {
         ms,
@@ -142,6 +143,8 @@ struct Parameters {
                    gainEnvelopeFollow("gainenvelopefollow", "gain envelope follow", -1, 1, 0),
                    feedback("feedback", "feedback", 0, 1, 0)
     {}
+
+    Parameters(juce::XmlElement* parent);
 
     enum MuteBypassOptions {
         none = 0,

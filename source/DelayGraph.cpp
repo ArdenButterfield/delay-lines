@@ -12,14 +12,58 @@ DelayGraph::DelayGraph()
     activePoint = nullptr;
     interactionState = none;
 
-    points.push_back(std::make_unique<StartPoint>(juce::Point<float>(0,0), findUniquePointId()));
+    points.push_back(std::make_unique<GraphPoint>(juce::Point<float>(0,0), GraphPoint::start, findUniquePointId()));
     startPoint = points.back().get();
-    points.push_back(std::make_unique<EndPoint>(juce::Point<float>(100,100), findUniquePointId()));
+    points.push_back(std::make_unique<GraphPoint>(juce::Point<float>(100,100), GraphPoint::end, findUniquePointId()));
     endPoint = points.back().get();
     addLine(points[0].get(), points[1].get());
 }
 
-juce::Identifier DelayGraph::findUniqueLineId()
+DelayGraph::DelayGraph (juce::XmlElement* element)
+{
+    activePoint = nullptr;
+    interactionState = none;
+
+    auto pointsElement = element->getChildByName("points");
+    if (!pointsElement) {
+        DBG( "no points element found" );
+        return;
+    }
+
+    for (int i = 0; i < pointsElement->getNumChildElements(); ++i) {
+        auto p = pointsElement->getChildElement(i);
+        points.push_back(std::make_unique<GraphPoint>(p));
+    }
+
+    auto linesElement = element->getChildByName("lines");
+    if (!linesElement) {
+        DBG( "no lines element found" );
+        return;
+    }
+
+    for (int i = 0; i < linesElement->getNumChildElements(); ++i) {
+        auto l = linesElement->getChildElement(i);
+        auto start = getPoint(GraphLine::stringToId(l->getStringAttribute("start").toStdString()));
+        auto end = getPoint(GraphLine::stringToId(l->getStringAttribute("end").toStdString()));
+        lines.push_back(std::make_unique<GraphLine>(start, end, l));
+    }
+
+    for (auto& point : points) {
+        if (!point->importFromXml(pointsElement)) {
+            deletePoint(point.get());
+        }
+    }
+
+
+    for (auto& line : lines) {
+        if (!line->importFromXml(this, linesElement)) {
+            deleteLine(line.get());
+        }
+    }
+
+}
+
+int DelayGraph::findUniqueLineId()
 {
     auto id = 0;
     auto idConflict = true;
@@ -27,16 +71,16 @@ juce::Identifier DelayGraph::findUniqueLineId()
         idConflict = false;
         ++id;
         for (auto& line : lines) {
-            if (line->identifier == juce::Identifier(std::to_string(id))) {
+            if (line->identifier == id) {
                 idConflict = true;
             }
         }
     }
 
-    return juce::Identifier(std::to_string(id));
+    return id;
 }
 
-juce::Identifier DelayGraph::findUniquePointId()
+int DelayGraph::findUniquePointId()
 {
     auto id = 0;
     auto idConflict = true;
@@ -44,20 +88,20 @@ juce::Identifier DelayGraph::findUniquePointId()
         idConflict = false;
         ++id;
         for (auto& point : points) {
-            if (point->identifier == juce::Identifier(std::to_string(id))) {
+            if (point->identifier == id) {
                 idConflict = true;
             }
         }
     }
 
-    return juce::Identifier(std::to_string(id));
+    return id;
 }
 
 
 void DelayGraph::addPoint(const juce::Point<float>& point, bool connectToSelected) {
     criticalSection.enter();
 
-    points.push_back(std::make_unique<InnerPoint>(point, findUniquePointId()));
+    points.push_back(std::make_unique<GraphPoint>(point, GraphPoint::inner, findUniquePointId()));
     points.back()->prepareToPlay(processSpec.get());
     if (connectToSelected) {
         auto added = points[points.size() - 1].get();
@@ -175,7 +219,18 @@ void DelayGraph::bakeOffsets()
     }
 }
 
-GraphLine* DelayGraph::getLine (const juce::Identifier& id)
+GraphPoint* DelayGraph::getPoint (const int& id)
+{
+    for (auto& point : points) {
+        if (point->identifier == id) {
+            return point.get();
+        }
+    }
+    return nullptr;
+}
+
+
+GraphLine* DelayGraph::getLine (const int& id)
 {
     for (auto& line : lines) {
         if (line->identifier == id) {
@@ -231,12 +286,12 @@ void DelayGraph::exportToXml (juce::XmlElement* parent)
 {
     auto element = parent->createNewChildElement("graph");
 
-    auto linesElement = element->createNewChildElement("lines");
     auto pointsElement = element->createNewChildElement("points");
 
     for (auto& point : points) {
         point->exportToXml(pointsElement);
     }
+    auto linesElement = element->createNewChildElement("lines");
 
     for (auto& line : lines) {
         line->exportToXml(linesElement);
@@ -261,13 +316,27 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
         if (!point->importFromXml(pointsElement)) {
             deletePoint(point.get());
         }
-        // TODO: make new points
+    }
+
+    for (int i = 0; i < pointsElement->getNumChildElements(); ++i) {
+        auto p = pointsElement->getChildElement(i);
+        if (!getPoint(GraphPoint::stringToId(p->getTagName().toStdString()))) {
+            points.push_back(std::make_unique<GraphPoint>(p));
+        }
     }
 
     for (auto& line : lines) {
-        if (!line->importFromXml(linesElement)) {
+        if (!line->importFromXml(this, linesElement)) {
             deleteLine(line.get());
         }
-        // TODO: make new lines
+    }
+
+    for (int i = 0; i < linesElement->getNumChildElements(); ++i) {
+        auto l = linesElement->getChildElement(i);
+        if (!getLine(GraphLine::stringToId(l->getTagName().toStdString()))) {
+            auto start = getPoint(GraphLine::stringToId(l->getStringAttribute("start").toStdString()));
+            auto end = getPoint(GraphLine::stringToId(l->getStringAttribute("end").toStdString()));
+            lines.push_back(std::make_unique<GraphLine>(start, end, l));
+        }
     }
 }

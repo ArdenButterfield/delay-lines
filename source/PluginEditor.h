@@ -9,7 +9,7 @@
 #include "juce_audio_processors/juce_audio_processors.h"
 
 //==============================================================================
-class PluginEditor : public juce::AudioProcessorEditor
+class PluginEditor : public juce::AudioProcessorEditor, public juce::Button::Listener
 {
 public:
     explicit PluginEditor (PluginProcessor&);
@@ -19,7 +19,12 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
+    juce::TextButton printXmlButton;
+
 private:
+    void buttonClicked(juce::Button *) override;
+    void buttonStateChanged(juce::Button*) override;
+
     PlaygroundController playgroundController;
     PlaygroundView playgroundView;
     // This reference is provided as a quick way for your editor to

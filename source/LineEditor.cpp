@@ -4,7 +4,7 @@
 
 #include "LineEditor.h"
 
-LineEditor::LineEditor (DelayGraph& _delayGraph, const juce::Identifier& _line) : delayGraph(_delayGraph), graphLine(_line), lengthEditor(_delayGraph, _line)
+LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line) : delayGraph(_delayGraph), graphLine(_line), lengthEditor(_delayGraph, _line)
 {
     timeEnvelopeFollowSlider.setRange(-1, 1);
 

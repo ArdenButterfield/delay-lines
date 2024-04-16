@@ -5,7 +5,7 @@
 #include "LengthEditor.h"
 
 
-LengthEditor::LengthEditor (DelayGraph& _delayGraph, const juce::Identifier& _line) : delayGraph(_delayGraph), graphLine(_line)
+LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGraph(_delayGraph), graphLine(_line)
 {
     startTimerHz(60);
     unitSelector.addItemList({"Milliseconds", "Samples", "Hertz", "Pitch", "Beat"}, 1); // offset must start at 1: 0 is reserved for undefined

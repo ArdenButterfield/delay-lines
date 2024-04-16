@@ -45,6 +45,7 @@ public:
 
     juce::AudioProcessorValueTreeState& getValueTreeState();
 
+    void printXml();
 private:
     bool parametersNeedUpdating;
     void updateParameters();

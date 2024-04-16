@@ -13,9 +13,12 @@
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "juce_core/juce_core.h"
 
+class DelayGraph;
+
 class GraphLine : public juce::Timer {
 public:
-    GraphLine(GraphPoint* start, GraphPoint* end, const juce::Identifier& id);
+    GraphLine(GraphPoint* start, GraphPoint* end, const int& id);
+    GraphLine(GraphPoint* start, GraphPoint* end, juce::XmlElement* element);
 
     void timerCallback() override;
 
@@ -33,9 +36,9 @@ public:
     void setInvert(bool invert);
     void setGainEnvelopeFollow(float amt);
     void setFeedback(float amt);
-    GraphPoint* const start;
+    GraphPoint* start;
 
-    GraphPoint* const end;
+    GraphPoint* end;
     void pushSample(std::vector<float>& sample);
     void popSample();
     void prepareToPlay(juce::dsp::ProcessSpec* spec);
@@ -50,13 +53,15 @@ public:
     bool editorAttached;
 
     bool prepared;
-    const juce::Identifier identifier;
+    const int identifier;
 
     std::set<GraphPoint*> realOutputs;
 
     void exportToXml(juce::XmlElement* parent);
-    bool importFromXml(juce::XmlElement* parent);
+    bool importFromXml(DelayGraph* dg, juce::XmlElement* parent);
 
+    std::string idToString();
+    static int stringToId(std::string s);
 private:
     void calculateInternalLength();
 

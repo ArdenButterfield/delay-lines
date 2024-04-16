@@ -18,6 +18,7 @@ class DelayGraph : public juce::Timer
 {
 public:
     DelayGraph();
+    DelayGraph(juce::XmlElement* element);
     void addPoint(const juce::Point<float>& point, bool connectToSelected=false);
     void deletePoint(const GraphPoint* point);
     void deleteLine(const GraphLine* line);
@@ -52,7 +53,8 @@ public:
 
     void bakeOffsets();
 
-    GraphLine* getLine(const juce::Identifier& id);
+    GraphPoint* getPoint(const int& id);
+    GraphLine* getLine(const int& id);
 
     void setRealOutputs();
 
@@ -68,8 +70,8 @@ private:
     std::vector<std::unique_ptr<GraphPoint>> points;
     std::vector<std::unique_ptr<GraphLine>> lines;
 
-    juce::Identifier findUniqueLineId();
-    juce::Identifier findUniquePointId();
+    int findUniqueLineId();
+    int findUniquePointId();
 };
 
 #endif //DELAYLINES_DELAYGRAPH_H

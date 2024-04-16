@@ -4,14 +4,23 @@
 
 #include "GraphLine.h"
 #include "juce_core/juce_core.h"
+#include "DelayGraph.h"
 
-GraphLine::GraphLine(GraphPoint* const _start, GraphPoint* const _end, const juce::Identifier& id)
+GraphLine::GraphLine(GraphPoint* _start, GraphPoint* _end, const int& id)
     : start(_start), end(_end), identifier(id)
 {
     modOscillator.initialise([] (float x) {return std::sin(x);}, 128);
     prepared = false;
 
 }
+
+GraphLine::GraphLine (GraphPoint* _start, GraphPoint* _end, juce::XmlElement* element)
+    : start(_start), end(_end), parameters(element), identifier(stringToId(element->getTagName().toStdString()))
+{
+    modOscillator.initialise([] (float x) {return std::sin(x);}, 128);
+    prepared = false;
+}
+
 
 void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
 {
@@ -235,19 +244,35 @@ void GraphLine::bakeOffset()
 
 void GraphLine::exportToXml(juce::XmlElement* parent)
 {
-    auto element = parent->createNewChildElement(identifier);
+    auto element = parent->createNewChildElement(idToString());
     parameters.exportToXml(element);
-    element->setAttribute("start", start->identifier.toString());
-    element->setAttribute("end", end->identifier.toString());
+    element->setAttribute("start", start->idToString());
+    element->setAttribute("end", end->idToString());
 }
 
-bool GraphLine::importFromXml (juce::XmlElement* parent)
+bool GraphLine::importFromXml (DelayGraph* dg, juce::XmlElement* parent)
 {
-    auto element = parent->getChildByName(identifier);
+    auto element = parent->getChildByName(idToString());
     if (element) {
-        // TODO: set start and end points
-        parameters.importFromXml(element);
-        return true;
+        auto _start = dg->getPoint(GraphPoint::stringToId(element->getStringAttribute("start").toStdString()));
+        auto _end = dg->getPoint(GraphPoint::stringToId(element->getStringAttribute("end").toStdString()));
+        if (_start && _end) {
+            start = _start;
+            end = _end;
+            parameters.importFromXml(element);
+            return true;
+        }
     }
     return false;
+}
+
+std::string GraphLine::idToString()
+{
+    // for xml
+    return "line_" + std::to_string(identifier);
+}
+int GraphLine::stringToId (std::string s)
+{
+    // for xml
+    return std::stoi(s.erase(0, 5));
 }

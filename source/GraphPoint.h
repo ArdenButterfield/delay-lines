@@ -16,10 +16,8 @@ public:
         end
     };
 
-    explicit GraphPoint(const juce::Point<float>& p, PointType pt, const juce::Identifier& id) : juce::Point<float>(p), pointType(pt), draggingOffset(false), identifier(id) {
-        offset.setXY(0,0);
-        startTimerHz(30);
-    }
+    explicit GraphPoint(const juce::Point<float>& p, PointType pt, const int& id);
+    GraphPoint(juce::XmlElement* element);
 
     void timerCallback() override {
         if (!draggingOffset) {
@@ -48,28 +46,13 @@ public:
     std::vector<float> samples;
     juce::Point<float> offset;
 
-    const juce::Identifier identifier;
+    const int identifier;
 
     juce::XmlElement exportToXml(juce::XmlElement* parent);
     bool importFromXml(juce::XmlElement* parent);
-};
 
-class InnerPoint : public GraphPoint {
-public:
-    explicit InnerPoint(const juce::Point<float>& p, const juce::Identifier& id) : GraphPoint(p, inner, id) {
-    }
-};
-
-class StartPoint : public GraphPoint {
-public:
-    explicit StartPoint(const juce::Point<float>& p, const juce::Identifier& id) : GraphPoint(p, start, id) {
-    }
-};
-
-class EndPoint : public GraphPoint {
-public:
-    explicit EndPoint(const juce::Point<float>& p, const juce::Identifier& id) : GraphPoint(p, end, id) {
-    }
+    std::string idToString();
+    static int stringToId(std::string s);
 };
 
 #endif //DELAYLINES_GRAPHPOINT_H
