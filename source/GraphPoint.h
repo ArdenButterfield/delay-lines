@@ -48,7 +48,7 @@ public:
 
     const int identifier;
 
-    juce::XmlElement exportToXml(juce::XmlElement* parent);
+    void exportToXml(juce::XmlElement* parent);
     bool importFromXml(juce::XmlElement* parent);
 
     std::string idToString();

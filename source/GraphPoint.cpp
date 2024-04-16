@@ -17,7 +17,7 @@ GraphPoint::GraphPoint (juce::XmlElement* element)
 {
 }
 
-juce::XmlElement GraphPoint::exportToXml (juce::XmlElement* parent)
+void GraphPoint::exportToXml (juce::XmlElement* parent)
 {
     auto element = parent->createNewChildElement(idToString());
     element->setAttribute("x", x);
