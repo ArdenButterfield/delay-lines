@@ -90,7 +90,6 @@ TEST_CASE("Import XML", "[importxml]")
     auto finalXml = juce::XmlElement("plugin-state");
     delayGraph.exportToXml(&finalXml);
     REQUIRE( xmlElement->isEquivalentTo(&finalXml, true));
-
 }
 
 

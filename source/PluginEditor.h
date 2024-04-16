@@ -4,6 +4,7 @@
 #include "PlaygroundController.h"
 #include "PlaygroundView.h"
 #include "PluginProcessor.h"
+#include "PresetBrowser.h"
 
 #include "melatonin_inspector/melatonin_inspector.h"
 #include "juce_audio_processors/juce_audio_processors.h"
@@ -27,6 +28,9 @@ private:
 
     PlaygroundController playgroundController;
     PlaygroundView playgroundView;
+
+    PresetBrowser presetBrowser;
+
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     PluginProcessor& processorRef;

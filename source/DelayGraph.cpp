@@ -312,6 +312,7 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
         return false;
     }
 
+    criticalSection.enter();
     for (auto& point : points) {
         if (!point->importFromXml(pointsElement)) {
             deletePoint(point.get());
@@ -339,4 +340,5 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
             lines.push_back(std::make_unique<GraphLine>(start, end, l));
         }
     }
+    criticalSection.exit();
 }

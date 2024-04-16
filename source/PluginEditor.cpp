@@ -4,6 +4,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     : AudioProcessorEditor (&p),
       playgroundController(p.delayGraph),
       playgroundView(p.delayGraph),
+      presetBrowser(p.delayGraph),
       processorRef (p),
       printXmlButton("Print XML"),
       mixAttachment(p.getValueTreeState(), "mix", mixSlider)
@@ -14,6 +15,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 
     addAndMakeVisible(playgroundView);
     addAndMakeVisible(mixSlider);
+    addAndMakeVisible(presetBrowser);
     addAndMakeVisible(printXmlButton);
 
     setResizable(true, true);
@@ -40,6 +42,7 @@ void PluginEditor::resized()
     playgroundView.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 150));
     mixSlider.setBounds(getLocalBounds().withTop(playgroundView.getBottom() + 10));
     printXmlButton.setBounds(10,10, 100, 30);
+    presetBrowser.setBounds(150, 10, 200, 60);
 }
 
 void PluginEditor::buttonClicked (juce::Button* button)
