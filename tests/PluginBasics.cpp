@@ -28,6 +28,18 @@ TEST_CASE ("Plugin instance", "[instance]")
     }
 }
 
+TEST_CASE("Basic xml export", "[xmlbasic]")
+{
+    // This lets us use JUCE's MessageManager without leaking.
+    // PluginProcessor might need this if you use the APVTS for example.
+    // You'll also need it for tests that rely on juce::Graphics, juce::Timer, etc.
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+    DelayGraph delayGraph;
+
+    auto xml = juce::XmlElement("plugin-state");
+    delayGraph.exportToXml(&xml);
+}
+
 TEST_CASE("Export XML", "[exportxml]")
 {
     // This lets us use JUCE's MessageManager without leaking.
