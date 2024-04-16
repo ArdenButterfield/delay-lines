@@ -19,7 +19,7 @@ GraphPoint::GraphPoint (juce::XmlElement* element)
 
 juce::XmlElement GraphPoint::exportToXml (juce::XmlElement* parent)
 {
-    auto element = parent->createNewChildElement("p" + std::to_string(identifier));
+    auto element = parent->createNewChildElement(idToString());
     element->setAttribute("x", x);
     element->setAttribute("y", y);
     element->setAttribute("type", pointType);
@@ -27,7 +27,7 @@ juce::XmlElement GraphPoint::exportToXml (juce::XmlElement* parent)
 
 bool GraphPoint::importFromXml (juce::XmlElement* parent)
 {
-    auto element = parent->getChildByName("p" + std::to_string(identifier));
+    auto element = parent->getChildByName(idToString());
     if (element) {
         x = element->getDoubleAttribute("x", x);
         y = element->getDoubleAttribute("y", y);

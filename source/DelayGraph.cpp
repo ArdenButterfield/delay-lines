@@ -289,6 +289,7 @@ void DelayGraph::exportToXml (juce::XmlElement* parent)
     auto pointsElement = element->createNewChildElement("points");
 
     for (auto& point : points) {
+        std::cout << "export point\n";
         point->exportToXml(pointsElement);
     }
     auto linesElement = element->createNewChildElement("lines");

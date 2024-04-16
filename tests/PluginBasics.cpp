@@ -1,5 +1,7 @@
 #include "helpers/test_helpers.h"
 #include <PluginProcessor.h>
+#include <DelayGraph.h>
+
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
 
@@ -10,18 +12,34 @@ TEST_CASE ("one is equal to one", "[dummy]")
 
 TEST_CASE ("Plugin instance", "[instance]")
 {
-    PluginProcessor testPlugin;
-
     // This lets us use JUCE's MessageManager without leaking.
     // PluginProcessor might need this if you use the APVTS for example.
     // You'll also need it for tests that rely on juce::Graphics, juce::Timer, etc.
     auto gui = juce::ScopedJuceInitialiser_GUI {};
+
+    PluginProcessor testPlugin;
+
 
     SECTION ("name")
     {
         CHECK_THAT (testPlugin.getName().toStdString(),
             Catch::Matchers::Equals ("Delay Lines"));
     }
+}
+
+TEST_CASE("Export XML", "[exportxml]")
+{
+    // This lets us use JUCE's MessageManager without leaking.
+    // PluginProcessor might need this if you use the APVTS for example.
+    // You'll also need it for tests that rely on juce::Graphics, juce::Timer, etc.
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+
+    DelayGraph delayGraph;
+
+    auto xml = juce::XmlElement("plugin-state");
+    delayGraph.exportToXml(&xml);
+    std::cout << xml.toString();
+
 }
 
 
