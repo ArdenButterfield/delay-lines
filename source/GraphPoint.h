@@ -35,7 +35,7 @@ public:
         offset.y = 0;
     }
 
-    const PointType pointType;
+    PointType pointType;
 
     void prepareToPlay(juce::dsp::ProcessSpec* spec) {
         samples.resize(spec->numChannels);

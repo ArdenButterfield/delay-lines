@@ -63,7 +63,7 @@ bool Parameters::importFromXml (juce::XmlElement* parent)
         length.importFromXml(paramsXml);
 
         for (auto parameter : params) {
-            parameter->setValueNotifyingHost(parent->getDoubleAttribute(parameter->getParameterID(), parameter->getValue()));
+            parameter->setValueNotifyingHost(paramsXml->getDoubleAttribute(parameter->getParameterID(), parameter->getValue()));
         }
         return true;
     }

@@ -43,8 +43,8 @@ DelayGraph::DelayGraph (juce::XmlElement* element)
 
     for (int i = 0; i < linesElement->getNumChildElements(); ++i) {
         auto l = linesElement->getChildElement(i);
-        auto start = getPoint(GraphLine::stringToId(l->getStringAttribute("start").toStdString()));
-        auto end = getPoint(GraphLine::stringToId(l->getStringAttribute("end").toStdString()));
+        auto start = getPoint(l->getIntAttribute("start"));
+        auto end = getPoint(l->getIntAttribute("end"));
         lines.push_back(std::make_unique<GraphLine>(start, end, l));
     }
 
@@ -289,7 +289,6 @@ void DelayGraph::exportToXml (juce::XmlElement* parent)
     auto pointsElement = element->createNewChildElement("points");
 
     for (auto& point : points) {
-        std::cout << "export point\n";
         point->exportToXml(pointsElement);
     }
     auto linesElement = element->createNewChildElement("lines");
@@ -321,7 +320,7 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
 
     for (int i = 0; i < pointsElement->getNumChildElements(); ++i) {
         auto p = pointsElement->getChildElement(i);
-        if (!getPoint(GraphPoint::stringToId(p->getTagName().toStdString()))) {
+        if (!getPoint(p->getIntAttribute("id"))) {
             points.push_back(std::make_unique<GraphPoint>(p));
         }
     }
@@ -334,9 +333,9 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
 
     for (int i = 0; i < linesElement->getNumChildElements(); ++i) {
         auto l = linesElement->getChildElement(i);
-        if (!getLine(GraphLine::stringToId(l->getTagName().toStdString()))) {
-            auto start = getPoint(GraphLine::stringToId(l->getStringAttribute("start").toStdString()));
-            auto end = getPoint(GraphLine::stringToId(l->getStringAttribute("end").toStdString()));
+        if (!getLine(l->getIntAttribute("id"))) {
+            auto start = getPoint(l->getIntAttribute("start"));
+            auto end = getPoint(l->getIntAttribute("end"));
             lines.push_back(std::make_unique<GraphLine>(start, end, l));
         }
     }

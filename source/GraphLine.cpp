@@ -15,7 +15,7 @@ GraphLine::GraphLine(GraphPoint* _start, GraphPoint* _end, const int& id)
 }
 
 GraphLine::GraphLine (GraphPoint* _start, GraphPoint* _end, juce::XmlElement* element)
-    : start(_start), end(_end), parameters(element), identifier(stringToId(element->getTagName().toStdString()))
+    : start(_start), end(_end), parameters(element), identifier(element->getIntAttribute("id"))
 {
     modOscillator.initialise([] (float x) {return std::sin(x);}, 128);
     prepared = false;
@@ -244,18 +244,19 @@ void GraphLine::bakeOffset()
 
 void GraphLine::exportToXml(juce::XmlElement* parent)
 {
-    auto element = parent->createNewChildElement(idToString());
+    auto element = parent->createNewChildElement("line");
+    element->setAttribute("id", std::to_string(identifier));
     parameters.exportToXml(element);
-    element->setAttribute("start", start->idToString());
-    element->setAttribute("end", end->idToString());
+    element->setAttribute("start", start->identifier);
+    element->setAttribute("end", end->identifier);
 }
 
 bool GraphLine::importFromXml (DelayGraph* dg, juce::XmlElement* parent)
 {
-    auto element = parent->getChildByName(idToString());
+    auto element = parent->getChildByAttribute("id", std::to_string(identifier));
     if (element) {
-        auto _start = dg->getPoint(GraphPoint::stringToId(element->getStringAttribute("start").toStdString()));
-        auto _end = dg->getPoint(GraphPoint::stringToId(element->getStringAttribute("end").toStdString()));
+        auto _start = dg->getPoint(element->getIntAttribute("start"));
+        auto _end = dg->getPoint(element->getIntAttribute("end"));
         if (_start && _end) {
             start = _start;
             end = _end;

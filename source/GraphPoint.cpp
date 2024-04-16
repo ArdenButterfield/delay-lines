@@ -13,13 +13,14 @@ GraphPoint::GraphPoint(const juce::Point<float>& p, PointType pt, const int& id)
 GraphPoint::GraphPoint (juce::XmlElement* element)
     : GraphPoint(juce::Point<float>(element->getDoubleAttribute("x"), element->getDoubleAttribute("y")),
         static_cast<const PointType> (element->getIntAttribute ("type")),
-        stringToId(element->getTagName().toStdString()))
+        element->getIntAttribute("id"))
 {
 }
 
 void GraphPoint::exportToXml (juce::XmlElement* parent)
 {
-    auto element = parent->createNewChildElement(idToString());
+    auto element = parent->createNewChildElement("point");
+    element->setAttribute("id", std::to_string(identifier));
     element->setAttribute("x", x);
     element->setAttribute("y", y);
     element->setAttribute("type", pointType);
@@ -27,10 +28,11 @@ void GraphPoint::exportToXml (juce::XmlElement* parent)
 
 bool GraphPoint::importFromXml (juce::XmlElement* parent)
 {
-    auto element = parent->getChildByName(idToString());
+    auto element = parent->getChildByAttribute("id", std::to_string(identifier));
     if (element) {
         x = element->getDoubleAttribute("x", x);
         y = element->getDoubleAttribute("y", y);
+        pointType = static_cast<PointType>(element->getIntAttribute("type", pointType));
         return true;
     } else {
         return false;
