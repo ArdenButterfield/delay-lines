@@ -21,11 +21,10 @@ public:
     void resized() override;
 
     juce::TextButton printXmlButton;
-
+private:
     PresetBrowser presetBrowser;
     PlaygroundController playgroundController;
     PlaygroundView playgroundView;
-private:
     void buttonClicked(juce::Button *) override;
 
     void buttonStateChanged(juce::Button*) override;

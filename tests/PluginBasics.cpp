@@ -68,6 +68,22 @@ TEST_CASE("Export XML", "[exportxml]")
     REQUIRE( xml.isEquivalentTo(&finalXml, true));
 }
 
+TEST_CASE("Import blank XML", "[importinvalidxml]")
+{
+    auto xmlText = "<plugin-state>\n"
+                   "</plugin-state>";
+    auto xmlElement = juce::parseXML(xmlText);
+
+    // This lets us use JUCE's MessageManager without leaking.
+    // PluginProcessor might need this if you use the APVTS for example.
+    // You'll also need it for tests that rely on juce::Graphics, juce::Timer, etc.
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+
+    DelayGraph delayGraph;
+
+    REQUIRE_FALSE(delayGraph.importFromXml(xmlElement.get()));
+}
+
 TEST_CASE("Import XML", "[importxml]")
 {
     auto xmlText = "<plugin-state>\n"
