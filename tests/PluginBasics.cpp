@@ -40,6 +40,36 @@ TEST_CASE("Basic xml export", "[xmlbasic]")
     delayGraph.exportToXml(&xml);
 }
 
+TEST_CASE("Import to point", "[xmlpointimport]")
+{
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+    auto p = GraphPoint({1.f, 1.f}, GraphPoint::inner, 42);
+
+    auto xmlText =                    "    <points>\n"
+                   "      <point id=\"42\" x=\"100.0\" y=\"100.0\" type=\"2\"/>\n"
+                   "      <point id=\"2\" x=\"400.0\" y=\"100.0\" type=\"0\"/>\n"
+                   "      <point id=\"3\" x=\"50.0\" y=\"0.0\" type=\"1\"/>\n"
+                   "    </points>\n";
+
+    auto xmlElement = juce::parseXML(xmlText);
+    REQUIRE(p.importFromXml(xmlElement.get()));
+}
+
+TEST_CASE("Import to point constructor", "[xmlpointimportconstructor]")
+{
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+
+    auto xmlText =                    "    <points>\n"
+                   "      <point id=\"42\" x=\"100.0\" y=\"100.0\" type=\"2\"/>\n"
+                   "      <point id=\"2\" x=\"400.0\" y=\"100.0\" type=\"0\"/>\n"
+                   "      <point id=\"3\" x=\"50.0\" y=\"0.0\" type=\"1\"/>\n"
+                   "    </points>\n";
+
+    auto xmlElement = juce::parseXML(xmlText);
+    auto p = GraphPoint(xmlElement.get()->getChildElement(0));
+    REQUIRE(p.identifier == 42);
+}
+
 TEST_CASE("Export XML", "[exportxml]")
 {
     // This lets us use JUCE's MessageManager without leaking.
@@ -170,6 +200,53 @@ TEST_CASE( "set preset", "[setpreset]")
                    </graph>
                </plugin-state>)");
     REQUIRE( desired->isEquivalentTo(&finalXml, true));
+}
+
+TEST_CASE("global inputs", "[globalinputs]")
+{
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+
+    PluginProcessor testPlugin;
+
+    auto xml = juce::parseXML("<plugin-state>\n"
+                               "  <graph>\n"
+                               "    <points>\n"
+                               "      <point id=\"1\" x=\"0.0\" y=\"0.0\" type=\"1\"/>\n"
+                               "      <point id=\"2\" x=\"378.0\" y=\"150.0\" type=\"2\"/>\n"
+                               "      <point id=\"4\" x=\"190.0\" y=\"81.0\" type=\"0\"/>\n"
+                               "    </points>\n"
+                               "    <lines>\n"
+                               "      <line id=\"1\" start=\"1\" end=\"4\">\n"
+                               "        <parameters mutebypass=\"0.0\" lengthenvelopefollow=\"0.5\" moddepth=\"0.0\" modrate=\"0.03010033443570137\"\n"
+                               "                    distortion=\"0.0\" hicut=\"1.0\" locut=\"0.0\" gain=\"0.5\" invert=\"0.0\"\n"
+                               "                    gainenvelopefollow=\"0.5\" feedback=\"0.0\">\n"
+                               "          <delayLength mode=\"0\" samples=\"0.0\" milliseconds=\"598.3832397460938\" hertz=\"10.0\"\n"
+                               "                       pitch=\"100.0\" numerator=\"1.0\" denominator=\"4.0\"/>\n"
+                               "        </parameters>\n"
+                               "      </line>\n"
+                               "      <line id=\"2\" start=\"4\" end=\"2\">\n"
+                               "        <parameters mutebypass=\"0.0\" lengthenvelopefollow=\"0.5\" moddepth=\"0.0\" modrate=\"0.03010033443570137\"\n"
+                               "                    distortion=\"0.0\" hicut=\"1.0\" locut=\"0.0\" gain=\"0.5\" invert=\"0.0\"\n"
+                               "                    gainenvelopefollow=\"0.5\" feedback=\"0.0\">\n"
+                               "          <delayLength mode=\"0\" samples=\"0.0\" milliseconds=\"545.0530395507812\" hertz=\"10.0\"\n"
+                               "                       pitch=\"100.0\" numerator=\"1.0\" denominator=\"4.0\"/>\n"
+                               "        </parameters>\n"
+                               "      </line>\n"
+                               "    </lines>\n"
+                               "  </graph>\n"
+                               "</plugin-state>");
+    testPlugin.delayGraph.importFromXml(xml.get());
+
+    testPlugin.delayGraph.setRealOutputs();
+
+    for (auto& line : testPlugin.delayGraph.getLines()) {
+        REQUIRE(line->realOutputs.size() == 1);
+        if (line->identifier == 1) {
+            REQUIRE((*line->realOutputs.begin())->identifier == 4);
+        } else if (line->identifier == 2) {
+            REQUIRE((*line->realOutputs.begin())->identifier == 2);
+        }
+    }
 }
 
 #ifdef PAMPLEJUCE_IPP
