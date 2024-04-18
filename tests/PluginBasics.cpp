@@ -55,6 +55,23 @@ TEST_CASE("Import to point", "[xmlpointimport]")
     REQUIRE(p.importFromXml(xmlElement.get()));
 }
 
+TEST_CASE("Import to line", "[importtoline]")
+{
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+    auto delayGraph = DelayGraph();
+    auto line = delayGraph.getLine(1);
+    auto element = juce::XmlElement("lines");
+    line->exportToXml(&element);
+    element.getChildElement(0)->getChildByName("parameters")->setAttribute("gain", 0.25);
+
+    line->importFromXml(&delayGraph, &element);
+
+    auto element2 = juce::XmlElement("lines");
+    line->exportToXml(&element2);
+    REQUIRE(element.isEquivalentTo(&element2, false));
+//    line->importFromXml(&delayGraph, xml.get());
+}
+
 TEST_CASE("Import to point constructor", "[xmlpointimportconstructor]")
 {
     auto gui = juce::ScopedJuceInitialiser_GUI {};
@@ -202,11 +219,33 @@ TEST_CASE( "set preset", "[setpreset]")
     REQUIRE( desired->isEquivalentTo(&finalXml, true));
 }
 
+TEST_CASE("send audio", "[sendaudio]")
+{
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+
+    DelayGraph delayGraph;
+
+    auto spec = juce::dsp::ProcessSpec(44100, 512, 2);
+    delayGraph.prepareToPlay(spec);
+    delayGraph.setRealOutputs();
+    auto sample = std::vector<float>(2);
+
+    auto random = juce::Random();
+    for (int i = 0; i < 100000; ++i) {
+        sample[0] = 1;
+        sample[1] = 1;
+        delayGraph.processSample(sample);
+    }
+
+    REQUIRE((juce::approximatelyEqual(sample[0], 1.f) && juce::approximatelyEqual(sample[1], 1.f)));
+}
+
+
 TEST_CASE("global inputs", "[globalinputs]")
 {
     auto gui = juce::ScopedJuceInitialiser_GUI {};
 
-    PluginProcessor testPlugin;
+    DelayGraph delayGraph;
 
     auto xml = juce::parseXML("<plugin-state>\n"
                                "  <graph>\n"
@@ -220,7 +259,7 @@ TEST_CASE("global inputs", "[globalinputs]")
                                "        <parameters mutebypass=\"0.0\" lengthenvelopefollow=\"0.5\" moddepth=\"0.0\" modrate=\"0.03010033443570137\"\n"
                                "                    distortion=\"0.0\" hicut=\"1.0\" locut=\"0.0\" gain=\"0.5\" invert=\"0.0\"\n"
                                "                    gainenvelopefollow=\"0.5\" feedback=\"0.0\">\n"
-                               "          <delayLength mode=\"0\" samples=\"0.0\" milliseconds=\"598.3832397460938\" hertz=\"10.0\"\n"
+                               "          <delayLength mode=\"0\" samples=\"0.0\" milliseconds=\"10\" hertz=\"10.0\"\n"
                                "                       pitch=\"100.0\" numerator=\"1.0\" denominator=\"4.0\"/>\n"
                                "        </parameters>\n"
                                "      </line>\n"
@@ -228,18 +267,16 @@ TEST_CASE("global inputs", "[globalinputs]")
                                "        <parameters mutebypass=\"0.0\" lengthenvelopefollow=\"0.5\" moddepth=\"0.0\" modrate=\"0.03010033443570137\"\n"
                                "                    distortion=\"0.0\" hicut=\"1.0\" locut=\"0.0\" gain=\"0.5\" invert=\"0.0\"\n"
                                "                    gainenvelopefollow=\"0.5\" feedback=\"0.0\">\n"
-                               "          <delayLength mode=\"0\" samples=\"0.0\" milliseconds=\"545.0530395507812\" hertz=\"10.0\"\n"
+                               "          <delayLength mode=\"0\" samples=\"0.0\" milliseconds=\"10\" hertz=\"10.0\"\n"
                                "                       pitch=\"100.0\" numerator=\"1.0\" denominator=\"4.0\"/>\n"
                                "        </parameters>\n"
                                "      </line>\n"
                                "    </lines>\n"
                                "  </graph>\n"
                                "</plugin-state>");
-    testPlugin.delayGraph.importFromXml(xml.get());
+    delayGraph.importFromXml(xml.get());
 
-    testPlugin.delayGraph.setRealOutputs();
-
-    for (auto& line : testPlugin.delayGraph.getLines()) {
+    for (auto& line : delayGraph.getLines()) {
         REQUIRE(line->realOutputs.size() == 1);
         if (line->identifier == 1) {
             REQUIRE((*line->realOutputs.begin())->identifier == 4);
@@ -247,6 +284,19 @@ TEST_CASE("global inputs", "[globalinputs]")
             REQUIRE((*line->realOutputs.begin())->identifier == 2);
         }
     }
+
+    auto spec = juce::dsp::ProcessSpec(44100, 512, 2);
+    delayGraph.prepareToPlay(spec);
+    delayGraph.setRealOutputs();
+    auto sample = std::vector<float>(2);
+
+    for (int i = 0; i < 100000; ++i) {
+        sample[0] = 1;
+        sample[1] = 1;
+        delayGraph.processSample(sample);
+    }
+
+    REQUIRE((juce::approximatelyEqual(sample[0], 1.f) && juce::approximatelyEqual(sample[1], 1.f)));
 }
 
 #ifdef PAMPLEJUCE_IPP
