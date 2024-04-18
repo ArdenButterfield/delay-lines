@@ -287,7 +287,10 @@ TEST_CASE("global inputs", "[globalinputs]")
         }
     }
 
-    auto spec = juce::dsp::ProcessSpec(44100.0, 512, 2);
+    auto spec = juce::dsp::ProcessSpec();
+    spec.sampleRate = 44100;
+    spec.maximumBlockSize = 512;
+    spec.numChannels = 2;
     delayGraph.prepareToPlay(spec);
     delayGraph.setRealOutputs();
     auto sample = std::vector<float>(2);
