@@ -225,7 +225,10 @@ TEST_CASE("send audio", "[sendaudio]")
 
     DelayGraph delayGraph;
 
-    auto spec = juce::dsp::ProcessSpec(44100, 512, 2);
+    auto spec = juce::dsp::ProcessSpec();
+    spec.sampleRate = 44100;
+    spec.maximumBlockSize = 512;
+    spec.numChannels = 2;
     delayGraph.prepareToPlay(spec);
     delayGraph.setRealOutputs();
     auto sample = std::vector<float>(2);
