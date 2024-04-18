@@ -348,4 +348,5 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
             lines.push_back(std::make_unique<GraphLine>(start, end, l));
         }
     }
+    return true;
 }

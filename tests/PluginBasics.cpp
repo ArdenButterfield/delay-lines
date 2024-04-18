@@ -276,6 +276,8 @@ TEST_CASE("global inputs", "[globalinputs]")
                                "</plugin-state>");
     delayGraph.importFromXml(xml.get());
 
+    delayGraph.setRealOutputs();
+
     for (auto& line : delayGraph.getLines()) {
         REQUIRE(line->realOutputs.size() == 1);
         if (line->identifier == 1) {
@@ -285,7 +287,7 @@ TEST_CASE("global inputs", "[globalinputs]")
         }
     }
 
-    auto spec = juce::dsp::ProcessSpec(44100, 512, 2);
+    auto spec = juce::dsp::ProcessSpec(44100.0, 512, 2);
     delayGraph.prepareToPlay(spec);
     delayGraph.setRealOutputs();
     auto sample = std::vector<float>(2);
@@ -295,6 +297,7 @@ TEST_CASE("global inputs", "[globalinputs]")
         sample[1] = 1;
         delayGraph.processSample(sample);
     }
+    std::cout << sample[0] << " " << sample[1] << "\n";
 
     REQUIRE((juce::approximatelyEqual(sample[0], 1.f) && juce::approximatelyEqual(sample[1], 1.f)));
 }
