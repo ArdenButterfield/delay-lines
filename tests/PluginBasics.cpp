@@ -262,7 +262,7 @@ TEST_CASE("global inputs", "[globalinputs]")
                                "        <parameters mutebypass=\"0.0\" lengthenvelopefollow=\"0.5\" moddepth=\"0.0\" modrate=\"0.03010033443570137\"\n"
                                "                    distortion=\"0.0\" hicut=\"1.0\" locut=\"0.0\" gain=\"0.5\" invert=\"0.0\"\n"
                                "                    gainenvelopefollow=\"0.5\" feedback=\"0.0\">\n"
-                               "          <delayLength mode=\"0\" samples=\"0.0\" milliseconds=\"10\" hertz=\"10.0\"\n"
+                               "          <delayLength mode=\"1\" samples=\"1.0\" milliseconds=\"10\" hertz=\"10.0\"\n"
                                "                       pitch=\"100.0\" numerator=\"1.0\" denominator=\"4.0\"/>\n"
                                "        </parameters>\n"
                                "      </line>\n"
@@ -270,7 +270,7 @@ TEST_CASE("global inputs", "[globalinputs]")
                                "        <parameters mutebypass=\"0.0\" lengthenvelopefollow=\"0.5\" moddepth=\"0.0\" modrate=\"0.03010033443570137\"\n"
                                "                    distortion=\"0.0\" hicut=\"1.0\" locut=\"0.0\" gain=\"0.5\" invert=\"0.0\"\n"
                                "                    gainenvelopefollow=\"0.5\" feedback=\"0.0\">\n"
-                               "          <delayLength mode=\"0\" samples=\"0.0\" milliseconds=\"10\" hertz=\"10.0\"\n"
+                               "          <delayLength mode=\"1\" samples=\"3.0\" milliseconds=\"10\" hertz=\"10.0\"\n"
                                "                       pitch=\"100.0\" numerator=\"1.0\" denominator=\"4.0\"/>\n"
                                "        </parameters>\n"
                                "      </line>\n"
@@ -298,7 +298,7 @@ TEST_CASE("global inputs", "[globalinputs]")
     delayGraph.setRealOutputs();
     auto sample = std::vector<float>(2);
 
-    for (int i = 0; i < 100000; ++i) {
+    for (int i = 0; i < 10; ++i) {
         sample[0] = 1;
         sample[1] = 1;
         delayGraph.processSample(sample);

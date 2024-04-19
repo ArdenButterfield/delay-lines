@@ -123,7 +123,7 @@ void DelayGraph::addLine (GraphPoint* start, GraphPoint* end)
 
     lines.push_back(std::make_unique<GraphLine>(start, end, findUniqueLineId()));
     if (processSpec) {
-        lines.back()->prepareToPlay(processSpec.get());
+        lines.back()->prepareToPlay(*processSpec);
     }
     criticalSection.exit();
 }
@@ -173,7 +173,7 @@ void DelayGraph::prepareToPlay (juce::dsp::ProcessSpec& spec)
 {
     processSpec = std::make_unique<juce::dsp::ProcessSpec>(spec);
     for (auto& line : lines) {
-        line->prepareToPlay(processSpec.get());
+        line->prepareToPlay(*processSpec);
     }
     for (auto& point : points) {
         point->prepareToPlay(processSpec.get());

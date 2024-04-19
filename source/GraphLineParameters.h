@@ -14,15 +14,16 @@ struct DelayLength {
     DelayLength(juce::XmlElement* parent);
 
     enum Mode {
-        ms,
-        samps,
-        hz,
-        note,
-        beat
+        ms = 0,
+        samps = 1,
+        hz = 2,
+        note = 3,
+        beat = 4
     };
 
 
     float getLengthInSamples(float samplerate, float bpm) {
+        std::cout << "get length " << samplesLength << " " << mode << "\n";
         switch (mode)
         {
             case ms:

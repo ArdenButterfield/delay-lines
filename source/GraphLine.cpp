@@ -9,7 +9,6 @@
 GraphLine::GraphLine(GraphPoint* _start, GraphPoint* _end, const int& id)
     : start(_start), end(_end), identifier(id)
 {
-    modOscillator.initialise([] (float x) {return std::sin(x);}, 128);
     prepared = false;
 
 }
@@ -17,61 +16,47 @@ GraphLine::GraphLine(GraphPoint* _start, GraphPoint* _end, const int& id)
 GraphLine::GraphLine (GraphPoint* _start, GraphPoint* _end, juce::XmlElement* element)
     : start(_start), end(_end), parameters(element), identifier(element->getIntAttribute("id"))
 {
-    modOscillator.initialise([] (float x) {return std::sin(x);}, 128);
     prepared = false;
 }
 
 
-void GraphLine::prepareToPlay (juce::dsp::ProcessSpec* spec)
+void GraphLine::prepareToPlay (juce::dsp::ProcessSpec& spec)
 {
-    lengths.resize(spec->numChannels, juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>(defaultLength * spec->sampleRate));
-    gains.resize(spec->numChannels, juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>(defaultGain));
-    for (auto& l : lengths) {
-        l.reset(spec->sampleRate, 0.2);
-    }
-    for (auto& g : gains) {
-        g.reset(spec->sampleRate, 0.2);
-    }
-    modDepth.reset(512);
-    numChannels = spec->numChannels;
-    sampleRate = spec->sampleRate;
+    auto targetLength = parameters.length.getLengthInSamples(sampleRate, 120);
+    modOscillator = std::make_unique<ModOscillator>(spec, parameters.modRate.get(), parameters.modDepth.get());
+    delayLineInternal = std::make_unique<DelayLineInternal>(spec, targetLength, spec.sampleRate * 5, modOscillator.get());
 
-    internalDelayLine.setMaximumDelayInSamples(spec->sampleRate * 5);
-    envelopeDelayLine.setMaximumDelayInSamples(spec->sampleRate * 5);
+    gain.setCurrentAndTargetValue(parameters.gain);
 
-    internalDelayLine.prepare(*spec);
-    envelopeDelayLine.prepare(*spec);
-    envelopeFilter.prepare(*spec);
+    numChannels = spec.numChannels;
+    sampleRate = spec.sampleRate;
 
-    hiCutFilters.resize(spec->numChannels);
-    loCutFilters.resize(spec->numChannels);
 
-    modOscillator.prepare(*spec);
+    hiCutFilters.resize(numChannels);
+    loCutFilters.resize(numChannels);
 
     startTimerHz(60);
 
-    lastSample.resize(spec->numChannels, 0);
+    lastSample.resize(numChannels, 0);
     prepared = true;
 }
 
 void GraphLine::calculateInternalLength()
 {
+    if (!delayLineInternal) {
+            return;
+}
     auto lineVector = end->getDistanceFrom(*start);
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
     auto currentLength = parameters.length.getLengthInSamples(sampleRate, 120) * realLineVector / lineVector; // TODO: BPM
-    currentLength = std::min(currentLength, (float)internalDelayLine.getMaximumDelayInSamples() - 1);
-    currentLength = std::max(currentLength, 0.f);
-    for (auto& l : lengths) {
-        l.setTargetValue(currentLength);
-    }
+
+    delayLineInternal->setTargetLength(currentLength);
 }
 
-void GraphLine::setGain (float gain)
+void GraphLine::setGain (float _gain)
 {
-    parameters.gain = gain;
-    for (auto& g : gains) {
-        g.setTargetValue(gain);
-    }
+    parameters.gain = _gain;
+    gain.setTargetValue(_gain);
 }
 
 void GraphLine::pushSample (std::vector<float>& sample)
@@ -80,12 +65,13 @@ void GraphLine::pushSample (std::vector<float>& sample)
         return;
     }
 
+    auto val = std::vector<float>(numChannels);
+
     for (unsigned channel = 0; channel < numChannels; ++channel) {
-        auto val = sample[channel] + parameters.feedback * lastSample[channel];
-        internalDelayLine.pushSample(static_cast<int>(channel), val);
-        auto envelope = envelopeFilter.processSample(static_cast<int>(channel), val);
-        envelopeDelayLine.pushSample(static_cast<int>(channel), envelope);
+        val[channel] = sample[channel] + parameters.feedback * lastSample[channel];
     }
+
+    delayLineInternal->pushSample(val);
 }
 
 float GraphLine::distortSample (float samp)
@@ -100,28 +86,32 @@ void GraphLine::popSample ()
         return;
     }
 
-    auto mod = 1 + modDepth.getNextValue() * modOscillator.processSample(0) / (parameters.modRate * juce::MathConstants<float>::twoPi * 10);
+    auto val = std::vector<float>(numChannels);
 
+    delayLineInternal->popSample(val);
+
+    auto gainVal = gain.getNextValue();
     for (unsigned channel = 0; channel < numChannels; ++channel) {
 
-        auto length = std::min(lengths[channel].getNextValue() * mod, (float)internalDelayLine.getMaximumDelayInSamples() - 1);
-        auto s = internalDelayLine.popSample(channel, length) * gains[channel].getNextValue();
+        auto s = val[channel] * gainVal;
         s = parameters.distortion ? distortSample(s) : s;
         s *= parameters.invert ? -1 : 1;
 
         s = parameters.loCut > 5 ? loCutFilters[channel].processSingleSampleRaw(s) : s;
         s = parameters.hiCut < 19999 ? hiCutFilters[channel].processSingleSampleRaw(s) : s;
 
-        envelopeDelayLine.popSample(channel, length);
-        auto inputEnvelope = envelopeDelayLine.popSample(static_cast<int>(channel), 0, false);
 
+#if false
         float gain;
+
         if (parameters.gainEnvelopeFollow > 0) {
             gain = (1 - parameters.gainEnvelopeFollow) + parameters.gainEnvelopeFollow * inputEnvelope;
         } else {
             gain = 1 + inputEnvelope * parameters.gainEnvelopeFollow;
         }
         s *= gain;
+#endif
+
         if (!parameters.isBypassed()) {
             for (auto point : realOutputs) {
                 point->samples[channel] += s;
@@ -148,13 +138,7 @@ void GraphLine::getEnvelope (float proportion, float& left, float& right)
         right = 0;
         return;
     }
-
-    left = envelopeDelayLine.popSample(0, internalDelayLine.getDelay() * proportion, false);
-    if (numChannels > 1) {
-        right = envelopeDelayLine.popSample(1, internalDelayLine.getDelay() * proportion, false);
-    } else {
-        right = left;
-    }
+    delayLineInternal->getEnvelope(proportion, left, right);
 }
 void GraphLine::setBypass (bool bypass)
 {
@@ -169,8 +153,7 @@ void GraphLine::setMute (bool mute)
 {
     if (mute) {
         parameters.muteBypass = Parameters::mute;
-        envelopeDelayLine.reset();
-        internalDelayLine.reset();
+        delayLineInternal->clearLines();
     } else if (parameters.muteBypass == Parameters::mute) {
         parameters.muteBypass = Parameters::none;
     }
@@ -184,13 +167,13 @@ void GraphLine::setLengthEnvelopeFollow (float amt)
 void GraphLine::setModDepth (float depth)
 {
     parameters.modDepth = depth;
-    modDepth.setTargetValue(depth);
+    modOscillator->setDepth(depth);
 }
 
 void GraphLine::setModRate (float rate)
 {
     parameters.modRate = rate;
-    modOscillator.setFrequency(rate);
+    modOscillator->setFrequency(rate);
 }
 
 void GraphLine::setDistortionAmount (float amt)
@@ -261,6 +244,7 @@ bool GraphLine::importFromXml (DelayGraph* dg, juce::XmlElement* parent)
             start = _start;
             end = _end;
             parameters.importFromXml(element);
+            calculateInternalLength();
             return true;
         }
     }

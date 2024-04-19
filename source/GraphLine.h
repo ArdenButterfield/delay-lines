@@ -7,6 +7,7 @@
 
 #include "GraphLineParameters.h"
 #include "GraphPoint.h"
+#include "DelayLineInternal.h"
 
 #include "juce_dsp/juce_dsp.h"
 #include "juce_audio_basics/juce_audio_basics.h"
@@ -41,7 +42,7 @@ public:
     GraphPoint* end;
     void pushSample(std::vector<float>& sample);
     void popSample();
-    void prepareToPlay(juce::dsp::ProcessSpec* spec);
+    void prepareToPlay(juce::dsp::ProcessSpec& spec);
     void toggleEnabled();
     void getEnvelope(float proportion, float& left, float& right);
 
@@ -63,24 +64,19 @@ public:
     std::string idToString();
     static int stringToId(std::string s);
 private:
+    std::unique_ptr<DelayLineInternal> delayLineInternal;
+
     void calculateInternalLength();
 
     unsigned numChannels;
     float sampleRate;
-    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Lagrange3rd> internalDelayLine;
-    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::None> envelopeDelayLine;
-    juce::dsp::BallisticsFilter<float> envelopeFilter;
-    std::vector<juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>> lengths;
 
-    std::vector<juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>> gains;
-    const float defaultGain = 1.0;
-    const float defaultLength = 1.0;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> gain;
 
     float distortSample(float samp);
     std::vector<float> lastSample;
     std::vector<juce::IIRFilter> loCutFilters;
     std::vector<juce::IIRFilter> hiCutFilters;
-    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> modDepth;
-    juce::dsp::Oscillator<float> modOscillator;
+    std::unique_ptr<ModOscillator> modOscillator;
 };
 #endif //DELAYLINES_GRAPHLINE_H
