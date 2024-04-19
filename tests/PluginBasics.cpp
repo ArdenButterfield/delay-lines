@@ -226,20 +226,19 @@ TEST_CASE("send audio", "[sendaudio]")
     DelayGraph delayGraph;
 
     auto spec = juce::dsp::ProcessSpec();
-    spec.sampleRate = 44100;
+    spec.sampleRate = 8000;
     spec.maximumBlockSize = 512;
     spec.numChannels = 2;
     delayGraph.prepareToPlay(spec);
-    delayGraph.setRealOutputs();
     auto sample = std::vector<float>(2);
 
-    auto random = juce::Random();
     for (int i = 0; i < 100000; ++i) {
         sample[0] = 1;
         sample[1] = 1;
         delayGraph.processSample(sample);
     }
 
+    std::cout << "send audio result: " << sample[0] << " " << sample[1] << "\n";
     REQUIRE((juce::approximatelyEqual(sample[0], 1.f) && juce::approximatelyEqual(sample[1], 1.f)));
 }
 
@@ -330,7 +329,6 @@ TEST_CASE("global inputs", "[globalinputs]")
         sample[1] = 1;
         delayGraph.processSample(sample);
     }
-    std::cout << sample[0] << " " << sample[1] << "\n";
 
     REQUIRE((juce::approximatelyEqual(sample[0], 1.f) && juce::approximatelyEqual(sample[1], 1.f)));
 }
