@@ -251,13 +251,3 @@ bool GraphLine::importFromXml (DelayGraph* dg, juce::XmlElement* parent)
     return false;
 }
 
-std::string GraphLine::idToString()
-{
-    // for xml
-    return "line_" + std::to_string(identifier);
-}
-int GraphLine::stringToId (std::string s)
-{
-    // for xml
-    return std::stoi(s.erase(0, 5));
-}

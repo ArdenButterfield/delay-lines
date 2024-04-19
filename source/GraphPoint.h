@@ -19,27 +19,13 @@ public:
     explicit GraphPoint(const juce::Point<float>& p, PointType pt, const int& id);
     GraphPoint(juce::XmlElement* element);
 
-    void timerCallback() override {
-        if (!draggingOffset) {
-            offset *= 0.9;
-            if (offset.getDistanceSquaredFromOrigin() < 0.2) {
-                offset *= 0;
-            }
-        }
-    }
+    void timerCallback() override;
 
-    void bakeOffset() {
-        this->x += offset.x;
-        this->y += offset.y;
-        offset.x = 0;
-        offset.y = 0;
-    }
+    void bakeOffset();
 
     PointType pointType;
 
-    void prepareToPlay(juce::dsp::ProcessSpec* spec) {
-        samples.resize(spec->numChannels);
-    }
+    void prepareToPlay(juce::dsp::ProcessSpec* spec);
 
     bool draggingOffset;
 
@@ -50,9 +36,6 @@ public:
 
     void exportToXml(juce::XmlElement* parent);
     bool importFromXml(juce::XmlElement* parent);
-
-    std::string idToString();
-    static int stringToId(std::string s);
 };
 
 #endif //DELAYLINES_GRAPHPOINT_H

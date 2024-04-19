@@ -17,6 +17,27 @@ GraphPoint::GraphPoint (juce::XmlElement* element)
 {
 }
 
+void GraphPoint::prepareToPlay(juce::dsp::ProcessSpec* spec) {
+    samples.resize(spec->numChannels);
+}
+
+void GraphPoint::timerCallback() {
+    if (!draggingOffset) {
+        offset *= 0.9;
+        if (offset.getDistanceSquaredFromOrigin() < 0.2) {
+            offset *= 0;
+        }
+    }
+}
+
+void GraphPoint::bakeOffset() {
+    this->x += offset.x;
+    this->y += offset.y;
+    offset.x = 0;
+    offset.y = 0;
+}
+
+
 void GraphPoint::exportToXml (juce::XmlElement* parent)
 {
     auto element = parent->createNewChildElement("point");
@@ -37,15 +58,4 @@ bool GraphPoint::importFromXml (juce::XmlElement* parent)
     } else {
         return false;
     }
-}
-std::string GraphPoint::idToString()
-{
-    // for xml
-    return "point_" + std::to_string(identifier);
-}
-
-int GraphPoint::stringToId (std::string s)
-{
-    // for xml
-    return std::stoi(s.erase(0, 6));
 }

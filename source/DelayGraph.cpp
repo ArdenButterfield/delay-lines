@@ -333,7 +333,13 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
     for (int i = 0; i < pointsElement->getNumChildElements(); ++i) {
         auto p = pointsElement->getChildElement(i);
         if (!getPoint(p->getIntAttribute("id"))) {
+            criticalSection.enter();
             points.push_back(std::make_unique<GraphPoint>(p));
+            auto newPoint = points.back().get();
+            if (processSpec) {
+                newPoint->prepareToPlay(processSpec.get());
+            }
+            criticalSection.exit();
         }
     }
 
@@ -354,8 +360,15 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
         if (!getLine(l->getIntAttribute("id"))) {
             auto start = getPoint(l->getIntAttribute("start"));
             auto end = getPoint(l->getIntAttribute("end"));
+            criticalSection.enter();
             lines.push_back(std::make_unique<GraphLine>(start, end, l));
+            auto newLine = lines.back().get();
+            if (processSpec) {
+                newLine->prepareToPlay(*processSpec);
+            }
+            criticalSection.exit();
         }
     }
+    setRealOutputs();
     return true;
 }

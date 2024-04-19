@@ -219,6 +219,39 @@ TEST_CASE( "set preset", "[setpreset]")
     REQUIRE( desired->isEquivalentTo(&finalXml, true));
 }
 
+TEST_CASE( "playing from preset", "[playpreset]")
+{
+    // This lets us use JUCE's MessageManager without leaking.
+    // PluginProcessor might need this if you use the APVTS for example.
+    // You'll also need it for tests that rely on juce::Graphics, juce::Timer, etc.
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+
+    DelayGraph delayGraph;
+
+    auto spec = juce::dsp::ProcessSpec();
+    spec.sampleRate = 8000;
+    spec.maximumBlockSize = 512;
+    spec.numChannels = 2;
+
+    delayGraph.prepareToPlay(spec);
+
+    auto p = PresetBrowser(delayGraph);
+    p.presetMenu.setSelectedId(2, juce::NotificationType::sendNotificationSync);
+
+    auto sample = std::vector<float>(2);
+
+    for (auto& line : delayGraph.getLines()) {
+        line->setBypass(true);
+        for (int i = 0; i < 100; ++i) {
+            delayGraph.processSample(sample);
+        }
+        line->setBypass(false);
+        for (int i = 0; i < 100; ++i) {
+            delayGraph.processSample(sample);
+        }
+    }
+}
+
 TEST_CASE("send audio", "[sendaudio]")
 {
     auto gui = juce::ScopedJuceInitialiser_GUI {};

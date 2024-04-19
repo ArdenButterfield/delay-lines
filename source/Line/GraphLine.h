@@ -60,9 +60,6 @@ public:
 
     void exportToXml(juce::XmlElement* parent);
     bool importFromXml(DelayGraph* dg, juce::XmlElement* parent);
-
-    std::string idToString();
-    static int stringToId(std::string s);
 private:
     std::unique_ptr<DelayLineInternal> delayLineInternal;
 
