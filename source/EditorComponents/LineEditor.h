@@ -7,7 +7,7 @@
 
 #include "juce_gui_basics/juce_gui_basics.h"
 
-#include "DelayGraph.h"
+#include "../DelayGraph.h"
 #include "LengthEditor.h"
 
 class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::ToggleButton::Listener, public juce::Timer

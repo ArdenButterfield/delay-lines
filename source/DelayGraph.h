@@ -11,8 +11,7 @@
 #include "juce_events/juce_events.h"
 
 #include "GraphPoint.h"
-#include "GraphLine.h"
-
+#include "Line/GraphLine.h"
 
 class DelayGraph : public juce::Timer
 {

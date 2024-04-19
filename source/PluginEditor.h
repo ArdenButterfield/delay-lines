@@ -1,10 +1,10 @@
 #pragma once
 
 #include "BinaryData.h"
+#include "EditorComponents/PlaygroundView.h"
+#include "EditorComponents/PresetBrowser.h"
 #include "PlaygroundController.h"
-#include "PlaygroundView.h"
 #include "PluginProcessor.h"
-#include "PresetBrowser.h"
 
 #include "melatonin_inspector/melatonin_inspector.h"
 #include "juce_audio_processors/juce_audio_processors.h"

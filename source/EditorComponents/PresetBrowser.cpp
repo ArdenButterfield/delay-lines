@@ -6,7 +6,7 @@
 
 
 PresetBrowser::PresetBrowser(DelayGraph& dg) : delayGraph(dg), presets(juce::parseXML(
-#include "presets/defaults.xml"
+#include "../presets/defaults.xml"
 ))
 {
     addAndMakeVisible(presetMenu);

@@ -7,8 +7,8 @@
 
 #include "juce_gui_basics/juce_gui_basics.h"
 
-#include "DelayGraph.h"
-#include "GraphLine.h"
+#include "../DelayGraph.h"
+#include "../Line/GraphLine.h"
 
 class LengthEditor : public juce::Component, public juce::Timer, public juce::ComboBox::Listener, public juce::Slider::Listener
 {

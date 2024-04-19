@@ -6,7 +6,7 @@
 #define DELAYLINES_GRAPHLINE_H
 
 #include "GraphLineParameters.h"
-#include "GraphPoint.h"
+#include "../GraphPoint.h"
 #include "DelayLineInternal.h"
 
 #include "juce_dsp/juce_dsp.h"

@@ -238,7 +238,6 @@ TEST_CASE("send audio", "[sendaudio]")
         delayGraph.processSample(sample);
     }
 
-    std::cout << "send audio result: " << sample[0] << " " << sample[1] << "\n";
     REQUIRE((juce::approximatelyEqual(sample[0], 1.f) && juce::approximatelyEqual(sample[1], 1.f)));
 }
 

@@ -4,7 +4,7 @@
 
 #include "GraphLine.h"
 #include "juce_core/juce_core.h"
-#include "DelayGraph.h"
+#include "../DelayGraph.h"
 
 GraphLine::GraphLine(GraphPoint* _start, GraphPoint* _end, const int& id)
     : start(_start), end(_end), identifier(id)
