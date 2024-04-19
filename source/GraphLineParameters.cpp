@@ -27,8 +27,6 @@ bool DelayLength::importFromXml (juce::XmlElement* parent)
     if (delayLength) {
         mode = static_cast<Mode>(delayLength->getIntAttribute("mode", 2));
         samplesLength = delayLength->getDoubleAttribute("samples", samplesLength);
-        std::cout << "imported samples length from xml: " << samplesLength << "\n";
-        std::cout << "imported mode from xml: " << mode << "\n";
         millisecondsLength = delayLength->getDoubleAttribute("milliseconds", millisecondsLength);
         hertz = delayLength->getDoubleAttribute("hertz", hertz);
         midiNote = delayLength->getDoubleAttribute("pitch", midiNote);

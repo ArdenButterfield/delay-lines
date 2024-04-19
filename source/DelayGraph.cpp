@@ -186,26 +186,34 @@ void DelayGraph::prepareToPlay (juce::dsp::ProcessSpec& spec)
 void DelayGraph::processSample (std::vector<float>& sample)
 {
     criticalSection.enter();
-    for (auto& point : points) {
-        std::fill(point->samples.begin(), point->samples.end(), 0);
-    }
 
+    // FLOOD
     for (unsigned channel = 0; channel < processSpec->numChannels; ++channel) {
         for (auto point : realGlobalInputs) {
             point->samples[channel] += sample[channel];
         }
     }
 
+    // POP
+    for (auto& line : lines) {
+        line->popSample();
+    }
+
+    // RETURN
+    for (unsigned channel = 0; channel < processSpec->numChannels; ++channel) {
+        sample[channel] = endPoint->samples[channel];
+    }
+
+    // PUSH
     for (auto& line : lines) {
         line->pushSample(line->start->samples);
     }
 
-    for (auto& line : lines) {
-        line->popSample();
+    // CLEAR
+    for (auto& point : points) {
+        std::fill(point->samples.begin(), point->samples.end(), 0);
     }
-    for (unsigned channel = 0; channel < processSpec->numChannels; ++channel) {
-        sample[channel] = endPoint->samples[channel];
-    }
+
     criticalSection.exit();
 }
 
@@ -312,7 +320,6 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
         return false;
     }
 
-    std::cout << "attempting to import points\n";
     std::vector<GraphPoint*> pointsToDelete;
     for (auto& point : points) {
         if (!point->importFromXml(pointsElement)) {
@@ -320,11 +327,9 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
         }
     }
     for (auto point : pointsToDelete) {
-        std::cout << "delete point\n";
         deletePoint(point);
     }
 
-    std::cout << "making new points as needed\n";
     for (int i = 0; i < pointsElement->getNumChildElements(); ++i) {
         auto p = pointsElement->getChildElement(i);
         if (!getPoint(p->getIntAttribute("id"))) {
@@ -333,7 +338,6 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
     }
 
     std::vector<GraphLine*> linesToDelete;
-    std::cout << "attempting to import to lines\n";
 
     for (auto& line : lines) {
         if (!line->importFromXml(this, linesElement)) {
@@ -342,11 +346,9 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
     }
 
     for (auto line : linesToDelete) {
-        std::cout << "delete line\n";
         deleteLine(line);
     }
 
-    std::cout << "making new lines as needed\n";
     for (int i = 0; i < linesElement->getNumChildElements(); ++i) {
         auto l = linesElement->getChildElement(i);
         if (!getLine(l->getIntAttribute("id"))) {
@@ -355,6 +357,5 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
             lines.push_back(std::make_unique<GraphLine>(start, end, l));
         }
     }
-    std::cout << "done\n";
     return true;
 }

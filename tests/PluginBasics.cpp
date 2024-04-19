@@ -243,6 +243,22 @@ TEST_CASE("send audio", "[sendaudio]")
     REQUIRE((juce::approximatelyEqual(sample[0], 1.f) && juce::approximatelyEqual(sample[1], 1.f)));
 }
 
+TEST_CASE("delay line internal", "[delayinternal]")
+{
+    auto d = DelayLineInternal({44100, 512, 2}, 4, 100, nullptr);
+    auto sample = std::vector<float>(2);
+    for (auto i = 0; i < 10; ++i) {
+        sample[0] = 1;
+        sample[1] = 1;
+        d.pushSample(sample);
+        sample[0] = 0;
+        sample[1] = 0;
+        d.popSample(sample);
+    }
+    REQUIRE(juce::approximatelyEqual(sample[0], 1.0f));
+    REQUIRE(juce::approximatelyEqual(sample[1], 1.0f));
+}
+
 
 TEST_CASE("global inputs", "[globalinputs]")
 {
@@ -281,12 +297,24 @@ TEST_CASE("global inputs", "[globalinputs]")
 
     delayGraph.setRealOutputs();
 
+    auto start = delayGraph.startPoint;
+    auto end = delayGraph.endPoint;
+    auto middle = delayGraph.getPoint(4);
+
     for (auto& line : delayGraph.getLines()) {
         REQUIRE(line->realOutputs.size() == 1);
         if (line->identifier == 1) {
             REQUIRE((*line->realOutputs.begin())->identifier == 4);
+            REQUIRE(line->end->identifier == 4);
+            REQUIRE(line->start->identifier == 1);
+            REQUIRE(line->start == start);
+            REQUIRE(line->end == middle);
         } else if (line->identifier == 2) {
             REQUIRE((*line->realOutputs.begin())->identifier == 2);
+            REQUIRE(line->start->identifier == 4);
+            REQUIRE(line->end->identifier == 2);
+            REQUIRE(line->start == middle);
+            REQUIRE(line->end == end);
         }
     }
 
@@ -295,7 +323,6 @@ TEST_CASE("global inputs", "[globalinputs]")
     spec.maximumBlockSize = 512;
     spec.numChannels = 2;
     delayGraph.prepareToPlay(spec);
-    delayGraph.setRealOutputs();
     auto sample = std::vector<float>(2);
 
     for (int i = 0; i < 10; ++i) {

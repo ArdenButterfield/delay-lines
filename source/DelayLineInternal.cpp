@@ -45,10 +45,10 @@ void DelayLineInternal::popSample (std::vector<float>& sample)
 {
     auto l = length.getNextValue();
 
+
     if (modOscillator) {
         l *= modOscillator->tick();
     }
-
     for (unsigned i = 0; i < spec.numChannels; ++i) {
         sample[i] = delayLine.popSample(static_cast<int>(i), l, true);
         envelopeDelayLine.popSample(static_cast<int>(i), l, true);

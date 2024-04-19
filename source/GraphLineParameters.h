@@ -23,7 +23,6 @@ struct DelayLength {
 
 
     float getLengthInSamples(float samplerate, float bpm) {
-        std::cout << "get length " << samplesLength << " " << mode << "\n";
         switch (mode)
         {
             case ms:
