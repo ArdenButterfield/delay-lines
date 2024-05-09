@@ -7,16 +7,20 @@ PluginEditor::PluginEditor (PluginProcessor& p)
       presetBrowser(p.delayGraph),
       processorRef (p),
       printXmlButton("Print XML"),
-      mixAttachment(p.getValueTreeState(), "mix", mixSlider)
+      modulatorOverlayButton("Modulator Overlay")
 {
     playgroundView.addMouseListener(&playgroundController, false);
 
+    modulatorOverlay = std::make_unique<ModulatorOverlay>(playgroundView);
     printXmlButton.addListener(this);
+    modulatorOverlayButton.addListener(this);
 
     addAndMakeVisible(playgroundView);
     addAndMakeVisible(mixSlider);
     addAndMakeVisible(presetBrowser);
     addAndMakeVisible(printXmlButton);
+    addAndMakeVisible(modulatorOverlayButton);
+    addAndMakeVisible(modulatorOverlay.get());
 
     setResizable(true, true);
 
@@ -43,12 +47,16 @@ void PluginEditor::resized()
     mixSlider.setBounds(getLocalBounds().withTop(playgroundView.getBottom() + 10));
     printXmlButton.setBounds(10,10, 100, 30);
     presetBrowser.setBounds(150, 10, 200, 60);
+    modulatorOverlayButton.setBounds(360, 10, 100, 30);
+    modulatorOverlay->setBounds(playgroundView.getBounds());
 }
 
 void PluginEditor::buttonClicked (juce::Button* button)
 {
     if (button == &printXmlButton) {
         processorRef.printXml();
+    } else if (button == &modulatorOverlayButton) {
+        modulatorOverlay->setVisible(!modulatorOverlay->isVisible());
     }
 }
 void PluginEditor::buttonStateChanged (juce::Button*)

@@ -59,3 +59,14 @@ bool GraphPoint::importFromXml (juce::XmlElement* parent)
         return false;
     }
 }
+bool GraphPoint::modulateIfPossible (ModulatableKey& key, float newValue)
+{
+    if (key.parameterId == juce::Identifier("x")) {
+        this->x = newValue;
+        return true;
+    } else if (key.parameterId == juce::Identifier("y")) {
+        this->y = newValue;
+        return true;
+    }
+    return false;
+}

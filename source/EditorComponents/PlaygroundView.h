@@ -17,6 +17,7 @@ public:
     ~PlaygroundView() override = default;
     void resized() override;
     void paint(juce::Graphics &g) override;
+    const std::unique_ptr<LineEditor>* getLineEditor();
 private:
     void makeLineEditorIfNeeded();
     void timerCallback() override;

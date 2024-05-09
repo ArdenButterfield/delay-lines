@@ -94,7 +94,7 @@ void GraphLine::popSample ()
     for (unsigned channel = 0; channel < numChannels; ++channel) {
 
         auto s = val[channel] * gainVal;
-        s = parameters.distortion ? distortSample(s) : s;
+        s = parameters.distortion > 0 ? distortSample(s) : s;
         s *= parameters.invert ? -1 : 1;
 
         s = parameters.loCut > 5 ? loCutFilters[channel].processSingleSampleRaw(s) : s;
@@ -251,3 +251,7 @@ bool GraphLine::importFromXml (DelayGraph* dg, juce::XmlElement* parent)
     return false;
 }
 
+bool GraphLine::modulateIfPossible (ModulatableKey& key, float newValue)
+{
+    return parameters.modulateIfPossible(key, newValue);
+}

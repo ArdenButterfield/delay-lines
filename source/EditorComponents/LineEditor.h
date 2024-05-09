@@ -22,19 +22,6 @@ public:
     void mouseDrag(const juce::MouseEvent &event) override;
     void mouseUp(const juce::MouseEvent &event) override;
 
-private:
-    juce::ComponentDragger dragger;
-
-    void sliderValueChanged(juce::Slider* slider) override;
-    void buttonStateChanged(juce::Button *) override;
-    void buttonClicked(juce::Button *) override;
-
-
-    void timerCallback() override;
-
-    DelayGraph& delayGraph;
-    const int& graphLine;
-
     juce::ToggleButton bypassButton;
     juce::ToggleButton muteButton;
 
@@ -54,8 +41,23 @@ private:
 
     juce::Slider feedbackSlider;
 
+private:
     juce::Rectangle<int> topBar;
     juce::Rectangle<int> mainSection;
+
+
+    juce::ComponentDragger dragger;
+
+    void sliderValueChanged(juce::Slider* slider) override;
+    void buttonStateChanged(juce::Button *) override;
+    void buttonClicked(juce::Button *) override;
+
+
+    void timerCallback() override;
+
+    DelayGraph& delayGraph;
+    const int& graphLine;
+
     std::array<juce::Rectangle<int>, 3> panels;
 
     bool dragging;

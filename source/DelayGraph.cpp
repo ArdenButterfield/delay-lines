@@ -372,3 +372,21 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
     setRealOutputs();
     return true;
 }
+
+bool DelayGraph::modulateIfPossible (ModulatableKey& key, float newValue)
+{
+    if (key.type == ModulatableKey::Type::point) {
+        for (auto& point : points) {
+            if (point->identifier == key.pointOrLineId) {
+                return point->modulateIfPossible(key, newValue);
+            }
+        }
+    } else if (key.type == ModulatableKey::Type::line) {
+        for (auto& line : lines) {
+            if (line->identifier == key.pointOrLineId) {
+                return line->modulateIfPossible(key, newValue);
+            }
+        }
+    }
+    return false;
+}

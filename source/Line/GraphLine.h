@@ -7,6 +7,7 @@
 
 #include "GraphLineParameters.h"
 #include "../GraphPoint.h"
+#include "../Modulation/ModulatableKey.h"
 #include "DelayLineInternal.h"
 
 #include "juce_dsp/juce_dsp.h"
@@ -60,6 +61,7 @@ public:
 
     void exportToXml(juce::XmlElement* parent);
     bool importFromXml(DelayGraph* dg, juce::XmlElement* parent);
+    bool modulateIfPossible(ModulatableKey& key, float newValue);
 private:
     std::unique_ptr<DelayLineInternal> delayLineInternal;
 

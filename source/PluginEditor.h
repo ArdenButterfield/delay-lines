@@ -3,6 +3,8 @@
 #include "BinaryData.h"
 #include "EditorComponents/PlaygroundView.h"
 #include "EditorComponents/PresetBrowser.h"
+#include "EditorComponents/ModulatorOverlay.h"
+
 #include "PlaygroundController.h"
 #include "PluginProcessor.h"
 
@@ -22,6 +24,7 @@ public:
 
     juce::TextButton printXmlButton;
 private:
+    std::unique_ptr<ModulatorOverlay> modulatorOverlay;
     PresetBrowser presetBrowser;
     PlaygroundController playgroundController;
     PlaygroundView playgroundView;
@@ -34,8 +37,8 @@ private:
     PluginProcessor& processorRef;
     std::unique_ptr<melatonin::Inspector> inspector;
     juce::TextButton inspectButton { "Inspect the UI" };
+    juce::TextButton modulatorOverlayButton { "mod overlay" };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
 
     juce::Slider mixSlider;
-    const juce::AudioProcessorValueTreeState::SliderAttachment mixAttachment;
 };

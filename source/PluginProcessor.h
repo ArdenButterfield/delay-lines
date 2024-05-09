@@ -4,12 +4,14 @@
 #include <juce_dsp/juce_dsp.h>
 
 #include "DelayGraph.h"
+#include "Modulation/ModulationEngine.h"
 
 #if (MSVC)
 #include "ipps.h"
 #endif
 
-class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
+
+class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorParameter::Listener
 {
 public:
     PluginProcessor();
@@ -42,17 +44,19 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     DelayGraph delayGraph;
-
-    juce::AudioProcessorValueTreeState& getValueTreeState();
+    ModulationEngine modulationEngine;
 
     void printXml();
 private:
     bool parametersNeedUpdating;
     void updateParameters();
-    void parameterChanged(const juce::String &parameterID, float newValue) override;
+    void parameterValueChanged(int parameterIndex, float newValue) override;
+    void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {
+        juce::ignoreUnused(parameterIndex);
+        juce::ignoreUnused(gestureIsStarting);
+    }
 
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> mix;
-    juce::AudioProcessorValueTreeState parameters;
-
+    juce::AudioParameterFloat mixParameter;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

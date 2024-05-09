@@ -4,7 +4,8 @@
 
 #include "LineEditor.h"
 
-LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line) : delayGraph(_delayGraph), graphLine(_line), lengthEditor(_delayGraph, _line)
+LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
+    : lengthEditor(_delayGraph, _line), delayGraph(_delayGraph), graphLine(_line), dragging(false)
 {
     timeEnvelopeFollowSlider.setRange(-1, 1);
 
@@ -178,6 +179,7 @@ void LineEditor::mouseDrag (const juce::MouseEvent& event)
 
 void LineEditor::mouseUp (const juce::MouseEvent& event)
 {
+    juce::ignoreUnused(event);
     dragging = false;
 }
 

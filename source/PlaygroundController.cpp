@@ -10,10 +10,14 @@ void PlaygroundController::mouseMove (const juce::MouseEvent& event)
 }
 
 void PlaygroundController::mouseEnter (const juce::MouseEvent& event)
-{}
+{
+    juce::ignoreUnused(event);
+}
 
 void PlaygroundController::mouseExit (const juce::MouseEvent& event)
-{}
+{
+    juce::ignoreUnused(event);
+}
 
 void PlaygroundController::mouseDown (const juce::MouseEvent& event)
 {
@@ -41,6 +45,12 @@ void PlaygroundController::mouseDown (const juce::MouseEvent& event)
                 delayGraph.lineInProgressEndPoint = nullptr;
             }
             break;
+        case DelayGraph::none:
+        case DelayGraph::stretchingPoint:
+        case DelayGraph::movingPoint:
+        case DelayGraph::creatingLine:
+        case DelayGraph::editingLine:
+        case DelayGraph::lineHover:
         default: break;
     }
 }
@@ -56,24 +66,28 @@ void PlaygroundController::mouseDrag (const juce::MouseEvent& event)
             delayGraph.lineInProgressEnd = event.position;
             delayGraph.lineInProgressEndPoint = nullptr;
             for (const auto& point : delayGraph.getPoints()) {
-                if  ((point.get() != delayGraph.activePoint) && (point->getDistanceSquaredFrom(delayGraph.lineInProgressEnd) < outerHoverDistance * outerHoverDistance)) {
+                if  ((point.get() != delayGraph.activePoint) && (point->getDistanceSquaredFrom(delayGraph.lineInProgressEnd) < static_cast<float>(outerHoverDistance * outerHoverDistance))) {
                     delayGraph.lineInProgressEndPoint = point.get();
                 }
             }
             break;
         case DelayGraph::movingPoint:
         case DelayGraph::stretchingPoint:
-            delayGraph.activePoint->offset = event.position - *delayGraph.activePoint;
+            delayGraph.activePoint->offset = event.position - juce::Point<float>(delayGraph.activePoint->x, delayGraph.activePoint->y);
             break;
-        default:
-            break;
+        case DelayGraph::none:
+        case DelayGraph::editingLine:
+        case DelayGraph::innerSelected:
+        case DelayGraph::outerSelected:
+        case DelayGraph::lineHover:
+        default: break;
     }
 
     if (delayGraph.interactionState == DelayGraph::creatingLine) {
         delayGraph.lineInProgressEnd = event.position;
         delayGraph.lineInProgressEndPoint = nullptr;
         for (const auto& point : delayGraph.getPoints()) {
-            if ((point.get() != delayGraph.activePoint) && (point->getDistanceSquaredFrom(delayGraph.lineInProgressEnd) < outerHoverDistance * outerHoverDistance)) {
+            if ((point.get() != delayGraph.activePoint) && (point->getDistanceSquaredFrom(delayGraph.lineInProgressEnd) < static_cast<float>(outerHoverDistance * outerHoverDistance))) {
                 delayGraph.lineInProgressEndPoint = point.get();
             }
         }
@@ -120,6 +134,7 @@ void PlaygroundController::mouseUp (const juce::MouseEvent& event)
             delayGraph.interactionState = DelayGraph::none;
             delayGraph.bakeOffsets();
             break;
+        case DelayGraph::outerSelected:
         default: break;
     }
 
@@ -128,6 +143,7 @@ void PlaygroundController::mouseUp (const juce::MouseEvent& event)
 
 void PlaygroundController::mouseDoubleClick (const juce::MouseEvent& event)
 {
+    juce::ignoreUnused(event);
     switch (delayGraph.interactionState) {
         case DelayGraph::innerSelected:
             if (delayGraph.activePoint->pointType == GraphPoint::inner) {
@@ -139,6 +155,11 @@ void PlaygroundController::mouseDoubleClick (const juce::MouseEvent& event)
             delayGraph.deleteLine(delayGraph.activeLine);
             delayGraph.interactionState = DelayGraph::none;
             break;
+        case DelayGraph::none:
+        case DelayGraph::outerSelected:
+        case DelayGraph::movingPoint:
+        case DelayGraph::stretchingPoint:
+        case DelayGraph::creatingLine:
         default: break;
     }
 }
@@ -151,7 +172,7 @@ void PlaygroundController::setHoveredPoint (const juce::Point<float>& mousePoint
     GraphPoint* closestPoint = nullptr;
     auto squareDistance = outerHoverDistance * outerHoverDistance;
     for (const auto& point : delayGraph.getPoints()) {
-        auto dist = point->getDistanceSquaredFrom(mousePoint);
+        int dist = static_cast<int>(point->getDistanceSquaredFrom(mousePoint));
         if (dist < squareDistance) {
             squareDistance = dist;
             closestPoint = point.get();
@@ -169,7 +190,7 @@ void PlaygroundController::setHoveredPoint (const juce::Point<float>& mousePoint
     for (auto& line : delayGraph.getLines()) {
         auto l = juce::Line<float>(*line->start, *line->end);
         auto pointOnLine = juce::Point<float>();
-        if (l.getDistanceFromPoint(mousePoint, pointOnLine) < lineHoverDistance) {
+        if (l.getDistanceFromPoint(mousePoint, pointOnLine) < static_cast<float>(lineHoverDistance)) {
             delayGraph.activeLine = line.get();
             delayGraph.interactionState = DelayGraph::lineHover;
             return;

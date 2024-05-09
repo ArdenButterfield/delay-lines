@@ -139,3 +139,7 @@ void PlaygroundView::makeLineEditorIfNeeded()
         delete ed;
     }
 }
+const std::unique_ptr<LineEditor>* PlaygroundView::getLineEditor()
+{
+    return &lineEditor;
+}

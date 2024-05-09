@@ -69,3 +69,14 @@ bool Parameters::importFromXml (juce::XmlElement* parent)
     }
     return false;
 }
+
+bool Parameters::modulateIfPossible (ModulatableKey& key, float newValue)
+{
+    for (auto param : params) {
+        if (key.parameterId == juce::Identifier(param->getParameterID())) {
+            param->setValue(newValue);
+            return true;
+        }
+    }
+    return false;
+}

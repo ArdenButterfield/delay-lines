@@ -8,6 +8,8 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "juce_dsp/juce_dsp.h"
 
+#include "Modulation/ModulatableKey.h"
+
 class GraphPoint : public juce::Point<float>, juce::Timer {
 public:
     enum PointType {
@@ -36,6 +38,8 @@ public:
 
     void exportToXml(juce::XmlElement* parent);
     bool importFromXml(juce::XmlElement* parent);
+
+    bool modulateIfPossible(ModulatableKey& key, float newValue);
 };
 
 #endif //DELAYLINES_GRAPHPOINT_H

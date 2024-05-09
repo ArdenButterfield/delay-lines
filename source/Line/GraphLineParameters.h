@@ -7,6 +7,7 @@
 
 #endif //DELAYLINES_GRAPHLINEPARAMETERS_H
 
+#include "../Modulation/ModulatableKey.h"
 #include "juce_audio_processors/juce_audio_processors.h"
 
 struct DelayLength {
@@ -35,6 +36,7 @@ struct DelayLength {
                 return samplerate / static_cast<float>(juce::MidiMessage::getMidiNoteInHertz(static_cast<int>(std::round(midiNote))));
             case beat:
                 return (std::round(beatLength[0]) / std::round(beatLength[1])) * 60 * samplerate / bpm;
+            default: return 0;
         }
     }
 
@@ -186,6 +188,8 @@ struct Parameters {
         &gainEnvelopeFollow,
         &feedback
     };
+
+    bool modulateIfPossible(ModulatableKey& key, float newValue);
 
     void exportToXml(juce::XmlElement* parent);
     bool importFromXml(juce::XmlElement* parent);

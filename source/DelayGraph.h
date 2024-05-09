@@ -12,6 +12,7 @@
 
 #include "GraphPoint.h"
 #include "Line/GraphLine.h"
+#include "Modulation/ModulatableKey.h"
 
 class DelayGraph : public juce::Timer
 {
@@ -24,6 +25,8 @@ public:
     const std::vector<std::unique_ptr<GraphPoint>>& getPoints();
     void addLine(GraphPoint* start, GraphPoint* end);
     std::vector<std::unique_ptr<GraphLine>>& getLines();
+
+    bool modulateIfPossible(ModulatableKey& key, float newValue);
 
     enum InteractionState {
         none = 0,
