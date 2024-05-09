@@ -10,20 +10,16 @@ PluginProcessor::PluginProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
-        modulationEngine(10, delayGraph),
-        mixParameter(juce::ParameterID {"mix", 1}, "mix", 0.f, 100.f, 50.f)
+        modulationEngine(10, delayGraph)
 {
-    mixParameter.addListener(this);
-    addParameter(&mixParameter);
+    auto mixParameter = new juce::AudioParameterFloat(juce::ParameterID {"mix", 1}, "mix", 0.f, 100.f, 50.f);
+    mixParameter->addListener(this);
+    addParameter(mixParameter);
     parametersNeedUpdating = true;
-    for (auto& param : modulationEngine.getParameters()) {
-        addParameter(param.get());
-    }
 }
 
 PluginProcessor::~PluginProcessor()
 {
-    mixParameter.removeListener(this);
 }
 
 //==============================================================================
@@ -132,7 +128,7 @@ bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void PluginProcessor::updateParameters()
 {
     parametersNeedUpdating = false;
-    mix.setCurrentAndTargetValue(mixParameter * 0.01);
+    mix.setCurrentAndTargetValue(*mixParameter * 0.01);
 }
 
 void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,

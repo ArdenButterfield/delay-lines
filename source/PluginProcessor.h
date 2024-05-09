@@ -57,6 +57,6 @@ private:
     }
 
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> mix;
-    juce::AudioParameterFloat mixParameter;
+    juce::AudioParameterFloat* mixParameter;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
