@@ -1,6 +1,35 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include "parameters.h"
+
+juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
+{
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {MIX_PARAM_ID, 1},
+        "mix",
+        0.f, 100.f, 50.f));
+    for (auto i = 0; i < NUM_MOD_PARAMETERS; ++i) {
+        parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+            juce::ParameterID{MOD_PARAM_PREFIX + juce::String(i), 1},
+            MOD_PARAM_PREFIX_NAME + juce::String(i + 1),
+            0.f, 1.f, 0.f
+            ));
+    }
+    return {parameters.begin(), parameters.end()};
+}
+
+std::vector<juce::String> makeModulationIds() {
+    auto v = std::vector<juce::String>();
+
+    for (auto i = 0; i < NUM_MOD_PARAMETERS; ++i) {
+        v.push_back(MOD_PARAM_PREFIX + juce::String(i));
+    }
+    return v;
+}
+
 PluginProcessor::PluginProcessor()
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -10,11 +39,10 @@ PluginProcessor::PluginProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
-        modulationEngine(10, delayGraph)
+      parameters(*this, nullptr, juce::Identifier("DELAY LINE PARAMETERS"), makeParameters()),
+        modulationEngine(parameters, makeModulationIds(), delayGraph)
 {
-    auto mixParameter = new juce::AudioParameterFloat(juce::ParameterID {"mix", 1}, "mix", 0.f, 100.f, 50.f);
-    mixParameter->addListener(this);
-    addParameter(mixParameter);
+    parameters.addParameterListener("mix", this);
     parametersNeedUpdating = true;
 }
 
@@ -128,8 +156,7 @@ bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void PluginProcessor::updateParameters()
 {
     parametersNeedUpdating = false;
-    mix.setCurrentAndTargetValue(*mixParameter * 0.01);
-}
+    mix.setCurrentAndTargetValue(((juce::AudioParameterFloat*)parameters.getParameter("mix"))->get() * 0.01);}
 
 void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                               juce::MidiBuffer& midiMessages)
@@ -215,9 +242,13 @@ void PluginProcessor::printXml()
     delayGraph.exportToXml(&xml);
     std::cout << xml.toString();
 }
-void PluginProcessor::parameterValueChanged (int parameterIndex, float newValue)
+juce::AudioProcessorValueTreeState& PluginProcessor::getValueTreeState()
 {
-    juce::ignoreUnused(parameterIndex);
-    juce::ignoreUnused(newValue);
-    parametersNeedUpdating = true;
+    return parameters;
+}
+void PluginProcessor::parameterChanged (const juce::String& parameterID, float newValue)
+{
+    if (parameterID == "mix") {
+
+    }
 }

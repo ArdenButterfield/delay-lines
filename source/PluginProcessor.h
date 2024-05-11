@@ -11,7 +11,7 @@
 #endif
 
 
-class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorParameter::Listener
+class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     PluginProcessor();
@@ -47,16 +47,13 @@ public:
     ModulationEngine modulationEngine;
 
     void printXml();
+
+    juce::AudioProcessorValueTreeState& getValueTreeState();
 private:
     bool parametersNeedUpdating;
     void updateParameters();
-    void parameterValueChanged(int parameterIndex, float newValue) override;
-    void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {
-        juce::ignoreUnused(parameterIndex);
-        juce::ignoreUnused(gestureIsStarting);
-    }
-
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> mix;
-    juce::AudioParameterFloat* mixParameter;
+    juce::AudioProcessorValueTreeState parameters;
+    void parameterChanged (const juce::String &parameterID, float newValue) override;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

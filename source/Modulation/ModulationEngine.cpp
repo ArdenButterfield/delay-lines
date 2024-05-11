@@ -4,17 +4,15 @@
 
 #include "ModulationEngine.h"
 
-ModulationEngine::ModulationEngine(unsigned int numParameters, DelayGraph& dg) : delayGraph(dg)
+ModulationEngine::ModulationEngine(juce::AudioProcessorValueTreeState& _treeState, std::vector<juce::String> _paramIds, DelayGraph& _delayGraph)
+    : treeState(_treeState),
+      paramIds(_paramIds),
+      delayGraph(_delayGraph)
 {
-    for (unsigned i = 0; i < numParameters; ++i) {
-        parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-            juce::ParameterID("mod" + juce::String(i + 1), 1),
-            "Mod " + juce::String(i + 1),
-            0.f,
-            1.f,
-            0.f));
+    for (auto& paramId : paramIds) {
+        treeState.addParameterListener(paramId, this);
     }
-    mappings.resize(numParameters);
+    mappings.resize(paramIds.size());
 }
 
 ModulationEngine::~ModulationEngine()
@@ -22,31 +20,28 @@ ModulationEngine::~ModulationEngine()
 
 }
 
-std::vector<std::unique_ptr<juce::AudioParameterFloat>>& ModulationEngine::getParameters()
+void ModulationEngine::parameterChanged(const juce::String &parameterID, float newValue)
 {
-    return parameters;
-}
-
-void ModulationEngine::parameterValueChanged (int parameterIndex, float newValue)
-{
-    for (unsigned i = 0; i < parameters.size(); ++i) {
-        if (mappings[i] && parameters[i]->getParameterIndex() == parameterIndex) {
+    for (unsigned i = 0; i < paramIds.size(); ++i) {
+        if (mappings[i] && paramIds[i] == parameterID) {
             delayGraph.modulateIfPossible(*mappings[i], newValue);
-            return;
         }
     }
 }
 
 void ModulationEngine::setParameterValue (unsigned int index, float value)
 {
-    parameters[index]->beginChangeGesture();
-    *parameters[index] = value;
-    parameters[index]->endChangeGesture();
+    auto p = treeState.getParameter(paramIds[index]);
+
+    p->beginChangeGesture();
+    p->setValue(value);
+    p->endChangeGesture();
 }
 
 float ModulationEngine::getParameterValue (unsigned int index)
 {
-    return parameters[index]->get();
+    auto p = treeState.getParameter(paramIds[index]);
+    return p->getValue();
 }
 
 void ModulationEngine::setMapping (unsigned int index, ModulatableKey key)

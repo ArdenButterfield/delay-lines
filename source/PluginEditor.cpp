@@ -22,7 +22,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(modulatorOverlayButton);
     addAndMakeVisible(modulatorOverlay.get());
 
-    setResizable(true, true);
+//    setResizable(true, true);
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
