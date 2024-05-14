@@ -18,6 +18,7 @@ TEST_CASE ("Plugin instance", "[instance]")
     // You'll also need it for tests that rely on juce::Graphics, juce::Timer, etc.
     auto gui = juce::ScopedJuceInitialiser_GUI {};
 
+    std::cout << "construct plugin\n";
     PluginProcessor testPlugin;
 
 
@@ -26,6 +27,7 @@ TEST_CASE ("Plugin instance", "[instance]")
         CHECK_THAT (testPlugin.getName().toStdString(),
             Catch::Matchers::Equals ("Delay Lines"));
     }
+    std::cout << "end of test\n";
 }
 
 TEST_CASE("Basic xml export", "[xmlbasic]")
