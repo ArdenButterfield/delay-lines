@@ -42,16 +42,13 @@ PluginProcessor::PluginProcessor()
       parameters(*this, nullptr, juce::Identifier("DELAY LINE PARAMETERS"), makeParameters()),
         modulationEngine(parameters, makeModulationIds(), delayGraph)
 {
-    std::cout << "start plugin constructor\n";
     parameters.addParameterListener("mix", this);
     parametersNeedUpdating = true;
-    std::cout << "end plugin constructor\n";
 
 }
 
 PluginProcessor::~PluginProcessor()
 {
-    std::cout << "plugin destructor\n";
 
 }
 

@@ -9,24 +9,20 @@ ModulationEngine::ModulationEngine(juce::AudioProcessorValueTreeState& _treeStat
       paramIds(_paramIds),
       delayGraph(_delayGraph)
 {
-    std::cout << "start mod engine constructor\n";
 
     for (auto& paramId : paramIds) {
         treeState.addParameterListener(paramId, this);
     }
     mappings.resize(paramIds.size());
-    std::cout << "end mod engine constructor\n";
 
 }
 
 ModulationEngine::~ModulationEngine()
 {
-    std::cout << "start mod engine destructor\n";
 
     for (auto& paramId : paramIds) {
         treeState.removeParameterListener(paramId, this);
     }
-    std::cout << "start mod engine destructor\n";
 
 }
 
