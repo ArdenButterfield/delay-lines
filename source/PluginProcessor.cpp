@@ -11,10 +11,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
         juce::ParameterID {MIX_PARAM_ID, 1},
         "mix",
         0.f, 100.f, 50.f));
-    for (auto i = 0; i < NUM_MOD_PARAMETERS; ++i) {
+    for (unsigned i = 0; i < NUM_MOD_PARAMETERS; ++i) {
         parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-            juce::ParameterID{MOD_PARAM_PREFIX + juce::String(i), 1},
-            MOD_PARAM_PREFIX_NAME + juce::String(i + 1),
+            juce::ParameterID{ makeModParamId(i), 1},
+            makeModParamName(i),
             0.f, 1.f, 0.f
             ));
     }
@@ -24,8 +24,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
 std::vector<juce::String> makeModulationIds() {
     auto v = std::vector<juce::String>();
 
-    for (auto i = 0; i < NUM_MOD_PARAMETERS; ++i) {
-        v.push_back(MOD_PARAM_PREFIX + juce::String(i));
+    for (unsigned i = 0; i < NUM_MOD_PARAMETERS; ++i) {
+        v.push_back(makeModParamId(i));
     }
     return v;
 }

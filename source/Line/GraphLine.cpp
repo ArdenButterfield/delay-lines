@@ -22,14 +22,15 @@ GraphLine::GraphLine (GraphPoint* _start, GraphPoint* _end, juce::XmlElement* el
 
 void GraphLine::prepareToPlay (juce::dsp::ProcessSpec& spec)
 {
+    numChannels = spec.numChannels;
+    sampleRate = spec.sampleRate;
+
     auto targetLength = parameters.length.getLengthInSamples(sampleRate, 120);
     modOscillator = std::make_unique<ModOscillator>(spec, parameters.modRate.get(), parameters.modDepth.get());
     delayLineInternal = std::make_unique<DelayLineInternal>(spec, targetLength, spec.sampleRate * 5, modOscillator.get());
 
     gain.setCurrentAndTargetValue(parameters.gain);
 
-    numChannels = spec.numChannels;
-    sampleRate = spec.sampleRate;
 
 
     hiCutFilters.resize(numChannels);
