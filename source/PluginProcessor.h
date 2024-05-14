@@ -44,16 +44,16 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     DelayGraph delayGraph;
+    juce::AudioProcessorValueTreeState parameters;
+
     ModulationEngine modulationEngine;
 
     void printXml();
-
     juce::AudioProcessorValueTreeState& getValueTreeState();
 private:
     bool parametersNeedUpdating;
     void updateParameters();
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> mix;
-    juce::AudioProcessorValueTreeState parameters;
     void parameterChanged (const juce::String &parameterID, float newValue) override;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
