@@ -44,10 +44,12 @@ PluginProcessor::PluginProcessor()
 {
     parameters.addParameterListener("mix", this);
     parametersNeedUpdating = true;
+
 }
 
 PluginProcessor::~PluginProcessor()
 {
+
 }
 
 //==============================================================================

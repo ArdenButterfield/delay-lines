@@ -83,7 +83,7 @@ TEST_CASE("Import to point constructor", "[xmlpointimportconstructor]")
                    "    </points>\n";
 
     auto xmlElement = juce::parseXML(xmlText);
-    auto p = GraphPoint(xmlElement.get()->getChildElement(0));
+    auto p = GraphPoint(xmlElement->getChildElement(0));
     REQUIRE(p.identifier == 42);
 }
 

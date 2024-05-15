@@ -9,14 +9,20 @@ ModulationEngine::ModulationEngine(juce::AudioProcessorValueTreeState& _treeStat
       paramIds(_paramIds),
       delayGraph(_delayGraph)
 {
+
     for (auto& paramId : paramIds) {
         treeState.addParameterListener(paramId, this);
     }
     mappings.resize(paramIds.size());
+
 }
 
 ModulationEngine::~ModulationEngine()
 {
+
+    for (auto& paramId : paramIds) {
+        treeState.removeParameterListener(paramId, this);
+    }
 
 }
 
