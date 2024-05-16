@@ -8,7 +8,6 @@
 #include "PlaygroundController.h"
 #include "PluginProcessor.h"
 
-#include "melatonin_inspector/melatonin_inspector.h"
 #include "juce_audio_processors/juce_audio_processors.h"
 
 //==============================================================================
