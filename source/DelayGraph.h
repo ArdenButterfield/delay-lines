@@ -40,7 +40,7 @@ public:
     };
 
     juce::Point<float> lineInProgressEnd;
-    GraphPoint* lineInProgressEndPoint;
+    GraphPoint* lineInProgressEndPoint{};
 
     GraphPoint* activePoint;
 
@@ -49,7 +49,7 @@ public:
 
     InteractionState interactionState;
 
-    GraphLine* activeLine;
+    GraphLine* activeLine{};
     void prepareToPlay(juce::dsp::ProcessSpec& spec);
     void processSample(std::vector<float>& sample);
 

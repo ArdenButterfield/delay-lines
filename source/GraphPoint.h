@@ -19,7 +19,7 @@ public:
     };
 
     explicit GraphPoint(const juce::Point<float>& p, PointType pt, const int& id);
-    GraphPoint(juce::XmlElement* element);
+    explicit GraphPoint(juce::XmlElement* element);
 
     void timerCallback() override;
 

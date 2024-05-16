@@ -23,7 +23,6 @@ ModulationEngine::~ModulationEngine()
     for (auto& paramId : paramIds) {
         treeState.removeParameterListener(paramId, this);
     }
-
 }
 
 void ModulationEngine::parameterChanged(const juce::String &parameterID, float newValue)
@@ -50,7 +49,7 @@ float ModulationEngine::getParameterValue (unsigned int index)
     return p->getValue();
 }
 
-void ModulationEngine::setMapping (unsigned int index, ModulatableKey key)
+void ModulationEngine::setMapping (unsigned int index, const ModulatableKey& key)
 {
     mappings[index] = std::make_unique<ModulatableKey>(key);
 }

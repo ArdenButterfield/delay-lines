@@ -17,7 +17,7 @@ public:
 
     float getParameterValue(unsigned int index);
     void setParameterValue(unsigned int index, float value);
-    void setMapping(unsigned int index, ModulatableKey key);
+    void setMapping(unsigned int index, const ModulatableKey& key);
     void clearMapping(unsigned int index);
     bool isMapped(unsigned int index);
     void parameterChanged(const juce::String &parameterID, float newValue) override;

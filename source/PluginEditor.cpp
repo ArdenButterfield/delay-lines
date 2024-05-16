@@ -2,11 +2,11 @@
 
 PluginEditor::PluginEditor (PluginProcessor& p)
     : AudioProcessorEditor (&p),
+      printXmlButton("Print XML"),
+      presetBrowser(p.delayGraph),
       playgroundController(p.delayGraph),
       playgroundView(p.delayGraph),
-      presetBrowser(p.delayGraph),
       processorRef (p),
-      printXmlButton("Print XML"),
       modulatorOverlayButton("Modulator Overlay")
 {
     playgroundView.addMouseListener(&playgroundController, false);
@@ -29,9 +29,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     setSize (800, 600);
 }
 
-PluginEditor::~PluginEditor()
-{
-}
+PluginEditor::~PluginEditor() = default;
 
 void PluginEditor::paint (juce::Graphics& g)
 {
