@@ -26,12 +26,12 @@ bool DelayLength::importFromXml (juce::XmlElement* parent)
     auto delayLength = parent->getChildByName("delayLength");
     if (delayLength) {
         mode = static_cast<Mode>(delayLength->getIntAttribute("mode", 2));
-        samplesLength = delayLength->getDoubleAttribute("samples", samplesLength);
-        millisecondsLength = delayLength->getDoubleAttribute("milliseconds", millisecondsLength);
-        hertz = delayLength->getDoubleAttribute("hertz", hertz);
-        midiNote = delayLength->getDoubleAttribute("pitch", midiNote);
-        beatLength[0] = delayLength->getDoubleAttribute("numerator", beatLength[0]);
-        beatLength[1] = delayLength->getDoubleAttribute("denominator", beatLength[1]);
+        samplesLength = static_cast<float>(delayLength->getDoubleAttribute("samples", samplesLength));
+        millisecondsLength = static_cast<float>(delayLength->getDoubleAttribute("milliseconds", millisecondsLength));
+        hertz = static_cast<float>(delayLength->getDoubleAttribute("hertz", hertz));
+        midiNote = static_cast<float>(delayLength->getDoubleAttribute("pitch", midiNote));
+        beatLength[0] = static_cast<float>(delayLength->getDoubleAttribute("numerator", beatLength[0]));
+        beatLength[1] = static_cast<float>(delayLength->getDoubleAttribute("denominator", beatLength[1]));
         return true;
     }
     return false;
@@ -63,7 +63,7 @@ bool Parameters::importFromXml (juce::XmlElement* parent)
         length.importFromXml(paramsXml);
 
         for (auto parameter : params) {
-            parameter->setValueNotifyingHost(paramsXml->getDoubleAttribute(parameter->getParameterID(), parameter->getValue()));
+            parameter->setValueNotifyingHost(static_cast<float>(paramsXml->getDoubleAttribute(parameter->getParameterID(), parameter->getValue())));
         }
         return true;
     }

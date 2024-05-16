@@ -13,8 +13,8 @@
 class PresetBrowser : public juce::Component, public juce::ComboBox::Listener
 {
 public:
-    PresetBrowser(DelayGraph& dg);
-    ~PresetBrowser();
+    explicit PresetBrowser(DelayGraph& dg);
+    ~PresetBrowser() override;
     void paint(juce::Graphics &g) override;
     void resized() override;
     juce::ComboBox presetMenu;

@@ -21,9 +21,9 @@ public:
 private:
     void makeLineEditorIfNeeded();
     void timerCallback() override;
-    void drawLine(juce::Graphics& g, GraphLine* line);
-    void drawPoint(juce::Graphics& g, GraphPoint* point);
-    void drawLineBeingCreated(juce::Graphics& g);
+    void drawLine(juce::Graphics& g, GraphLine* line) const;
+    void drawPoint(juce::Graphics& g, GraphPoint* point) const;
+    void drawLineBeingCreated(juce::Graphics& g) const;
     DelayGraph& delayGraph;
     std::unique_ptr<LineEditor> lineEditor;
 };

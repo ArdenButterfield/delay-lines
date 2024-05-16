@@ -7,23 +7,35 @@
 #include "../DelayGraph.h"
 
 GraphLine::GraphLine(GraphPoint* _start, GraphPoint* _end, const int& id)
-    : start(_start), end(_end), identifier(id)
+    : start(_start),
+      end(_end),
+      editorAttached(false),
+      prepared(false),
+      identifier(id),
+      numChannels(0),
+      sampleRate(0)
 {
-    prepared = false;
 
 }
 
 GraphLine::GraphLine (GraphPoint* _start, GraphPoint* _end, juce::XmlElement* element)
-    : start(_start), end(_end), parameters(element), identifier(element->getIntAttribute("id"))
+    : start(_start),
+      end(_end),
+      parameters(element),
+      editorAttached(false),
+      prepared(false),
+      identifier(element->getIntAttribute("id")),
+      numChannels(0),
+      sampleRate(0)
+
 {
-    prepared = false;
 }
 
 
 void GraphLine::prepareToPlay (juce::dsp::ProcessSpec& spec)
 {
     numChannels = spec.numChannels;
-    sampleRate = spec.sampleRate;
+    sampleRate = static_cast<float>(spec.sampleRate);
 
     auto targetLength = parameters.length.getLengthInSamples(sampleRate, 120);
     modOscillator = std::make_unique<ModOscillator>(spec, parameters.modRate.get(), parameters.modDepth.get());
@@ -47,7 +59,7 @@ void GraphLine::calculateInternalLength()
     if (!delayLineInternal) {
             return;
 }
-    auto lineVector = end->getDistanceFrom(*start);
+    auto lineVector = end->getDistanceFrom({start->x, start->y});
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
     auto currentLength = parameters.length.getLengthInSamples(sampleRate, 120) * realLineVector / lineVector; // TODO: BPM
 
@@ -75,7 +87,7 @@ void GraphLine::pushSample (std::vector<float>& sample)
     delayLineInternal->pushSample(val);
 }
 
-float GraphLine::distortSample (float samp)
+float GraphLine::distortSample (float samp) const
 {
     auto distorted = juce::dsp::FastMathApproximations::tanh(samp * parameters.distortion * 5);
     return parameters.distortion * distorted + (1 - parameters.distortion) * samp;
@@ -219,7 +231,7 @@ void GraphLine::setFeedback (float amt)
 
 void GraphLine::bakeOffset()
 {
-    auto lineVector = end->getDistanceFrom(*start);
+    auto lineVector = end->getDistanceFrom({start->x, start->y});
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
 
     parameters.length.rescale(realLineVector / lineVector);

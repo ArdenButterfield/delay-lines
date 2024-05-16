@@ -11,7 +11,7 @@
 class ModOverlayButton : public juce::ShapeButton
 {
 public:
-    explicit ModOverlayButton(ModulatableKey key, juce::Button::Listener* l)
+    explicit ModOverlayButton(const ModulatableKey& key, juce::Button::Listener* l)
         : juce::ShapeButton(juce::String(key.pointOrLineId) + "-" + key.parameterId.toString(),
             juce::Colours::magenta.withAlpha(0.3f),
             juce::Colours::magenta.withAlpha(0.5f),

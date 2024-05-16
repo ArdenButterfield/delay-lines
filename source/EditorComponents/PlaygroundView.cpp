@@ -3,7 +3,6 @@
 //
 
 #include "PlaygroundView.h"
-#include <numbers> 
 
 void PlaygroundView::resized()
 {
@@ -19,7 +18,7 @@ juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point<float>
 }
 
 
-void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line)
+void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line) const
 {
     if (delayGraph.interactionState == DelayGraph::lineHover && delayGraph.activeLine == line) {
         g.setColour(juce::Colours::yellow);
@@ -46,10 +45,12 @@ void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line)
     leftLinePath.startNewSubPath(0,0);
     rightLinePath.startNewSubPath(0,0);
     float l,r;
-    for (float p = 0; p < 1; p += 1 / line->start->getDistanceFrom(*line->end)) {
-        line->getEnvelope(p, l, r);
-        leftLinePath.lineTo(p, l);
-        rightLinePath.lineTo(p, r);
+    auto numSteps = static_cast<int>(line->start->getDistanceFrom({line->end->x, line->start->x}));
+    for (auto step = 0; step < numSteps; step += 1) {
+        auto proportion = static_cast<float>(step) / static_cast<float>(numSteps);
+        line->getEnvelope(proportion, l, r);
+        leftLinePath.lineTo(proportion, l);
+        rightLinePath.lineTo(proportion, r);
     }
     leftLinePath.lineTo(1,0);
     rightLinePath.lineTo(1,0);
@@ -63,7 +64,7 @@ void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line)
 }
 
 
-void PlaygroundView::drawPoint (juce::Graphics& g, GraphPoint* point)
+void PlaygroundView::drawPoint (juce::Graphics& g, GraphPoint* point) const
 {
     if (point == delayGraph.activePoint) {
         if (delayGraph.interactionState == DelayGraph::outerSelected) {
@@ -91,7 +92,7 @@ void PlaygroundView::drawPoint (juce::Graphics& g, GraphPoint* point)
     }
 }
 
-void PlaygroundView::drawLineBeingCreated (juce::Graphics& g)
+void PlaygroundView::drawLineBeingCreated (juce::Graphics& g) const
 {
     if (delayGraph.interactionState == DelayGraph::creatingLine) {
         g.setColour(juce::Colours::orange);

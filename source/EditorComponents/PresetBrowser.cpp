@@ -20,9 +20,7 @@ PresetBrowser::PresetBrowser(DelayGraph& dg) : delayGraph(dg), presets(juce::par
 }
 
 PresetBrowser::~PresetBrowser()
-{
-
-}
+= default;
 
 void PresetBrowser::paint(juce::Graphics &g)
 {

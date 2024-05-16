@@ -82,15 +82,17 @@ void LengthEditor::sliderValueChanged (juce::Slider* slider)
         return;
     }
     if (slider == &millisecondsSlider) {
-        line->parameters.length.setMillisecondsLength(millisecondsSlider.getValue());
+        line->parameters.length.setMillisecondsLength(static_cast<float>(millisecondsSlider.getValue()));
     } else if (slider == &samplesSlider) {
-        line->parameters.length.setSamplesLength(samplesSlider.getValue());
+        line->parameters.length.setSamplesLength(static_cast<float>(samplesSlider.getValue()));
     } else if (slider == &hertzSlider) {
-        line->parameters.length.setHertz(hertzSlider.getValue());
+        line->parameters.length.setHertz(static_cast<float>(hertzSlider.getValue()));
     } else if (slider == &pitchSlider) {
-        line->parameters.length.setMidiNote(pitchSlider.getValue());
+        line->parameters.length.setMidiNote(static_cast<int>(pitchSlider.getValue()));
     } else if (slider == &beatNumerator || slider == &beatDenominator) {
-        line->parameters.length.setBeat(beatNumerator.getValue(), beatDenominator.getValue());
+        auto n = static_cast<int>(std::round(beatNumerator.getValue()));
+        auto d = static_cast<int>(std::round(beatDenominator.getValue()));
+        line->parameters.length.setBeat(n, d);
     }
 }
 

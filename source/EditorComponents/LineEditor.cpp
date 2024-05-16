@@ -62,8 +62,7 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
 }
 
 LineEditor::~LineEditor()
-{
-}
+= default;
 
 
 void LineEditor::resized()
@@ -123,23 +122,23 @@ void LineEditor::sliderValueChanged (juce::Slider* slider)
         return;
     }
     if (slider == &gainSlider) {
-        line->setGain(gainSlider.getValue());
+        line->setGain(static_cast<float>(gainSlider.getValue()));
     } else if (slider == &timeEnvelopeFollowSlider) {
-        line->setLengthEnvelopeFollow(timeEnvelopeFollowSlider.getValue());
+        line->setLengthEnvelopeFollow(static_cast<float>(timeEnvelopeFollowSlider.getValue()));
     } else if (slider == &modRateSlider) {
-        line->setModRate(modRateSlider.getValue());
+        line->setModRate(static_cast<float>(modRateSlider.getValue()));
     } else if (slider == &modDepthSlider) {
-        line->setModDepth (modDepthSlider.getValue());
+        line->setModDepth (static_cast<float>(modDepthSlider.getValue()));
     } else if (slider == &distortionSlider) {
-        line->setDistortionAmount(distortionSlider.getValue());
+        line->setDistortionAmount(static_cast<float>(distortionSlider.getValue()));
     } else if (slider == &loCutSlider) {
-        line->setLowCutFilter(loCutSlider.getValue());
+        line->setLowCutFilter(static_cast<float>(loCutSlider.getValue()));
     } else if (slider == &hiCutSlider) {
-        line->setHighCutFilter(hiCutSlider.getValue());
+        line->setHighCutFilter(static_cast<float>(hiCutSlider.getValue()));
     } else if (slider == &gainEnvelopeFollowSlider) {
-        line->setGainEnvelopeFollow(gainEnvelopeFollowSlider.getValue());
+        line->setGainEnvelopeFollow(static_cast<float>(gainEnvelopeFollowSlider.getValue()));
     } else if (slider == &feedbackSlider) {
-        line->setFeedback(feedbackSlider.getValue());
+        line->setFeedback(static_cast<float>(feedbackSlider.getValue()));
     }
 }
 

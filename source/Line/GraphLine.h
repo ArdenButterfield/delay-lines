@@ -72,7 +72,7 @@ private:
 
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> gain;
 
-    float distortSample(float samp);
+    float distortSample(float samp) const;
     std::vector<float> lastSample;
     std::vector<juce::IIRFilter> loCutFilters;
     std::vector<juce::IIRFilter> hiCutFilters;

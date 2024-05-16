@@ -4,9 +4,11 @@
 
 #include "ModulationEngine.h"
 
+#include <utility>
+
 ModulationEngine::ModulationEngine(juce::AudioProcessorValueTreeState& _treeState, std::vector<juce::String> _paramIds, DelayGraph& _delayGraph)
     : treeState(_treeState),
-      paramIds(_paramIds),
+      paramIds(std::move(_paramIds)),
       delayGraph(_delayGraph)
 {
 

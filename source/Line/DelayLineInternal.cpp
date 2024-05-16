@@ -20,9 +20,7 @@ DelayLineInternal::DelayLineInternal (juce::dsp::ProcessSpec _spec, float initia
 }
 
 DelayLineInternal::~DelayLineInternal()
-{
-
-}
+= default;
 
 void DelayLineInternal::setTargetLength (float l)
 {
