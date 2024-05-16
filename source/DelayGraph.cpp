@@ -7,11 +7,12 @@
 #include <algorithm>
 #include <vector>
 
-DelayGraph::DelayGraph()
+DelayGraph::DelayGraph() :
+                           lineInProgressEndPoint(nullptr),
+                           activePoint(nullptr),
+                           interactionState(none),
+                           activeLine(nullptr)
 {
-    activePoint = nullptr;
-    interactionState = none;
-
     points.push_back(std::make_unique<GraphPoint>(juce::Point<float>(0,0), GraphPoint::start, findUniquePointId()));
     startPoint = points.back().get();
     points.push_back(std::make_unique<GraphPoint>(juce::Point<float>(100,100), GraphPoint::end, findUniquePointId()));
@@ -19,7 +20,7 @@ DelayGraph::DelayGraph()
     addLine(points[0].get(), points[1].get());
 }
 
-DelayGraph::DelayGraph (juce::XmlElement* element)
+DelayGraph::DelayGraph (juce::XmlElement* element) : startPoint(nullptr), endPoint(nullptr)
 {
     activePoint = nullptr;
     interactionState = none;
@@ -33,6 +34,19 @@ DelayGraph::DelayGraph (juce::XmlElement* element)
     for (int i = 0; i < pointsElement->getNumChildElements(); ++i) {
         auto p = pointsElement->getChildElement(i);
         points.push_back(std::make_unique<GraphPoint>(p));
+        if (points.back()->pointType == GraphPoint::start) {
+            startPoint = points.back().get();
+        }
+        if (points.back()->pointType == GraphPoint::end) {
+            endPoint = points.back().get();
+        }
+    }
+
+    if (startPoint == nullptr) {
+        DBG( "constructing from xml with no start point" );
+    }
+    if (endPoint == nullptr) {
+        DBG( "constructing from xml with no end point" );
     }
 
     auto linesElement = element->getChildByName("lines");
@@ -60,7 +74,6 @@ DelayGraph::DelayGraph (juce::XmlElement* element)
             deleteLine(line.get());
         }
     }
-
 }
 
 int DelayGraph::findUniqueLineId()
