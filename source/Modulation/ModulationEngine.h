@@ -21,10 +21,10 @@ public:
     void clearMapping(unsigned int index);
     bool isMapped(unsigned int index);
     void parameterChanged(const juce::String &parameterID, float newValue) override;
+    const std::vector<juce::String> paramIds;
+    juce::AudioProcessorValueTreeState& treeState;
 private:
     std::vector<std::unique_ptr<ModulatableKey>> mappings;
-    juce::AudioProcessorValueTreeState& treeState;
-    const std::vector<juce::String> paramIds;
     DelayGraph& delayGraph;
 
 };

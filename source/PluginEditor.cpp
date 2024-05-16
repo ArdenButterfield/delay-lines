@@ -7,7 +7,8 @@ PluginEditor::PluginEditor (PluginProcessor& p)
       playgroundController(p.delayGraph),
       playgroundView(p.delayGraph),
       processorRef (p),
-      modulatorOverlayButton("Modulator Overlay")
+      modulatorOverlayButton("Modulator Overlay"),
+      modKnobs(p.modulationEngine)
 {
     playgroundView.addMouseListener(&playgroundController, false);
 
@@ -21,6 +22,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(printXmlButton);
     addAndMakeVisible(modulatorOverlayButton);
     addAndMakeVisible(modulatorOverlay.get());
+    addAndMakeVisible(modKnobs);
 
 //    setResizable(true, true);
 
@@ -42,10 +44,11 @@ void PluginEditor::resized()
 {
     // layout the positions of your child components here
     playgroundView.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 150));
-    mixSlider.setBounds(getLocalBounds().withTop(playgroundView.getBottom() + 10));
+    modKnobs.setBounds(getLocalBounds().withTop(playgroundView.getBottom() + 10));
     printXmlButton.setBounds(10,10, 100, 30);
     presetBrowser.setBounds(150, 10, 200, 60);
     modulatorOverlayButton.setBounds(360, 10, 100, 30);
+    mixSlider.setBounds(470, 10, 100, 30);
     modulatorOverlay->setBounds(playgroundView.getBounds());
 }
 

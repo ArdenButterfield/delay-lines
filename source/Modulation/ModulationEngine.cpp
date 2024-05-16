@@ -41,7 +41,7 @@ void ModulationEngine::setParameterValue (unsigned int index, float value)
     auto p = treeState.getParameter(paramIds[index]);
 
     p->beginChangeGesture();
-    p->setValue(value);
+    p->setValueNotifyingHost(value);
     p->endChangeGesture();
 }
 

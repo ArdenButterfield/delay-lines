@@ -365,6 +365,17 @@ TEST_CASE("global inputs", "[globalinputs]")
     REQUIRE((juce::approximatelyEqual(sample[0], 1.f) && juce::approximatelyEqual(sample[1], 1.f)));
 }
 
+TEST_CASE("modulation", "[mod]")
+{
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+    PluginProcessor p;
+    auto lineid = p.delayGraph.getLines()[0]->identifier;
+    p.modulationEngine.setMapping(4, {ModulatableKey::line, lineid, "locut"});
+    p.modulationEngine.setParameterValue(4, 0.7f);
+    REQUIRE(juce::approximatelyEqual(p.modulationEngine.getParameterValue(4), 0.7f));
+    REQUIRE(juce::approximatelyEqual(p.delayGraph.getLines()[0]->parameters.loCut.convertTo0to1(p.delayGraph.getLines()[0]->parameters.loCut), 0.7f));
+}
+
 #ifdef PAMPLEJUCE_IPP
     #include <ipp.h>
 

@@ -122,7 +122,9 @@ target_compile_definitions(SharedCode
 add_library(my_warning_flags INTERFACE)
 target_compile_options(my_warning_flags INTERFACE
     -Wno-float-conversion
-    )
+    -Wno-implicit-int-float-conversion
+    -Wno-implicit-float-conversion
+        )
 
 
         # Link to any other modules you added (with juce_add_module) here!
