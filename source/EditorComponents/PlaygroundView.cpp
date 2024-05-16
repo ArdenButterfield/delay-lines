@@ -9,7 +9,7 @@ void PlaygroundView::resized()
 
 }
 
-juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point<float> end, int channel) {
+static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point<float> end, int channel) {
     auto transform = juce::AffineTransform();
     transform = transform.scaled(start.getDistanceFrom(end), channel ? 50 : -50);
     transform = transform.rotated(start.getAngleToPoint(end) - juce::MathConstants<float>::halfPi);

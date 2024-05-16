@@ -10,6 +10,8 @@
 #include "ipps.h"
 #endif
 
+juce::AudioProcessorValueTreeState::ParameterLayout makeParameters();
+std::vector<juce::String> makeModulationIds();
 
 class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
 {

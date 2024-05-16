@@ -245,9 +245,12 @@ juce::AudioProcessorValueTreeState& PluginProcessor::getValueTreeState()
 {
     return parameters;
 }
+
 void PluginProcessor::parameterChanged (const juce::String& parameterID, float newValue)
 {
-    if (parameterID == "mix") {
+    juce::ignoreUnused(newValue);
 
+    if (parameterID == "mix") {
+        parametersNeedUpdating = true;
     }
 }

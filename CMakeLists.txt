@@ -122,7 +122,13 @@ target_compile_definitions(SharedCode
     PRODUCT_NAME_WITHOUT_VERSION="Pamplejuce"
 )
 
-# Link to any other modules you added (with juce_add_module) here!
+add_library(my_warning_flags INTERFACE)
+target_compile_options(my_warning_flags INTERFACE
+    -Wno-float-conversion
+    )
+
+
+        # Link to any other modules you added (with juce_add_module) here!
 # Usually JUCE modules must have PRIVATE visibility
 # See https://github.com/juce-framework/JUCE/blob/master/docs/CMake%20API.md#juce_add_module
 # However, with Pamplejuce, you'll link modules to SharedCode with INTERFACE visibility
@@ -138,7 +144,9 @@ target_link_libraries(SharedCode
     juce_gui_extra
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
-    juce::juce_recommended_warning_flags)
+    juce::juce_recommended_warning_flags
+    my_warning_flags
+    )
 
 # Link the JUCE plugin targets our SharedCode target
 target_link_libraries("${PROJECT_NAME}" PRIVATE SharedCode)

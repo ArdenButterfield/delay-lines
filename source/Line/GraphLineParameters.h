@@ -134,16 +134,16 @@ private:
 
 struct Parameters {
     Parameters() : muteBypass("mutebypass", "mute bypass", {"none", "mute", "bypass"}, 0),
-                   lengthEnvelopeFollow("lengthenvelopefollow", "length envelope follow", -1, 1, 0),
-                   modDepth("moddepth", "mod depth", 0, 1, 0),
-                   modRate("modrate", "mod rate", 0.1, 30, 1),
-                   distortion("distortion", "distortion", 0, 1, 0),
-                   hiCut("hicut", "hi cut", 100, 20000, 20000),
-                   loCut("locut", "lo cut", 0, 2000, 0),
-                   gain("gain", "gain", 0, 2, 1),
+                   lengthEnvelopeFollow("lengthenvelopefollow", "length envelope follow", -1.f, 1.f, 0.f),
+                   modDepth("moddepth", "mod depth", 0.f, 1.f, 0.f),
+                   modRate("modrate", "mod rate", 0.1f, 30.f, 1.f),
+                   distortion("distortion", "distortion", 0.f, 1.f, 0.f),
+                   hiCut("hicut", "hi cut", 100.f, 20000.f, 20000.f),
+                   loCut("locut", "lo cut", 0.f, 2000.f, 0.f),
+                   gain("gain", "gain", 0.f, 2.f, 1.f),
                    invert("invert", "invert", false),
-                   gainEnvelopeFollow("gainenvelopefollow", "gain envelope follow", -1, 1, 0),
-                   feedback("feedback", "feedback", 0, 1, 0)
+                   gainEnvelopeFollow("gainenvelopefollow", "gain envelope follow", -1.f, 1.f, 0.f),
+                   feedback("feedback", "feedback", 0.f, 1.f, 0.f)
     {}
 
     explicit Parameters(juce::XmlElement* parent);

@@ -14,11 +14,11 @@ const int NUM_MOD_PARAMETERS = 10;
 
 const juce::String MIX_PARAM_ID = "mix";
 
-juce::String makeModParamId(unsigned index) {
+static juce::String makeModParamId(unsigned index) {
     return "mod" + juce::String(index);
 }
 
-juce::String makeModParamName(unsigned index) {
+static juce::String makeModParamName(unsigned index) {
     return "Modulator " + juce::String(index + 1);
 }
 

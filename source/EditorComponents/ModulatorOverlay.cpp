@@ -6,13 +6,11 @@
 
 ModulatorOverlay::ModulatorOverlay(PlaygroundView& _playgroundView) : playgroundView(_playgroundView)
 {
-
+    juce::ignoreUnused(playgroundView);
 }
 
 ModulatorOverlay::~ModulatorOverlay()
-{
-
-}
+= default;
 
 void ModulatorOverlay::resized()
 {

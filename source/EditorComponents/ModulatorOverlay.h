@@ -13,7 +13,7 @@ class ModulatorOverlay : public juce::Component
 {
 public:
     ModulatorOverlay(PlaygroundView& playgroundView);
-    ~ModulatorOverlay();
+    ~ModulatorOverlay() override;
     void resized() override;
     void paint(juce::Graphics &g) override;
 private:
