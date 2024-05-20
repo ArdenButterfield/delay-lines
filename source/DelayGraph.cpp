@@ -403,3 +403,10 @@ bool DelayGraph::modulateIfPossible (ModulatableKey& key, float newValue)
     }
     return false;
 }
+
+void DelayGraph::setMidiTrackNote (int pitch)
+{
+    for (auto& line : lines) {
+        line->setMidiTrackNote(pitch);
+    }
+}

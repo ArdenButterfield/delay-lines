@@ -57,6 +57,11 @@ juce_add_plugin("${PROJECT_NAME}"
     COMPANY_NAME "${COMPANY_NAME}"
     BUNDLE_ID "${BUNDLE_ID}"
 
+    IS_SYNTH FALSE                       # Is this a synth or an effect?
+    NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
+    NEEDS_MIDI_OUTPUT FALSE              # Does the plugin need midi output?
+    IS_MIDI_EFFECT FALSE                 # Is this plugin a MIDI effect?
+
     # On MacOS, plugin is copied to ~/Users/yourname/Library/Audio/Plug-Ins/
     COPY_PLUGIN_AFTER_BUILD TRUE
 
@@ -119,12 +124,12 @@ target_compile_definitions(SharedCode
     PRODUCT_NAME_WITHOUT_VERSION="Pamplejuce"
 )
 
-add_library(my_warning_flags INTERFACE)
-target_compile_options(my_warning_flags INTERFACE
-    -Wno-float-conversion
-    -Wno-implicit-int-float-conversion
-    -Wno-implicit-float-conversion
-        )
+#add_library(my_warning_flags INTERFACE)
+#target_compile_options(my_warning_flags INTERFACE
+#    -Wno-float-conversion
+#    -Wno-implicit-int-float-conversion
+#    -Wno-implicit-float-conversion
+#        )
 
 
         # Link to any other modules you added (with juce_add_module) here!
@@ -143,7 +148,7 @@ target_link_libraries(SharedCode
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags
-    my_warning_flags
+#    my_warning_flags
     )
 
 # Link the JUCE plugin targets our SharedCode target

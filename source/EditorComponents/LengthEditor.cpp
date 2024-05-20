@@ -8,7 +8,7 @@
 LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGraph(_delayGraph), graphLine(_line)
 {
     startTimerHz(60);
-    unitSelector.addItemList({"Milliseconds", "Samples", "Hertz", "Pitch", "Beat"}, 1); // offset must start at 1: 0 is reserved for undefined
+    unitSelector.addItemList({"Milliseconds", "Samples", "Hertz", "Pitch", "Beat", "MIDI track"}, 1); // offset must start at 1: 0 is reserved for undefined
     unitSelector.addListener(this);
 
     samplesSlider.setNormalisableRange({0,200});
@@ -120,6 +120,8 @@ void LengthEditor::updateSliders()
         case DelayLength::beat:
             unitSelector.setSelectedId(5);
             break;
+        case DelayLength::midiTrack:
+            unitSelector.setSelectedId(6);
         default: break;
     }
 
@@ -167,6 +169,8 @@ void LengthEditor::updateUnitSelector()
             beatDenominator.setVisible(true);
             line->parameters.length.setMode(DelayLength::beat);
             break;
+        case 6:
+            line->parameters.length.setMode(DelayLength::midiTrack);
         default: break;
     }
 }

@@ -24,9 +24,6 @@ public:
     const ModulatableKey modKey;
 private:
     juce::Button::Listener* listener;
-    void paintButton(juce::Graphics &, bool, bool) override {
-
-    }
 };
 
 #endif //DELAYLINES_MODOVERLAYBUTTON_H

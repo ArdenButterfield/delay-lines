@@ -164,6 +164,17 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         updateParameters();
     }
 
+    auto pitch = -1;
+    for (const auto& metadata : midiMessages) {
+        auto message = metadata.getMessage();
+        if (message.isNoteOn()) {
+            pitch = message.getNoteNumber();
+        }
+    }
+    if (pitch >= 0) {
+        delayGraph.setMidiTrackNote(pitch);
+    }
+
     juce::ignoreUnused (midiMessages);
 
     juce::ScopedNoDenormals noDenormals;

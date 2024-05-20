@@ -38,29 +38,31 @@ public:
     void setInvert(bool invert);
     void setGainEnvelopeFollow(float amt);
     void setFeedback(float amt);
-    GraphPoint* start;
+    void setMidiTrackNote(int pitch);
 
+    GraphPoint* start;
     GraphPoint* end;
     void pushSample(std::vector<float>& sample);
     void popSample();
     void prepareToPlay(juce::dsp::ProcessSpec& spec);
     void toggleEnabled();
+
     void getEnvelope(float proportion, float& left, float& right);
 
     void bakeOffset();
 
     Parameters parameters;
-
     std::vector<GraphPoint*> popDestinations;
-    bool editorAttached;
 
+    bool editorAttached;
     bool prepared;
+
     const int identifier;
 
     std::set<GraphPoint*> realOutputs;
-
     void exportToXml(juce::XmlElement* parent);
     bool importFromXml(DelayGraph* dg, juce::XmlElement* parent);
+
     bool modulateIfPossible(ModulatableKey& key, float newValue);
 private:
     std::unique_ptr<DelayLineInternal> delayLineInternal;

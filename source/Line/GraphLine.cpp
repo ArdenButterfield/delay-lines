@@ -229,6 +229,12 @@ void GraphLine::setFeedback (float amt)
     parameters.feedback = amt;
 }
 
+void GraphLine::setMidiTrackNote (int pitch)
+{
+    parameters.length.setMidiTrackNote(pitch);
+}
+
+
 void GraphLine::bakeOffset()
 {
     auto lineVector = end->getDistanceFrom({start->x, start->y});

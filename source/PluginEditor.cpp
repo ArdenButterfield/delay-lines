@@ -21,7 +21,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(presetBrowser);
     addAndMakeVisible(printXmlButton);
     addAndMakeVisible(modulatorOverlayButton);
-    addAndMakeVisible(modulatorOverlay.get());
+//    addAndMakeVisible(modulatorOverlay.get()); TODO: bring back if needed
     addAndMakeVisible(modKnobs);
 
 //    setResizable(true, true);

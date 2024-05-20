@@ -58,6 +58,8 @@ public:
     GraphPoint* getPoint(const int& id);
     GraphLine* getLine(const int& id);
 
+    void setMidiTrackNote(int pitch);
+
     void setRealOutputs();
 
     void timerCallback() override;
