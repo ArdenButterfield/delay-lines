@@ -9,11 +9,15 @@
 #include "juce_graphics/juce_graphics.h"
 #include "../DelayGraph.h"
 #include "LineEditor.h"
+#include "../Modulation/ModOverlayButton.h"
+
+#include "GraphLineComponent.h"
+#include "GraphPointComponent.h"
 
 class PlaygroundView : public juce::Component, public juce::Timer
 {
 public:
-    explicit PlaygroundView (DelayGraph& dg) : delayGraph(dg) { startTimerHz(60);}
+    explicit PlaygroundView (DelayGraph& dg);
     ~PlaygroundView() override = default;
     void resized() override;
     void paint(juce::Graphics &g) override;
@@ -26,6 +30,8 @@ private:
     void drawLineBeingCreated(juce::Graphics& g) const;
     DelayGraph& delayGraph;
     std::unique_ptr<LineEditor> lineEditor;
+
+    ModOverlayButton overlayButton;
 };
 
 #endif //DELAYLINES_PLAYGROUNDVIEW_H

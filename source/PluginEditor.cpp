@@ -12,7 +12,6 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 {
     playgroundView.addMouseListener(&playgroundController, false);
 
-    modulatorOverlay = std::make_unique<ModulatorOverlay>(playgroundView);
     printXmlButton.addListener(this);
     modulatorOverlayButton.addListener(this);
 
@@ -49,7 +48,6 @@ void PluginEditor::resized()
     presetBrowser.setBounds(150, 10, 200, 60);
     modulatorOverlayButton.setBounds(360, 10, 100, 30);
     mixSlider.setBounds(470, 10, 100, 30);
-    modulatorOverlay->setBounds(playgroundView.getBounds());
 }
 
 void PluginEditor::buttonClicked (juce::Button* button)
@@ -57,7 +55,7 @@ void PluginEditor::buttonClicked (juce::Button* button)
     if (button == &printXmlButton) {
         processorRef.printXml();
     } else if (button == &modulatorOverlayButton) {
-        modulatorOverlay->setVisible(!modulatorOverlay->isVisible());
+//        modulatorOverlay->setVisible(!modulatorOverlay->isVisible());
     }
 }
 void PluginEditor::buttonStateChanged (juce::Button*)

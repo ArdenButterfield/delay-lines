@@ -4,10 +4,18 @@
 
 #include "PlaygroundView.h"
 
+PlaygroundView::PlaygroundView (DelayGraph& dg)
+    : delayGraph(dg), overlayButton(ModulatableKey( ModulatableKey::point, 0, "" ), nullptr) {
+    startTimerHz(60);
+    addAndMakeVisible(overlayButton);
+}
+
+
 void PlaygroundView::resized()
 {
-
+    overlayButton.setBounds(10,10,10,10);
 }
+
 
 static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point<float> end, int channel) {
     auto transform = juce::AffineTransform();
@@ -62,7 +70,6 @@ void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line) const
     g.fillPath(rightLinePath, makeTransform(*line->start + line->start->offset, *line->end + line->end->offset, 1));
     g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
 }
-
 
 void PlaygroundView::drawPoint (juce::Graphics& g, GraphPoint* point) const
 {
@@ -127,7 +134,6 @@ void PlaygroundView::timerCallback()
 {
     repaint();
 }
-
 void PlaygroundView::makeLineEditorIfNeeded()
 {
     if ((!lineEditor) && (delayGraph.interactionState == DelayGraph::editingLine)) {

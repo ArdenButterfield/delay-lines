@@ -9,6 +9,8 @@
 #include "juce_dsp/juce_dsp.h"
 
 #include "Modulation/ModulatableKey.h"
+#include "Modulation/ModOverlayButton.h"
+
 
 class GraphPoint : public juce::Point<float>, juce::Timer {
 public:
