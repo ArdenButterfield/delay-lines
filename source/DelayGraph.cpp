@@ -122,6 +122,10 @@ void DelayGraph::addPoint(const juce::Point<float>& point, bool connectToSelecte
         activePoint = added;
         interactionState = creatingLine;
     }
+    for (auto& listener : listeners) {
+        listener->pointAdded(points.back()->identifier);
+    }
+
     criticalSection.exit();
 
 }
@@ -138,6 +142,9 @@ void DelayGraph::addLine (GraphPoint* start, GraphPoint* end)
     if (processSpec) {
         lines.back()->prepareToPlay(*processSpec);
     }
+    for (auto& listener : listeners) {
+        listener->lineAdded(lines.back()->identifier);
+    }
     criticalSection.exit();
 }
 
@@ -151,6 +158,7 @@ void DelayGraph::deletePoint (const GraphPoint* point)
     if (point->pointType == GraphPoint::start || point->pointType == GraphPoint::end) {
         return;
     }
+    auto id = point->identifier;
     criticalSection.enter();
     for (auto iter = lines.begin(); iter != lines.end(); ) {
         if (iter->get()->start == point || iter->get()->end == point) {
@@ -166,11 +174,15 @@ void DelayGraph::deletePoint (const GraphPoint* point)
             ++iter;
         }
     }
+    for (auto& listener : listeners) {
+        listener->pointRemoved(id);
+    }
     criticalSection.exit();
 }
 
 void DelayGraph::deleteLine (const GraphLine* line)
 {
+    auto id = line->identifier;
     criticalSection.enter();
     for (auto iter = lines.begin(); iter != lines.end(); ) {
         if (iter->get() == line) {
@@ -178,6 +190,9 @@ void DelayGraph::deleteLine (const GraphLine* line)
         } else {
             ++iter;
         }
+    }
+    for (auto& listener : listeners) {
+        listener->lineRemoved(id);
     }
     criticalSection.exit();
 }
@@ -408,5 +423,16 @@ void DelayGraph::setMidiTrackNote (int pitch)
 {
     for (auto& line : lines) {
         line->setMidiTrackNote(pitch);
+    }
+}
+void DelayGraph::addListener (DelayGraph::Listener* listener)
+{
+    listeners.insert(listener);
+}
+
+void DelayGraph::removeListener (DelayGraph::Listener* listener)
+{
+    if (listeners.contains(listener)) {
+        listeners.erase(listener);
     }
 }

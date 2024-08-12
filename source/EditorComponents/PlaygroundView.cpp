@@ -134,6 +134,7 @@ void PlaygroundView::timerCallback()
 {
     repaint();
 }
+
 void PlaygroundView::makeLineEditorIfNeeded()
 {
     if ((!lineEditor) && (delayGraph.interactionState == DelayGraph::editingLine)) {
@@ -146,6 +147,7 @@ void PlaygroundView::makeLineEditorIfNeeded()
         delete ed;
     }
 }
+
 const std::unique_ptr<LineEditor>* PlaygroundView::getLineEditor()
 {
     return &lineEditor;

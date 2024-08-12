@@ -70,7 +70,6 @@ void GraphLineComponent::paint (juce::Graphics& g)
     g.fillPath(leftLinePath, makeTransform(*line->start + line->start->offset, *line->end + line->end->offset, 0));
     g.fillPath(rightLinePath, makeTransform(*line->start + line->start->offset, *line->end + line->end->offset, 1));
     g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
-
 }
 
 void GraphLineComponent::resized()

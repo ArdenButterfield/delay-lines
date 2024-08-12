@@ -17,8 +17,21 @@
 class DelayGraph : public juce::Timer
 {
 public:
+    class Listener
+    {
+    public:
+        Listener() {}
+        ~Listener() {}
+        virtual void pointAdded(int identifier) = 0;
+        virtual void lineAdded(int identifier) = 0;
+        virtual void pointRemoved(int identifier) = 0;
+        virtual void lineRemoved(int identifier) = 0;
+    };
+
     DelayGraph();
     DelayGraph(juce::XmlElement* element);
+    void addListener(Listener* listener);
+    void removeListener(Listener* listener);
     void addPoint(const juce::Point<float>& point, bool connectToSelected=false);
     void deletePoint(const GraphPoint* point);
     void deleteLine(const GraphLine* line);
@@ -67,6 +80,7 @@ public:
     void exportToXml(juce::XmlElement* parent);
     bool importFromXml(juce::XmlElement* parent);
 private:
+    std::set<Listener*> listeners;
     std::set<GraphPoint*> realGlobalInputs;
     juce::CriticalSection criticalSection;
     std::unique_ptr<juce::dsp::ProcessSpec> processSpec;
