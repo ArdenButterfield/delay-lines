@@ -14,9 +14,8 @@ static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point
 }
 
 
-GraphLineComponent::GraphLineComponent (PlaygroundView* _playgroundView, DelayGraph* _delayGraph, int _id)
-    : playgroundView(_playgroundView), delayGraph(_delayGraph), id(_id) {
-
+GraphLineComponent::GraphLineComponent (PlaygroundViewOld* _playgroundView, DelayGraph* _delayGraph, int _id)
+    : playgroundViewOld(_playgroundView), delayGraph(_delayGraph), id(_id) {
 }
 
 GraphLineComponent::~GraphLineComponent()

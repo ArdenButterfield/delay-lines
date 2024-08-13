@@ -7,19 +7,19 @@
 
 #include "juce_gui_basics/juce_gui_basics.h"
 
-class PlaygroundView;
+class PlaygroundViewOld;
 
 
 class GraphPointComponent : public juce::Component
 {
 public:
-    GraphPointComponent(PlaygroundView* _playgroundView);
+    GraphPointComponent(PlaygroundViewOld* _playgroundView);
     ~GraphPointComponent();
     void paint(juce::Graphics &g) override;
     void resized() override;
     bool hitTest(int x, int y) override;
 private:
-    PlaygroundView* playgroundView;
+    PlaygroundViewOld* playgroundViewOld;
 };
 
 

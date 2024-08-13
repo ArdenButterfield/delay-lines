@@ -2,16 +2,16 @@
 // Created by arden on 3/14/24.
 //
 
-#include "PlaygroundView.h"
+#include "PlaygroundViewOld.h"
 
-PlaygroundView::PlaygroundView (DelayGraph& dg)
+PlaygroundViewOld::PlaygroundViewOld (DelayGraph& dg)
     : delayGraph(dg), overlayButton(ModulatableKey( ModulatableKey::point, 0, "" ), nullptr) {
     startTimerHz(60);
     addAndMakeVisible(overlayButton);
 }
 
 
-void PlaygroundView::resized()
+void PlaygroundViewOld::resized()
 {
     overlayButton.setBounds(10,10,10,10);
 }
@@ -26,7 +26,7 @@ static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point
 }
 
 
-void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line) const
+void PlaygroundViewOld::drawLine (juce::Graphics& g, GraphLine* line) const
 {
     if (delayGraph.interactionState == DelayGraph::lineHover && delayGraph.activeLine == line) {
         g.setColour(juce::Colours::yellow);
@@ -71,7 +71,7 @@ void PlaygroundView::drawLine (juce::Graphics& g, GraphLine* line) const
     g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
 }
 
-void PlaygroundView::drawPoint (juce::Graphics& g, GraphPoint* point) const
+void PlaygroundViewOld::drawPoint (juce::Graphics& g, GraphPoint* point) const
 {
     if (point == delayGraph.activePoint) {
         if (delayGraph.interactionState == DelayGraph::outerSelected) {
@@ -99,7 +99,7 @@ void PlaygroundView::drawPoint (juce::Graphics& g, GraphPoint* point) const
     }
 }
 
-void PlaygroundView::drawLineBeingCreated (juce::Graphics& g) const
+void PlaygroundViewOld::drawLineBeingCreated (juce::Graphics& g) const
 {
     if (delayGraph.interactionState == DelayGraph::creatingLine) {
         g.setColour(juce::Colours::orange);
@@ -114,7 +114,7 @@ void PlaygroundView::drawLineBeingCreated (juce::Graphics& g) const
     }
 }
 
-void PlaygroundView::paint (juce::Graphics& g)
+void PlaygroundViewOld::paint (juce::Graphics& g)
 {
     makeLineEditorIfNeeded();
     g.setColour(juce::Colours::tan);
@@ -130,12 +130,12 @@ void PlaygroundView::paint (juce::Graphics& g)
     }
 }
 
-void PlaygroundView::timerCallback()
+void PlaygroundViewOld::timerCallback()
 {
     repaint();
 }
 
-void PlaygroundView::makeLineEditorIfNeeded()
+void PlaygroundViewOld::makeLineEditorIfNeeded()
 {
     if ((!lineEditor) && (delayGraph.interactionState == DelayGraph::editingLine)) {
         lineEditor = std::make_unique<LineEditor>(delayGraph, delayGraph.activeLine->identifier);
@@ -148,7 +148,7 @@ void PlaygroundView::makeLineEditorIfNeeded()
     }
 }
 
-const std::unique_ptr<LineEditor>* PlaygroundView::getLineEditor()
+const std::unique_ptr<LineEditor>* PlaygroundViewOld::getLineEditor()
 {
     return &lineEditor;
 }

@@ -7,13 +7,13 @@
 
 #include "juce_gui_basics/juce_gui_basics.h"
 
-class PlaygroundView;
+class PlaygroundViewOld;
 class DelayGraph;
 
 class GraphLineComponent : public juce::Component
 {
 public:
-    GraphLineComponent(PlaygroundView* _playgroundView, DelayGraph* _delayGraph, int _id);
+    GraphLineComponent(PlaygroundViewOld* _playgroundView, DelayGraph* _delayGraph, int _id);
     ~GraphLineComponent() override;
     void paint(juce::Graphics &g) override;
     void resized() override;
@@ -21,7 +21,7 @@ public:
 private:
     const int id;
     DelayGraph* delayGraph;
-    PlaygroundView* playgroundView;
+    PlaygroundViewOld* playgroundViewOld;
 };
 
 #endif //DELAYLINES_GRAPHLINECOMPONENT_H

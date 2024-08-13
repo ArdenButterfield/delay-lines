@@ -5,17 +5,17 @@ PluginEditor::PluginEditor (PluginProcessor& p)
       printXmlButton("Print XML"),
       presetBrowser(p.delayGraph),
       playgroundController(p.delayGraph),
-      playgroundView(p.delayGraph),
+      playgroundViewOld(p.delayGraph),
       processorRef (p),
       modulatorOverlayButton("Modulator Overlay"),
       modKnobs(p.modulationEngine)
 {
-    playgroundView.addMouseListener(&playgroundController, false);
+    playgroundViewOld.addMouseListener(&playgroundController, false);
 
     printXmlButton.addListener(this);
     modulatorOverlayButton.addListener(this);
 
-    addAndMakeVisible(playgroundView);
+    addAndMakeVisible(playgroundViewOld);
     addAndMakeVisible(mixSlider);
     addAndMakeVisible(presetBrowser);
     addAndMakeVisible(printXmlButton);
@@ -42,8 +42,8 @@ void PluginEditor::paint (juce::Graphics& g)
 void PluginEditor::resized()
 {
     // layout the positions of your child components here
-    playgroundView.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 150));
-    modKnobs.setBounds(getLocalBounds().withTop(playgroundView.getBottom() + 10));
+    playgroundViewOld.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 150));
+    modKnobs.setBounds(getLocalBounds().withTop(playgroundViewOld.getBottom() + 10));
     printXmlButton.setBounds(10,10, 100, 30);
     presetBrowser.setBounds(150, 10, 200, 60);
     modulatorOverlayButton.setBounds(360, 10, 100, 30);

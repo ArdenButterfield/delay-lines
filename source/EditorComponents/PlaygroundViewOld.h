@@ -2,8 +2,8 @@
 // Created by arden on 3/14/24.
 //
 
-#ifndef DELAYLINES_PLAYGROUNDVIEW_H
-#define DELAYLINES_PLAYGROUNDVIEW_H
+#ifndef DELAYLINES_PLAYGROUNDVIEWOLD_H
+#define DELAYLINES_PLAYGROUNDVIEWOLD_H
 
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "juce_graphics/juce_graphics.h"
@@ -14,11 +14,11 @@
 #include "GraphLineComponent.h"
 #include "GraphPointComponent.h"
 
-class PlaygroundView : public juce::Component, public juce::Timer
+class PlaygroundViewOld : public juce::Component, public juce::Timer
 {
 public:
-    explicit PlaygroundView (DelayGraph& dg);
-    ~PlaygroundView() override = default;
+    explicit PlaygroundViewOld (DelayGraph& dg);
+    ~PlaygroundViewOld() override = default;
     void resized() override;
     void paint(juce::Graphics &g) override;
     const std::unique_ptr<LineEditor>* getLineEditor();
@@ -34,4 +34,4 @@ private:
     ModOverlayButton overlayButton;
 };
 
-#endif //DELAYLINES_PLAYGROUNDVIEW_H
+#endif //DELAYLINES_PLAYGROUNDVIEWOLD_H
