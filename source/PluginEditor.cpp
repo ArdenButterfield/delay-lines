@@ -8,7 +8,8 @@ PluginEditor::PluginEditor (PluginProcessor& p)
       playgroundViewOld(p.delayGraph),
       processorRef (p),
       modulatorOverlayButton("Modulator Overlay"),
-      modKnobs(p.modulationEngine)
+      modKnobs(p.modulationEngine),
+      playgroundComponent(p.delayGraph)
 {
     playgroundViewOld.addMouseListener(&playgroundController, false);
 

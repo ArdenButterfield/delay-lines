@@ -265,7 +265,6 @@ GraphPoint* DelayGraph::getPoint (const int& id)
     return nullptr;
 }
 
-
 GraphLine* DelayGraph::getLine (const int& id)
 {
     for (auto& line : lines) {
@@ -274,6 +273,16 @@ GraphLine* DelayGraph::getLine (const int& id)
         }
     }
     return nullptr;
+}
+
+bool DelayGraph::copyPoint (const int id, std::unique_ptr<GraphPoint>& out) {
+    auto p = getPoint(id);
+    if (p == nullptr) {
+        return false;
+    }
+
+    out = std::make_unique<GraphPoint>(*p);
+    return true;
 }
 
 void DelayGraph::setRealOutputs()
@@ -435,4 +444,22 @@ void DelayGraph::removeListener (DelayGraph::Listener* listener)
     if (listeners.contains(listener)) {
         listeners.erase(listener);
     }
+}
+
+std::vector<int> DelayGraph::getAllPointIds()
+{
+    auto out = std::vector<int>();
+    for (auto& point : points) {
+        out.push_back(point->identifier);
+    }
+    return out;
+}
+
+std::vector<int> DelayGraph::getAllLineIds()
+{
+    auto out = std::vector<int>();
+    for (auto& line : lines) {
+        out.push_back(line->identifier);
+    }
+    return out;
 }

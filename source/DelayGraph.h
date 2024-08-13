@@ -71,11 +71,15 @@ public:
     GraphPoint* getPoint(const int& id);
     GraphLine* getLine(const int& id);
 
+    bool copyPoint(int id, std::unique_ptr<GraphPoint>& out);
+
     void setMidiTrackNote(int pitch);
 
     void setRealOutputs();
 
     void timerCallback() override;
+    std::vector<int> getAllPointIds();
+    std::vector<int> getAllLineIds();
 
     void exportToXml(juce::XmlElement* parent);
     bool importFromXml(juce::XmlElement* parent);

@@ -6,15 +6,35 @@
 #define DELAYLINES_PLAYGROUNDCOMPONENT_H
 
 #include "juce_gui_basics/juce_gui_basics.h"
+#include "../DelayGraph.h"
+#include "GraphLineComponent.h"
+#include "GraphPointComponent.h"
 
-class PlaygroundComponent : public juce::Component
+#include <set>
+
+class PlaygroundComponent : public juce::Component, public DelayGraph::Listener, public juce::Timer
 {
 public:
-    PlaygroundComponent();
+    explicit PlaygroundComponent(DelayGraph& _delayGraph);
     ~PlaygroundComponent() override;
     void resized() override;
     void paint(juce::Graphics &g) override;
+
+    void pointAdded(int identifier) override { addPoint(identifier); }
+    void pointRemoved(int identifier) override { removePoint(identifier); }
+    void lineAdded(int identifier) override { addLine(identifier); }
+    void lineRemoved(int identifier) override { removeLine(identifier); }
+
+    void addPoint(int identifier);
+    void removePoint(int identifier);
+    void addLine(int identifier);
+    void removeLine(int identifier);
+
+    void timerCallback() override { repaint(); }
 private:
+    DelayGraph& delayGraph;
+    std::set<std::unique_ptr<GraphLineComponent>> lineComponents;
+    std::set<std::unique_ptr<GraphPointComponent>> pointComponents;
 };
 
 #endif //DELAYLINES_PLAYGROUNDCOMPONENT_H
