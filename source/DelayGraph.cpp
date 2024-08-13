@@ -160,6 +160,9 @@ void DelayGraph::deletePoint (const GraphPoint* point)
     }
     auto id = point->identifier;
     criticalSection.enter();
+    if (point == activePoint) {
+        activePoint = nullptr;
+    }
     for (auto iter = lines.begin(); iter != lines.end(); ) {
         if (iter->get()->start == point || iter->get()->end == point) {
             iter = lines.erase(iter);
@@ -184,6 +187,9 @@ void DelayGraph::deleteLine (const GraphLine* line)
 {
     auto id = line->identifier;
     criticalSection.enter();
+    if (line == activeLine) {
+        activeLine = nullptr;
+    }
     for (auto iter = lines.begin(); iter != lines.end(); ) {
         if (iter->get() == line) {
             iter = lines.erase(iter);

@@ -10,12 +10,10 @@ PlaygroundViewOld::PlaygroundViewOld (DelayGraph& dg)
     addAndMakeVisible(overlayButton);
 }
 
-
 void PlaygroundViewOld::resized()
 {
     overlayButton.setBounds(10,10,10,10);
 }
-
 
 static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point<float> end, int channel) {
     auto transform = juce::AffineTransform();
@@ -24,7 +22,6 @@ static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point
     transform = transform.translated(start);
     return transform;
 }
-
 
 void PlaygroundViewOld::drawLine (juce::Graphics& g, GraphLine* line) const
 {
