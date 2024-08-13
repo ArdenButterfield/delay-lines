@@ -4,6 +4,8 @@
 #include "EditorComponents/PlaygroundViewOld.h"
 #include "EditorComponents/PresetBrowser.h"
 
+#include "EditorComponents/PlaygroundComponent.h"
+
 #include "PlaygroundControllerOld.h"
 #include "PluginProcessor.h"
 
@@ -27,6 +29,9 @@ private:
     PresetBrowser presetBrowser;
     PlaygroundControllerOld playgroundController;
     PlaygroundViewOld playgroundViewOld;
+
+    PlaygroundComponent playgroundComponent;
+
     void buttonClicked(juce::Button *) override;
 
     void buttonStateChanged(juce::Button*) override;

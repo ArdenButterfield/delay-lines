@@ -22,7 +22,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(modulatorOverlayButton);
 //    addAndMakeVisible(modulatorOverlay.get()); TODO: bring back if neededp
     addAndMakeVisible(modKnobs);
-
+    addAndMakeVisible(playgroundComponent);
 //    setResizable(true, true);
 
     // Make sure that before the constructor has finished, you've set the
@@ -36,13 +36,16 @@ void PluginEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
 }
 
 void PluginEditor::resized()
 {
     // layout the positions of your child components here
     playgroundViewOld.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 150));
+
+    playgroundViewOld.setBounds(playgroundViewOld.getBounds().withWidth(playgroundViewOld.getWidth() / 2));
+    playgroundComponent.setBounds(playgroundViewOld.getBounds().withX(playgroundViewOld.getRight()));
+
     modKnobs.setBounds(getLocalBounds().withTop(playgroundViewOld.getBottom() + 10));
     printXmlButton.setBounds(10,10, 100, 30);
     presetBrowser.setBounds(150, 10, 200, 60);
