@@ -61,11 +61,25 @@ void PlaygroundComponent::removePoint (int identifier)
 
 void PlaygroundComponent::addLine (int identifier)
 {
-
+    auto newLine = std::make_unique<GraphLineComponent>(delayGraph, this, identifier);
+    addAndMakeVisible(newLine.get());
+    newLine->setBounds(this->getLocalBounds());
+    lineComponents.insert(std::move(newLine));
 
 }
 
 void PlaygroundComponent::removeLine (int identifier)
 {
-
+    for (auto& l : lineComponents) {
+        if (l->getIdentifier() == identifier) {
+            removeChildComponent(l.get());
+            lineComponents.erase(l);
+        }
+    }
+}
+void PlaygroundComponent::mouseUp (const juce::MouseEvent& event)
+{
+    if (event.mouseWasClicked()) {
+        delayGraph.addPoint(event.position, false);
+    }
 }

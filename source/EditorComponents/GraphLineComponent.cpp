@@ -3,6 +3,7 @@
 //
 
 #include "GraphLineComponent.h"
+#include "PlaygroundComponent.h"
 #include "../DelayGraph.h"
 
 static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point<float> end, int channel) {
@@ -14,8 +15,8 @@ static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point
 }
 
 
-GraphLineComponent::GraphLineComponent (PlaygroundViewOld* _playgroundView, DelayGraph* _delayGraph, int _id)
-    : playgroundViewOld(_playgroundView), delayGraph(_delayGraph), id(_id) {
+GraphLineComponent::GraphLineComponent (DelayGraph& _delayGraph, PlaygroundComponent* _playgroundComponent, int _id)
+    : playgroundComponent(_playgroundComponent), delayGraph(_delayGraph), id(_id) {
 }
 
 GraphLineComponent::~GraphLineComponent()
@@ -24,14 +25,14 @@ GraphLineComponent::~GraphLineComponent()
 
 void GraphLineComponent::paint (juce::Graphics& g)
 {
-    auto line = delayGraph->getLine(id);
+    auto line = delayGraph.getLine(id);
     if (!line) {
         return;
     }
-    if (delayGraph->interactionState == DelayGraph::lineHover && delayGraph->activeLine == line) {
+    if (delayGraph.interactionState == DelayGraph::lineHover && delayGraph.activeLine == line) {
         g.setColour(juce::Colours::yellow);
         g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 10);
-    } else if (delayGraph->interactionState == DelayGraph::editingLine && delayGraph->activeLine == line) {
+    } else if (delayGraph.interactionState == DelayGraph::editingLine && delayGraph.activeLine == line) {
         g.setColour(juce::Colours::pink);
         g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 10);
     }
@@ -78,5 +79,12 @@ void GraphLineComponent::resized()
 
 bool GraphLineComponent::hitTest (int x, int y)
 {
-    return Component::hitTest (x, y);
+    auto line = delayGraph.getLine(id);
+    if (line == nullptr) {
+        return false;
+    }
+    auto l = juce::Line<float>(*line->start, *line->end);
+    auto pointOnLine = juce::Point<float>();
+    return (l.getDistanceFromPoint({static_cast<float>(x), static_cast<float>(y)}, pointOnLine)
+            < static_cast<float>(lineHoverDistance));
 }

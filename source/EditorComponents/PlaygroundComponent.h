@@ -32,6 +32,7 @@ public:
 
     void timerCallback() override { repaint(); }
 private:
+    void mouseUp(const juce::MouseEvent &event) override;
     DelayGraph& delayGraph;
     std::set<std::unique_ptr<GraphLineComponent>> lineComponents;
     std::set<std::unique_ptr<GraphPointComponent>> pointComponents;
