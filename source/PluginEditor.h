@@ -27,8 +27,6 @@ public:
     juce::TextButton printXmlButton;
 private:
     PresetBrowser presetBrowser;
-    PlaygroundControllerOld playgroundController;
-    PlaygroundViewOld playgroundViewOld;
 
     PlaygroundComponent playgroundComponent;
 
