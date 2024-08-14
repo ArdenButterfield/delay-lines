@@ -16,6 +16,11 @@ void GraphPointComponent::paint (juce::Graphics& g) {
     if (!point) {
         return;
     }
+    if (point == delayGraph.lineInProgressEndPoint) {
+        g.setColour(juce::Colours::green);
+        g.fillEllipse(point->x - 10, point->y - 10, 20, 20);
+
+    }
     if (point == delayGraph.activePoint) {
         if (delayGraph.interactionState == DelayGraph::outerSelected) {
             g.setColour(juce::Colours::blue);
@@ -88,9 +93,17 @@ void GraphPointComponent::updateFocus (const juce::Point<float>& mousePoint)
 void GraphPointComponent::mouseDown (const juce::MouseEvent& event)
 {
     if (delayGraph.interactionState == DelayGraph::outerSelected) {
+        auto pt = delayGraph.getPoint(identifier);
+        if (pt == nullptr) {
+            return;
+        }
+
         delayGraph.interactionState = DelayGraph::creatingLine;
         delayGraph.lineInProgressEnd = event.position;
         delayGraph.lineInProgressEndPoint = nullptr;
+        ghostComponent = std::make_unique<LineGhostComponent>(*pt, event.position);
+        addAndMakeVisible(ghostComponent.get());
+        ghostComponent->setBounds(getLocalBounds());
     } else if (delayGraph.interactionState == DelayGraph::innerSelected) {
         delayGraph.activePoint->draggingOffset = true;
         if (event.mods.isShiftDown()) {
@@ -104,6 +117,16 @@ void GraphPointComponent::mouseDrag (const juce::MouseEvent& event)
 {
     if (delayGraph.interactionState == DelayGraph::movingPoint || delayGraph.interactionState == DelayGraph::stretchingPoint) {
         delayGraph.activePoint->offset = event.position - juce::Point<float>(delayGraph.activePoint->x, delayGraph.activePoint->y);
+    } else if (delayGraph.interactionState == DelayGraph::creatingLine) {
+        delayGraph.lineInProgressEnd = event.position;
+        delayGraph.lineInProgressEndPoint = nullptr;
+        for (const auto& point : delayGraph.getPoints()) {
+            if  ((point.get() != delayGraph.activePoint) && (point->getDistanceSquaredFrom(delayGraph.lineInProgressEnd) < static_cast<float>(outerHoverDistance * outerHoverDistance))) {
+                delayGraph.lineInProgressEndPoint = point.get();
+                delayGraph.lineInProgressEnd = *point;
+            }
+        }
+        ghostComponent->end = delayGraph.lineInProgressEnd;
     }
 }
 void GraphPointComponent::mouseUp (const juce::MouseEvent& event)
@@ -114,8 +137,17 @@ void GraphPointComponent::mouseUp (const juce::MouseEvent& event)
     } else if (delayGraph.interactionState == DelayGraph::stretchingPoint) {
         delayGraph.interactionState = DelayGraph::none;
         delayGraph.activePoint->draggingOffset = false;
+    } else if (delayGraph.interactionState == DelayGraph::creatingLine) {
+        removeChildComponent(ghostComponent.get());
+        ghostComponent.reset();
+        if (delayGraph.lineInProgressEndPoint) {
+            delayGraph.addLine(delayGraph.activePoint, delayGraph.lineInProgressEndPoint);
+        } else {
+            delayGraph.addPoint(event.position, true);
+        }
     }
 }
+
 void GraphPointComponent::mouseDoubleClick (const juce::MouseEvent& event)
 {
     auto point = delayGraph.getPoint(identifier);

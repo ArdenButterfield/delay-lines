@@ -7,6 +7,7 @@
 
 #include "juce_gui_basics/juce_gui_basics.h"
 
+class LineEditor;
 class DelayGraph;
 class PlaygroundComponent;
 
@@ -19,7 +20,12 @@ public:
     void resized() override;
     bool hitTest(int x, int y) override;
     int getIdentifier() const { return id; }
+
+    void mouseEnter(const juce::MouseEvent &event) override;
+    void mouseExit(const juce::MouseEvent &event) override;
+    void mouseUp(const juce::MouseEvent &event) override;
 private:
+    std::unique_ptr<LineEditor> lineEditor;
     const int id;
     DelayGraph& delayGraph;
     PlaygroundComponent* playgroundComponent;

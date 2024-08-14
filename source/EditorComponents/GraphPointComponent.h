@@ -7,8 +7,18 @@
 
 #include "../DelayGraph.h"
 #include "juce_gui_basics/juce_gui_basics.h"
-
 class PlaygroundComponent;
+
+class LineGhostComponent : public juce::Component
+{
+public:
+    LineGhostComponent(juce::Point<float> _start, juce::Point<float> _end) : start(_start), end(_end) {}
+    void paint(juce::Graphics &g) override {
+        g.setColour(juce::Colours::green);
+        g.drawLine({start, end}, 2.0);
+    }
+    juce::Point<float> start, end;
+};
 
 class GraphPointComponent : public juce::Component
 {
@@ -31,7 +41,7 @@ private:
     void mouseUp(const juce::MouseEvent &event) override;
     void mouseDoubleClick(const juce::MouseEvent &event) override;
     void updateFocus(const juce::Point<float>& mousePoint);
-
+    std::unique_ptr<LineGhostComponent> ghostComponent;
     const int innerHoverDistance = 5;
     const int outerHoverDistance = 10;
 };

@@ -4,6 +4,7 @@
 
 #include "GraphLineComponent.h"
 #include "PlaygroundComponent.h"
+#include "LineEditor.h"
 #include "../DelayGraph.h"
 
 static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point<float> end, int channel) {
@@ -79,6 +80,9 @@ void GraphLineComponent::resized()
 
 bool GraphLineComponent::hitTest (int x, int y)
 {
+    if (lineEditor && lineEditor->isVisible()) {
+        return true;
+    }
     auto line = delayGraph.getLine(id);
     if (line == nullptr) {
         return false;
@@ -87,4 +91,32 @@ bool GraphLineComponent::hitTest (int x, int y)
     auto pointOnLine = juce::Point<float>();
     return (l.getDistanceFromPoint({static_cast<float>(x), static_cast<float>(y)}, pointOnLine)
             < static_cast<float>(lineHoverDistance));
+}
+
+void GraphLineComponent::mouseEnter (const juce::MouseEvent& event)
+{
+    delayGraph.activeLine = delayGraph.getLine(id);
+    delayGraph.interactionState = DelayGraph::lineHover;
+}
+
+void GraphLineComponent::mouseExit (const juce::MouseEvent& event)
+{
+    delayGraph.interactionState = DelayGraph::none;
+}
+
+void GraphLineComponent::mouseUp (const juce::MouseEvent& event)
+{
+    if (event.mouseWasClicked() && lineEditor && lineEditor->isVisible()) {
+        playgroundComponent->removeChildComponent(lineEditor.get());
+        lineEditor.reset();
+    } else if (event.mouseWasClicked() && event.mods.isShiftDown()) {
+        delayGraph.activeLine->toggleEnabled();
+    } else if (event.mouseWasClicked() && event.mods.isRightButtonDown()) {
+        delayGraph.deleteLine(delayGraph.activeLine);
+        delayGraph.interactionState = DelayGraph::none;
+    } else if (event.mouseWasClicked()) {
+        lineEditor = std::make_unique<LineEditor>(delayGraph, id);
+        playgroundComponent->addAndMakeVisible(*lineEditor);
+        lineEditor->setBounds(10,10,350,250);
+    }
 }

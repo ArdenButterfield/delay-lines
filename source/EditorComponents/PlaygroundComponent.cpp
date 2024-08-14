@@ -44,7 +44,7 @@ void PlaygroundComponent::paint (juce::Graphics& g)
 void PlaygroundComponent::addPoint (int identifier)
 {
     auto newPoint = std::make_unique<GraphPointComponent>(delayGraph, this, identifier);
-    addAndMakeVisible(newPoint.get());
+    addAndMakeVisible(newPoint.get(), -1);
     newPoint->setBounds(this->getLocalBounds());
     pointComponents.insert(std::move(newPoint));
 }
@@ -62,7 +62,7 @@ void PlaygroundComponent::removePoint (int identifier)
 void PlaygroundComponent::addLine (int identifier)
 {
     auto newLine = std::make_unique<GraphLineComponent>(delayGraph, this, identifier);
-    addAndMakeVisible(newLine.get());
+    addAndMakeVisible(newLine.get(), 0); // Lines should be under points
     newLine->setBounds(this->getLocalBounds());
     lineComponents.insert(std::move(newLine));
 
