@@ -5,7 +5,7 @@
 #include "PlaygroundViewOld.h"
 
 PlaygroundViewOld::PlaygroundViewOld (DelayGraph& dg)
-    : delayGraph(dg), overlayButton(ModulatableKey( ModulatableKey::point, 0, "" ), nullptr) {
+    : delayGraph(dg), overlayButton({ ModulatableKey::point, 0, "" }, nullptr) {
     startTimerHz(60);
     addAndMakeVisible(overlayButton);
 }
