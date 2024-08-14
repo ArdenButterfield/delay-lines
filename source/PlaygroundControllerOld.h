@@ -2,16 +2,16 @@
 // Created by arden on 3/14/24.
 //
 
-#ifndef DELAYLINES_PLAYGROUNDCONTROLLER_H
-#define DELAYLINES_PLAYGROUNDCONTROLLER_H
+#ifndef DELAYLINES_PLAYGROUNDCONTROLLEROLD_H
+#define DELAYLINES_PLAYGROUNDCONTROLLEROLD_H
 
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "DelayGraph.h"
 
-class PlaygroundController : public juce::MouseListener
+class PlaygroundControllerOld : public juce::MouseListener
 {
 public:
-    explicit PlaygroundController(DelayGraph& dg) : delayGraph(dg) {}
+    explicit PlaygroundControllerOld (DelayGraph& dg) : delayGraph(dg) {}
     void mouseMove(const juce::MouseEvent &event) override;
     void mouseEnter(const juce::MouseEvent &event) override;
     void mouseExit(const juce::MouseEvent &event) override;
@@ -29,4 +29,4 @@ private:
     void setHoveredPoint(const juce::Point<float>& mousePoint);
 };
 
-#endif //DELAYLINES_PLAYGROUNDCONTROLLER_H
+#endif //DELAYLINES_PLAYGROUNDCONTROLLEROLD_H

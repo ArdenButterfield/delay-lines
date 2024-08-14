@@ -2,24 +2,24 @@
 // Created by arden on 3/14/24.
 //
 
-#include "PlaygroundController.h"
+#include "PlaygroundControllerOld.h"
 
-void PlaygroundController::mouseMove (const juce::MouseEvent& event)
+void PlaygroundControllerOld::mouseMove (const juce::MouseEvent& event)
 {
     setHoveredPoint(event.position);
 }
 
-void PlaygroundController::mouseEnter (const juce::MouseEvent& event)
+void PlaygroundControllerOld::mouseEnter (const juce::MouseEvent& event)
 {
     juce::ignoreUnused(event);
 }
 
-void PlaygroundController::mouseExit (const juce::MouseEvent& event)
+void PlaygroundControllerOld::mouseExit (const juce::MouseEvent& event)
 {
     juce::ignoreUnused(event);
 }
 
-void PlaygroundController::mouseDown (const juce::MouseEvent& event)
+void PlaygroundControllerOld::mouseDown (const juce::MouseEvent& event)
 {
     if (event.mods.isRightButtonDown()) {
         return;
@@ -55,7 +55,7 @@ void PlaygroundController::mouseDown (const juce::MouseEvent& event)
     }
 }
 
-void PlaygroundController::mouseDrag (const juce::MouseEvent& event)
+void PlaygroundControllerOld::mouseDrag (const juce::MouseEvent& event)
 {
     if (event.mods.isRightButtonDown()) {
         return;
@@ -94,7 +94,7 @@ void PlaygroundController::mouseDrag (const juce::MouseEvent& event)
     }
 }
 
-void PlaygroundController::mouseUp (const juce::MouseEvent& event)
+void PlaygroundControllerOld::mouseUp (const juce::MouseEvent& event)
 {
     switch (delayGraph.interactionState) {
         case DelayGraph::none:
@@ -141,7 +141,7 @@ void PlaygroundController::mouseUp (const juce::MouseEvent& event)
     setHoveredPoint(event.position);
 }
 
-void PlaygroundController::mouseDoubleClick (const juce::MouseEvent& event)
+void PlaygroundControllerOld::mouseDoubleClick (const juce::MouseEvent& event)
 {
     juce::ignoreUnused(event);
     switch (delayGraph.interactionState) {
@@ -164,7 +164,7 @@ void PlaygroundController::mouseDoubleClick (const juce::MouseEvent& event)
     }
 }
 
-void PlaygroundController::setHoveredPoint (const juce::Point<float>& mousePoint)
+void PlaygroundControllerOld::setHoveredPoint (const juce::Point<float>& mousePoint)
 {
     if (delayGraph.interactionState == DelayGraph::editingLine) {
         return;

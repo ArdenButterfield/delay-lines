@@ -122,6 +122,10 @@ void DelayGraph::addPoint(const juce::Point<float>& point, bool connectToSelecte
         activePoint = added;
         interactionState = creatingLine;
     }
+    for (auto& listener : listeners) {
+        listener->pointAdded(points.back()->identifier);
+    }
+
     criticalSection.exit();
 
 }
@@ -138,6 +142,9 @@ void DelayGraph::addLine (GraphPoint* start, GraphPoint* end)
     if (processSpec) {
         lines.back()->prepareToPlay(*processSpec);
     }
+    for (auto& listener : listeners) {
+        listener->lineAdded(lines.back()->identifier);
+    }
     criticalSection.exit();
 }
 
@@ -151,7 +158,11 @@ void DelayGraph::deletePoint (const GraphPoint* point)
     if (point->pointType == GraphPoint::start || point->pointType == GraphPoint::end) {
         return;
     }
+    auto id = point->identifier;
     criticalSection.enter();
+    if (point == activePoint) {
+        activePoint = nullptr;
+    }
     for (auto iter = lines.begin(); iter != lines.end(); ) {
         if (iter->get()->start == point || iter->get()->end == point) {
             iter = lines.erase(iter);
@@ -166,18 +177,28 @@ void DelayGraph::deletePoint (const GraphPoint* point)
             ++iter;
         }
     }
+    for (auto& listener : listeners) {
+        listener->pointRemoved(id);
+    }
     criticalSection.exit();
 }
 
 void DelayGraph::deleteLine (const GraphLine* line)
 {
+    auto id = line->identifier;
     criticalSection.enter();
+    if (line == activeLine) {
+        activeLine = nullptr;
+    }
     for (auto iter = lines.begin(); iter != lines.end(); ) {
         if (iter->get() == line) {
             iter = lines.erase(iter);
         } else {
             ++iter;
         }
+    }
+    for (auto& listener : listeners) {
+        listener->lineRemoved(id);
     }
     criticalSection.exit();
 }
@@ -250,7 +271,6 @@ GraphPoint* DelayGraph::getPoint (const int& id)
     return nullptr;
 }
 
-
 GraphLine* DelayGraph::getLine (const int& id)
 {
     for (auto& line : lines) {
@@ -259,6 +279,16 @@ GraphLine* DelayGraph::getLine (const int& id)
         }
     }
     return nullptr;
+}
+
+bool DelayGraph::copyPoint (const int id, std::unique_ptr<GraphPoint>& out) {
+    auto p = getPoint(id);
+    if (p == nullptr) {
+        return false;
+    }
+
+    out = std::make_unique<GraphPoint>(*p);
+    return true;
 }
 
 void DelayGraph::setRealOutputs()
@@ -409,4 +439,33 @@ void DelayGraph::setMidiTrackNote (int pitch)
     for (auto& line : lines) {
         line->setMidiTrackNote(pitch);
     }
+}
+void DelayGraph::addListener (DelayGraph::Listener* listener)
+{
+    listeners.insert(listener);
+}
+
+void DelayGraph::removeListener (DelayGraph::Listener* listener)
+{
+    if (listeners.contains(listener)) {
+        listeners.erase(listener);
+    }
+}
+
+std::vector<int> DelayGraph::getAllPointIds()
+{
+    auto out = std::vector<int>();
+    for (auto& point : points) {
+        out.push_back(point->identifier);
+    }
+    return out;
+}
+
+std::vector<int> DelayGraph::getAllLineIds()
+{
+    auto out = std::vector<int>();
+    for (auto& line : lines) {
+        out.push_back(line->identifier);
+    }
+    return out;
 }

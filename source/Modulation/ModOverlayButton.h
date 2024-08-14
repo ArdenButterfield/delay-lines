@@ -19,9 +19,13 @@ public:
           modKey(key),
           listener(l)
     {
-        addListener(listener);
+        if (listener) {
+            addListener(listener);
+        }
     }
     const ModulatableKey modKey;
+
+    void paintButton(juce::Graphics &, bool, bool) override;
 private:
     juce::Button::Listener* listener;
 };

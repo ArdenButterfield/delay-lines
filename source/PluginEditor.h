@@ -1,11 +1,12 @@
 #pragma once
 
 #include "BinaryData.h"
-#include "EditorComponents/PlaygroundView.h"
+#include "EditorComponents/PlaygroundViewOld.h"
 #include "EditorComponents/PresetBrowser.h"
-#include "EditorComponents/ModulatorOverlay.h"
 
-#include "PlaygroundController.h"
+#include "EditorComponents/PlaygroundComponent.h"
+
+#include "PlaygroundControllerOld.h"
 #include "PluginProcessor.h"
 
 #include "juce_audio_processors/juce_audio_processors.h"
@@ -25,10 +26,10 @@ public:
 
     juce::TextButton printXmlButton;
 private:
-    std::unique_ptr<ModulatorOverlay> modulatorOverlay;
     PresetBrowser presetBrowser;
-    PlaygroundController playgroundController;
-    PlaygroundView playgroundView;
+
+    PlaygroundComponent playgroundComponent;
+
     void buttonClicked(juce::Button *) override;
 
     void buttonStateChanged(juce::Button*) override;
