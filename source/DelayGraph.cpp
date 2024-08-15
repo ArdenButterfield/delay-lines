@@ -469,3 +469,10 @@ std::vector<int> DelayGraph::getAllLineIds()
     }
     return out;
 }
+
+void DelayGraph::applyGlobalOffset (juce::Point<float> offset)
+{
+    for (auto& point : points) {
+        *point += offset;
+    }
+}

@@ -10,7 +10,7 @@
 #include "PluginProcessor.h"
 
 #include "juce_audio_processors/juce_audio_processors.h"
-
+#include "EditorComponents/DelayLinesLookAndFeel.h"
 #include "Modulation/ModKnobs.h"
 
 //==============================================================================
@@ -43,4 +43,6 @@ private:
     juce::Slider mixSlider;
 
     ModKnobs modKnobs;
+
+    DelayLinesLookAndFeel delayLinesLookAndFeel;
 };

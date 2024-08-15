@@ -81,5 +81,14 @@ void PlaygroundComponent::mouseUp (const juce::MouseEvent& event)
 {
     if (event.mouseWasClicked()) {
         delayGraph.addPoint(event.position, false);
+    } else {
+        delayGraph.applyGlobalOffset(globalOffset);
+        globalOffset = {0.f, 0.f};
     }
+}
+void PlaygroundComponent::mouseDrag (const juce::MouseEvent& event)
+{
+    globalOffset = {
+        static_cast<float>(event.getOffsetFromDragStart().x),
+        static_cast<float>(event.getOffsetFromDragStart().y)};
 }

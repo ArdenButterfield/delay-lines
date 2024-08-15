@@ -83,6 +83,8 @@ public:
 
     void exportToXml(juce::XmlElement* parent);
     bool importFromXml(juce::XmlElement* parent);
+
+    void applyGlobalOffset(juce::Point<float> offset);
 private:
     std::set<Listener*> listeners;
     std::set<GraphPoint*> realGlobalInputs;

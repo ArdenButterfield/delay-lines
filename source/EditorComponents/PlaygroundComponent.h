@@ -31,8 +31,12 @@ public:
     void removeLine(int identifier);
 
     void timerCallback() override { repaint(); }
+    juce::Point<float> getGlobalOffset() { return globalOffset; }
 private:
+    void applyGlobalOffset();
+    juce::Point<float> globalOffset;
     void mouseUp(const juce::MouseEvent &event) override;
+    void mouseDrag(const juce::MouseEvent &event) override;
     DelayGraph& delayGraph;
     std::set<std::unique_ptr<GraphLineComponent>> lineComponents;
     std::set<std::unique_ptr<GraphPointComponent>> pointComponents;

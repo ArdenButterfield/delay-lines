@@ -4,11 +4,12 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     : AudioProcessorEditor (&p),
       printXmlButton("Print XML"),
       presetBrowser(p.delayGraph),
+      playgroundComponent(p.delayGraph),
       processorRef (p),
       modulatorOverlayButton("Modulator Overlay"),
-      modKnobs(p.modulationEngine),
-      playgroundComponent(p.delayGraph)
+      modKnobs(p.modulationEngine)
 {
+    setLookAndFeel(&delayLinesLookAndFeel);
 
     printXmlButton.addListener(this);
     modulatorOverlayButton.addListener(this);
