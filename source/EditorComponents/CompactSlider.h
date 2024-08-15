@@ -10,7 +10,7 @@
 class CompactSlider : public juce::Slider, public juce::Label::Listener
 {
 public:
-    CompactSlider() {
+    CompactSlider() : suffix("") {
         setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
         setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
         addAndMakeVisible(valueLabel);
@@ -19,9 +19,13 @@ public:
         valueLabel.setEditable(true);
     }
 
+    void setSuffix(const juce::String& _suffix) {
+        suffix = _suffix;
+    }
+
     void paint(juce::Graphics& g) override {
         if (!valueLabel.isBeingEdited()) {
-            valueLabel.setText(juce::String(getValue()), juce::dontSendNotification);
+            valueLabel.setText(juce::String(getValue()) + suffix, juce::dontSendNotification);
         }
         auto val = valueToProportionOfLength(getValue());
         g.setColour(juce::Colours::black);
@@ -43,12 +47,14 @@ public:
 
     void labelTextChanged(juce::Label *labelThatHasChanged) override {}
     void editorShown(juce::Label * label, juce::TextEditor & textEditor) override {
+        textEditor.setText(juce::String(getValue()));
         textEditor.setInputRestrictions(10, "-.1234567890");
     }
     void editorHidden(juce::Label * label, juce::TextEditor & textEditor) override {
         setValue(textEditor.getText().getDoubleValue());
     }
 private:
+    juce::String suffix;
     juce::Label valueLabel;
 };
 

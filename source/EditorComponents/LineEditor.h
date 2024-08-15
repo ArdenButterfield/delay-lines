@@ -35,11 +35,11 @@ public:
     juce::Slider loCutSlider;
     juce::Slider hiCutSlider;
 
-    juce::Slider gainSlider;
+    CompactSlider gainSlider;
     juce::ToggleButton invertButton;
     juce::Slider gainEnvelopeFollowSlider;
 
-    juce::Slider feedbackSlider;
+    CompactSlider feedbackSlider;
 
 private:
     juce::Rectangle<int> topBar;

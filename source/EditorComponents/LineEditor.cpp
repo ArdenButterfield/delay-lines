@@ -20,6 +20,7 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
     hiCutSlider.setRange(100,20000);
 
     gainSlider.setRange(0,2);
+    gainSlider.setSuffix(" dB");
 
     gainEnvelopeFollowSlider.setRange(-1,1);
 
@@ -38,11 +39,16 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
              &distortionSlider,
              &loCutSlider,
              &hiCutSlider,
-             &gainSlider,
-             &gainEnvelopeFollowSlider,
-             &feedbackSlider}) {
+             &gainEnvelopeFollowSlider}) {
         slider->setSliderStyle(juce::Slider::RotaryVerticalDrag);
         slider->setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 60, 20);
+        addAndMakeVisible(slider);
+        slider->addListener(this);
+    }
+
+    for (auto slider : {
+             &gainSlider,
+             &feedbackSlider}) {
         addAndMakeVisible(slider);
         slider->addListener(this);
     }
