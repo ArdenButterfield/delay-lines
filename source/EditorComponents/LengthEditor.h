@@ -10,6 +10,8 @@
 #include "../DelayGraph.h"
 #include "../Line/GraphLine.h"
 
+#include "CompactSlider.h"
+
 class LengthEditor : public juce::Component, public juce::Timer, public juce::ComboBox::Listener, public juce::Slider::Listener
 {
 public:
@@ -26,14 +28,14 @@ private:
 
     juce::ComboBox unitSelector;
 
-    juce::Slider samplesSlider;
-    juce::Slider millisecondsSlider;
-    juce::Slider hertzSlider;
-    juce::Slider noteSlider;
-    juce::Slider pitchSlider;
+    CompactSlider samplesSlider;
+    CompactSlider millisecondsSlider;
+    CompactSlider hertzSlider;
+    CompactSlider noteSlider;
+    CompactSlider pitchSlider;
 
-    juce::Slider beatNumerator;
-    juce::Slider beatDenominator;
+    CompactSlider beatNumerator;
+    CompactSlider beatDenominator;
 
     DelayGraph& delayGraph;
     const int& graphLine;

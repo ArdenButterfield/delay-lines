@@ -34,8 +34,6 @@ LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGr
              &pitchSlider,
              &beatNumerator,
              &beatDenominator}) {
-        slider->setSliderStyle(juce::Slider::LinearBarVertical);
-        slider->setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 60, 20);
         addAndMakeVisible(slider);
         slider->addListener(this);
     }
