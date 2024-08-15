@@ -9,6 +9,7 @@
 
 #include "../DelayGraph.h"
 #include "LengthEditor.h"
+#include "DelayLinesLookAndFeel.h"
 
 class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::ToggleButton::Listener, public juce::Timer
 {
@@ -42,9 +43,11 @@ public:
     CompactSlider feedbackSlider;
 
 private:
+    juce::Label gainLabel;
+    juce::Label feedbackLabel;
+
     juce::Rectangle<int> topBar;
     juce::Rectangle<int> mainSection;
-
 
     juce::ComponentDragger dragger;
 
@@ -61,6 +64,8 @@ private:
     std::array<juce::Rectangle<int>, 3> panels;
 
     bool dragging;
+
+    DelayLinesLookAndFeel delayLinesLookAndFeel;
 };
 
 #endif //DELAYLINES_LINEEDITOR_H

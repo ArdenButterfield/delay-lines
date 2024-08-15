@@ -8,7 +8,7 @@
 LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGraph(_delayGraph), graphLine(_line)
 {
     startTimerHz(60);
-    unitSelector.addItemList({"Milliseconds", "Samples", "Hertz", "Pitch", "Beat", "MIDI track"}, 1); // offset must start at 1: 0 is reserved for undefined
+    unitSelector.addItemList({"ms", "Samples", "Hz", "Pitch", "Beat", "MIDI track"}, 1); // offset must start at 1: 0 is reserved for undefined
     unitSelector.addListener(this);
 
     samplesSlider.setNormalisableRange({0,200});
@@ -31,12 +31,14 @@ LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGr
              &samplesSlider,
              &millisecondsSlider,
              &hertzSlider,
-             &pitchSlider,
              &beatNumerator,
              &beatDenominator}) {
         addAndMakeVisible(slider);
         slider->addListener(this);
     }
+
+    addAndMakeVisible(pitchSlider);
+    pitchSlider.addListener(this);
 
     updateSliders();
     updateUnitSelector();
@@ -44,15 +46,15 @@ LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGr
 
 void LengthEditor::resized()
 {
-    unitSelector.setBounds(getLocalBounds().withHeight(30));
-    auto sliderZone = getLocalBounds().withTop(unitSelector.getBottom());
+    unitSelector.setBounds(getLocalBounds().withWidth(80).withRightX(getRight()));
+    auto sliderZone = getLocalBounds().withRight(unitSelector.getX());
 
     samplesSlider.setBounds(sliderZone);
     millisecondsSlider.setBounds(sliderZone);
     hertzSlider.setBounds(sliderZone);
     pitchSlider.setBounds(sliderZone);
 
-    beatNumerator.setBounds(sliderZone.withWidth(unitSelector.getWidth() / 2));
+    beatNumerator.setBounds(sliderZone.withWidth(sliderZone.getWidth() / 2));
     beatDenominator.setBounds(beatNumerator.getBounds().withX(beatNumerator.getRight()));
 
 }

@@ -11,6 +11,7 @@
 #include "../Line/GraphLine.h"
 
 #include "CompactSlider.h"
+#include "PitchCompactSlider.h"
 
 class LengthEditor : public juce::Component, public juce::Timer, public juce::ComboBox::Listener, public juce::Slider::Listener
 {
@@ -32,7 +33,7 @@ private:
     CompactSlider millisecondsSlider;
     CompactSlider hertzSlider;
     CompactSlider noteSlider;
-    CompactSlider pitchSlider;
+    PitchCompactSlider pitchSlider;
 
     CompactSlider beatNumerator;
     CompactSlider beatDenominator;
