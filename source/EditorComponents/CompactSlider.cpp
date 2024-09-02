@@ -50,6 +50,7 @@ void CompactSlider::editorShown (juce::Label* label, juce::TextEditor& textEdito
 {
     textEditor.setText(juce::String(getValue()));
     textEditor.setInputRestrictions(10, "-.1234567890");
+    textEditor.moveCaretToEnd();
 }
 
 void CompactSlider::editorHidden (juce::Label* label, juce::TextEditor& textEditor)

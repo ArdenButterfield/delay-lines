@@ -5,7 +5,7 @@
 #include "PlaygroundComponent.h"
 #include "../DelayGraph.h"
 
-PlaygroundComponent::PlaygroundComponent(DelayGraph& _delayGraph) : delayGraph(_delayGraph)
+PlaygroundComponent::PlaygroundComponent(DelayGraph& _delayGraph) : delayGraph(_delayGraph), globalOffset(0,0)
 {
     delayGraph.addListener(this);
     for (auto id : delayGraph.getAllLineIds()) {
@@ -77,6 +77,7 @@ void PlaygroundComponent::removeLine (int identifier)
         }
     }
 }
+
 void PlaygroundComponent::mouseUp (const juce::MouseEvent& event)
 {
     if (event.mouseWasClicked()) {
@@ -86,6 +87,7 @@ void PlaygroundComponent::mouseUp (const juce::MouseEvent& event)
         globalOffset = {0.f, 0.f};
     }
 }
+
 void PlaygroundComponent::mouseDrag (const juce::MouseEvent& event)
 {
     globalOffset = {
