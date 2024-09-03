@@ -12,7 +12,9 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
 
     modDepthSlider.setRange(0,1);
 
-    modRateSlider.setRange(0.1,30);
+    auto modrateRange = juce::NormalisableRange<double>(0.1, 30);
+    modrateRange.setSkewForCentre(3);
+    modRateSlider.setNormalisableRange(modrateRange);
 
     distortionSlider.setRange(0, 1);
 
@@ -36,11 +38,7 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
 
     for (auto slider : {
              &timeEnvelopeFollowSlider,
-             &modDepthSlider,
-             &modRateSlider,
              &distortionSlider,
-             &loCutSlider,
-             &hiCutSlider,
              &gainEnvelopeFollowSlider}) {
         slider->setSliderStyle(juce::Slider::RotaryVerticalDrag);
         slider->setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 60, 20);
@@ -50,7 +48,11 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
 
     for (auto slider : {
              &gainSlider,
-             &feedbackSlider}) {
+             &feedbackSlider,
+             &loCutSlider,
+             &hiCutSlider,
+             &modDepthSlider,
+             &modRateSlider}) {
         addAndMakeVisible(slider);
         slider->addListener(this);
     }
@@ -68,9 +70,25 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
 
     gainLabel.setText("GAIN", juce::dontSendNotification);
     feedbackLabel.setText("FEEDBACK", juce::dontSendNotification);
+    modLabel.setText("MOD", juce::dontSendNotification);
+    modDepthLabel.setText("depth", juce::dontSendNotification);
+    modRateLabel.setText("rate", juce::dontSendNotification);
+    filterLabel.setText("FILTER", juce::dontSendNotification);
+    filterLoLabel.setText("lo", juce::dontSendNotification);
+    filterHiLabel.setText("hi", juce::dontSendNotification);
 
-    addAndMakeVisible(gainLabel);
-    addAndMakeVisible(feedbackLabel);
+    for (auto label : {
+             &gainLabel,
+             &feedbackLabel,
+             &modLabel,
+             &modDepthLabel,
+             &modRateLabel,
+             &filterLabel,
+             &filterLoLabel,
+             &filterHiLabel
+         }) {
+        addAndMakeVisible(label);
+    }
 
     startTimerHz(60);
 }
@@ -91,7 +109,7 @@ void LineEditor::resized()
 
     lengthEditor.setBounds(mainSection.withHeight(40));
 
-    auto gainAndFeedbackArea = mainSection.withTrimmedTop(lengthEditor.getHeight()).withHeight(60);
+    auto gainAndFeedbackArea = mainSection.withTrimmedTop(lengthEditor.getHeight()).withHeight(50);
     auto gainArea = gainAndFeedbackArea.withWidth(gainAndFeedbackArea.getWidth() / 2);
     auto feedbackArea = gainAndFeedbackArea.withTrimmedLeft(gainArea.getRight());
 
@@ -99,6 +117,26 @@ void LineEditor::resized()
     feedbackSlider.setBounds(feedbackArea.withHeight(40));
     gainLabel.setBounds(gainArea.withTrimmedTop(gainSlider.getHeight()));
     feedbackLabel.setBounds(feedbackArea.withTrimmedTop(feedbackSlider.getHeight()));
+
+    modArea = mainSection.withTrimmedTop(gainAndFeedbackArea.getBottom()).withHeight(80);
+    auto thirdWidth = modArea.getWidth() / 3;
+    modDepthLabel.setBounds(modArea.withWidth(thirdWidth).withHeight(10));
+    modDepthSlider.setBounds(modArea.withWidth(thirdWidth).withTrimmedTop(modDepthLabel.getHeight()));
+
+    modRateLabel.setBounds(modArea.withWidth(thirdWidth).withRightX(modArea.getRight()).withHeight(10));
+    modRateSlider.setBounds(modArea.withWidth(thirdWidth).withRightX(modArea.getRight()).withTrimmedTop(modRateLabel.getHeight()));
+
+    modLabel.setBounds(modArea.withX(modDepthSlider.getRight()).withRight(modRateSlider.getX()));
+
+    filterArea = mainSection.withTrimmedTop(modArea.getBottom()).withHeight(80);
+    thirdWidth = modArea.getWidth() / 3;
+    filterLoLabel.setBounds(filterArea.withWidth(thirdWidth).withHeight(10));
+    loCutSlider.setBounds(filterArea.withWidth(thirdWidth).withTrimmedTop(filterLoLabel.getHeight()));
+
+    filterHiLabel.setBounds(filterArea.withWidth(thirdWidth).withRightX(filterArea.getRight()).withHeight(10));
+    hiCutSlider.setBounds(filterArea.withWidth(thirdWidth).withRightX(filterArea.getRight()).withTrimmedTop(filterHiLabel.getHeight()));
+
+    filterLabel.setBounds(filterArea.withX(loCutSlider.getRight()).withRight(hiCutSlider.getX()));
 
 
 //    panels[0] = mainSection.withWidth(mainSection.getWidth() / 3);
@@ -144,6 +182,10 @@ void LineEditor::paint (juce::Graphics& g)
     g.fillRect(panels[1]);
     g.setColour(juce::Colours::black);
     g.drawRect(getLocalBounds(), 3);
+//    g.drawRect(modArea, 1);
+//    for (auto child : getChildren()) {
+//        g.drawRect(child->getBounds());
+//    }
 }
 
 void LineEditor::sliderValueChanged (juce::Slider* slider)
