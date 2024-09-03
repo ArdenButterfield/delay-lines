@@ -135,6 +135,10 @@ void LineEditor::paint (juce::Graphics& g)
     g.setColour(juce::Colours::red);
     g.fillAll();
     g.setColour(juce::Colours::brown);
+    auto line = delayGraph.getLine(graphLine);
+    if (line) {
+        g.setColour (line->getColor());
+    }
     g.fillRect(topBar);
     g.setColour(juce::Colours::orangered);
     g.fillRect(panels[1]);

@@ -13,7 +13,9 @@
 #include "CompactSlider.h"
 #include "PitchCompactSlider.h"
 
-class LengthEditor : public juce::Component, public juce::Timer, public juce::ComboBox::Listener, public juce::Slider::Listener
+#include "BpmTapper.h"
+
+class LengthEditor : public juce::Component, public juce::Timer, public juce::ComboBox::Listener, public juce::Slider::Listener, public BpmTapper::Listener
 {
 public:
     LengthEditor(DelayGraph& delayGraph, const int& line);
@@ -24,10 +26,14 @@ public:
     void comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) override;
     void sliderValueChanged(juce::Slider *slider) override;
 private:
+    void tempoSet(juce::int64 interval) override;
+
     void updateSliders();
     void updateUnitSelector();
 
     juce::ComboBox unitSelector;
+
+    BpmTapper bpmTapper;
 
     CompactSlider samplesSlider;
     CompactSlider millisecondsSlider;

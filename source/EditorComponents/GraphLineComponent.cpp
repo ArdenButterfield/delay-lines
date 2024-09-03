@@ -54,7 +54,7 @@ void GraphLineComponent::paint (juce::Graphics& g)
         return;
     }
 
-    g.setColour(juce::Colours::brown);
+    g.setColour(line->getColor());
     auto leftLinePath = juce::Path();
     auto rightLinePath = juce::Path();
     leftLinePath.startNewSubPath(0,0);

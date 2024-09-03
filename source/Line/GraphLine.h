@@ -64,7 +64,12 @@ public:
     bool importFromXml(DelayGraph* dg, juce::XmlElement* parent);
 
     bool modulateIfPossible(ModulatableKey& key, float newValue);
+    juce::Colour getColor() { return color; }
 private:
+    static juce::Colour getRandomColour();
+
+    juce::Colour color;
+
     std::unique_ptr<DelayLineInternal> delayLineInternal;
 
     void calculateInternalLength();
