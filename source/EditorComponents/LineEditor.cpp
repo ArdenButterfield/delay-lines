@@ -215,8 +215,14 @@ void LineEditor::sliderValueChanged (juce::Slider* slider)
         line->setDistortionAmount(static_cast<float>(distortionSlider.getValue()));
     } else if (slider == &loCutSlider) {
         line->setLowCutFilter(static_cast<float>(loCutSlider.getValue()));
+        filterVisualizer.setFilters(
+            loCutSlider.valueToProportionOfLength(loCutSlider.getValue()),
+            hiCutSlider.valueToProportionOfLength(hiCutSlider.getValue()));
     } else if (slider == &hiCutSlider) {
         line->setHighCutFilter(static_cast<float>(hiCutSlider.getValue()));
+        filterVisualizer.setFilters(
+            loCutSlider.valueToProportionOfLength(loCutSlider.getValue()),
+            hiCutSlider.valueToProportionOfLength(hiCutSlider.getValue()));
     } else if (slider == &gainEnvelopeFollowSlider) {
         line->setGainEnvelopeFollow(static_cast<float>(gainEnvelopeFollowSlider.getValue()));
     } else if (slider == &feedbackSlider) {

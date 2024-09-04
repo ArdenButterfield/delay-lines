@@ -4,6 +4,6 @@
 #include <array>
 #include <unordered_map>
 
-extern const std::unordered_map<int, std::array<unsigned char, 200 * 200>> filteredSquares;
+extern const std::unordered_map<int, std::array<unsigned char, 100 * 100>> filteredSquares;
 
 #endif
