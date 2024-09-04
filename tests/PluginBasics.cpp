@@ -164,7 +164,7 @@ TEST_CASE("Import XML", "[importxml]")
     delayGraph.importFromXml(xmlElement.get());
     auto finalXml = juce::XmlElement("plugin-state");
     delayGraph.exportToXml(&finalXml);
-s""    REQUIRE( xmlElement->isEquivalentTo(&finalXml, true));
+    REQUIRE( xmlElement->isEquivalentTo(&finalXml, true));
 }
 
 TEST_CASE( "set preset", "[setpreset]")
