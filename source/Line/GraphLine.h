@@ -40,13 +40,14 @@ public:
     void setFeedback(float amt);
     void setMidiTrackNote(int pitch);
 
+    float getCurrentModPosition();
+
     GraphPoint* start;
     GraphPoint* end;
     void pushSample(std::vector<float>& sample);
     void popSample();
     void prepareToPlay(juce::dsp::ProcessSpec& spec);
     void toggleEnabled();
-
     void getEnvelope(float proportion, float& left, float& right);
 
     void bakeOffset();

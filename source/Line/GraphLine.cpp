@@ -290,3 +290,7 @@ bool GraphLine::modulateIfPossible (ModulatableKey& key, float newValue)
 {
     return parameters.modulateIfPossible(key, newValue);
 }
+float GraphLine::getCurrentModPosition()
+{
+    return modOscillator->getCurrentValueWithoutTicking();
+}

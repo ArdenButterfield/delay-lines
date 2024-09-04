@@ -10,6 +10,8 @@
 #include "../DelayGraph.h"
 #include "LengthEditor.h"
 #include "DelayLinesLookAndFeel.h"
+#include "ModVisualizer.h"
+#include "FilterVisualizer.h"
 
 class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::ToggleButton::Listener, public juce::Timer
 {
@@ -64,7 +66,6 @@ private:
     void buttonStateChanged(juce::Button *) override;
     void buttonClicked(juce::Button *) override;
 
-
     void timerCallback() override;
 
     DelayGraph& delayGraph;
@@ -76,6 +77,8 @@ private:
 
     DelayLinesLookAndFeel delayLinesLookAndFeel;
 
+    ModVisualizer modVisualizer;
+    FilterVisualizer filterVisualizer;
 };
 
 #endif //DELAYLINES_LINEEDITOR_H

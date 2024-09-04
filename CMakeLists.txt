@@ -91,12 +91,23 @@ add_library(SharedCode INTERFACE)
 # Use cxx_std_23 for C++23 (as of CMake v 3.20)
 target_compile_features(SharedCode INTERFACE cxx_std_20)
 
+add_library(
+        FilteredSquares
+        STATIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Filtered_Noise_Images/FilteredSquares.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Filtered_Noise_Images/FilteredSquares.h)
+
+set_property(TARGET FilteredSquares PROPERTY POSITION_INDEPENDENT_CODE ON)
+
+
 # Manually list all .h and .cpp files for the plugin
 # If you are like me, you'll use globs for your sanity.
 # Just ensure you employ CONFIGURE_DEPENDS so the build system picks up changes
 # If you want to appease the CMake gods and avoid globs, manually add files like so:
 file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/source/*.h")
 target_sources(SharedCode INTERFACE ${SourceFiles})
+
+target_include_directories(SharedCode INTERFACE Filtered_Noise_Images)
 
 # Adds a BinaryData target for embedding assets into the binary
 include(Assets)
@@ -140,6 +151,7 @@ target_compile_definitions(SharedCode
 target_link_libraries(SharedCode
     INTERFACE
     Assets
+    FilteredSquares
     juce_audio_utils
     juce_audio_processors
     juce_dsp

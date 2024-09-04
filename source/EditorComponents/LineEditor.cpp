@@ -5,7 +5,7 @@
 #include "LineEditor.h"
 
 LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
-    : lengthEditor(_delayGraph, _line), delayGraph(_delayGraph), graphLine(_line), dragging(false)
+    : lengthEditor(_delayGraph, _line), delayGraph(_delayGraph), graphLine(_line), dragging(false), modVisualizer(&_delayGraph, _line)
 {
     setLookAndFeel(&delayLinesLookAndFeel);
     timeEnvelopeFollowSlider.setRange(-1, 1);
@@ -45,6 +45,9 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
         addAndMakeVisible(slider);
         slider->addListener(this);
     }
+
+    addAndMakeVisible(modVisualizer);
+    addAndMakeVisible(filterVisualizer);
 
     for (auto slider : {
              &gainSlider,
@@ -119,6 +122,9 @@ void LineEditor::resized()
     feedbackLabel.setBounds(feedbackArea.withTrimmedTop(feedbackSlider.getHeight()));
 
     modArea = mainSection.withTrimmedTop(gainAndFeedbackArea.getBottom()).withHeight(80);
+
+    modVisualizer.setBounds(modArea);
+
     auto thirdWidth = modArea.getWidth() / 3;
     modDepthLabel.setBounds(modArea.withWidth(thirdWidth).withHeight(10));
     modDepthSlider.setBounds(modArea.withWidth(thirdWidth).withTrimmedTop(modDepthLabel.getHeight()));
@@ -129,6 +135,9 @@ void LineEditor::resized()
     modLabel.setBounds(modArea.withX(modDepthSlider.getRight()).withRight(modRateSlider.getX()));
 
     filterArea = mainSection.withTrimmedTop(modArea.getBottom()).withHeight(80);
+
+    filterVisualizer.setBounds(filterArea);
+
     thirdWidth = modArea.getWidth() / 3;
     filterLoLabel.setBounds(filterArea.withWidth(thirdWidth).withHeight(10));
     loCutSlider.setBounds(filterArea.withWidth(thirdWidth).withTrimmedTop(filterLoLabel.getHeight()));
