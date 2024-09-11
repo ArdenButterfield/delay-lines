@@ -18,9 +18,10 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
 
     distortionSlider.setRange(0, 1);
 
-    loCutSlider.setRange(0, 2000);
-
-    hiCutSlider.setRange(100,20000);
+    auto filterRange = juce::NormalisableRange<double>(0,20000);
+    filterRange.setSkewForCentre(500);
+    loCutSlider.setNormalisableRange(filterRange);
+    hiCutSlider.setNormalisableRange(filterRange);
 
     gainSlider.setRange(0,2);
     gainSlider.setSuffix(" dB");
@@ -50,15 +51,21 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
     addAndMakeVisible(filterVisualizer);
 
     for (auto slider : {
+             &loCutSlider,
+             &hiCutSlider}) {
+        addAndMakeVisible(slider);
+        slider->addListener(this);
+    }
+    for (auto slider : {
              &gainSlider,
              &feedbackSlider,
-             &loCutSlider,
-             &hiCutSlider,
              &modDepthSlider,
              &modRateSlider}) {
         addAndMakeVisible(slider);
         slider->addListener(this);
     }
+
+
 
     addAndMakeVisible(lengthEditor);
 

@@ -12,6 +12,7 @@
 #include "DelayLinesLookAndFeel.h"
 #include "ModVisualizer.h"
 #include "FilterVisualizer.h"
+#include "FilterSlider.h"
 
 class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::ToggleButton::Listener, public juce::Timer
 {
