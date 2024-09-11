@@ -97,6 +97,9 @@ add_library(
         ${CMAKE_CURRENT_SOURCE_DIR}/Filtered_Noise_Images/FilteredSquares.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Filtered_Noise_Images/FilteredSquares.h)
 
+target_compile_features(FilteredSquares INTERFACE cxx_std_20)
+
+
 set_property(TARGET FilteredSquares PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 
