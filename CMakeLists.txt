@@ -93,7 +93,7 @@ target_compile_features(SharedCode INTERFACE cxx_std_20)
 
 add_library(
         FilteredSquares
-        STATIC
+        INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Filtered_Noise_Images/FilteredSquares.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Filtered_Noise_Images/FilteredSquares.h)
 
