@@ -91,18 +91,6 @@ add_library(SharedCode INTERFACE)
 # Use cxx_std_23 for C++23 (as of CMake v 3.20)
 target_compile_features(SharedCode INTERFACE cxx_std_20)
 
-add_library(
-        FilteredSquares
-        INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/Filtered_Noise_Images/FilteredSquares.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Filtered_Noise_Images/FilteredSquares.h)
-
-target_compile_features(FilteredSquares INTERFACE cxx_std_20)
-
-
-set_property(TARGET FilteredSquares PROPERTY POSITION_INDEPENDENT_CODE ON)
-
-
 # Manually list all .h and .cpp files for the plugin
 # If you are like me, you'll use globs for your sanity.
 # Just ensure you employ CONFIGURE_DEPENDS so the build system picks up changes
@@ -135,7 +123,7 @@ target_compile_definitions(SharedCode
     VERSION="${CURRENT_VERSION}"
 
     # JucePlugin_Name is for some reason doesn't use the nicer PRODUCT_NAME
-    PRODUCT_NAME_WITHOUT_VERSION="Pamplejuce"
+    PRODUCT_NAME_WITHOUT_VERSION="Delaylines"
 )
 
 #add_library(my_warning_flags INTERFACE)

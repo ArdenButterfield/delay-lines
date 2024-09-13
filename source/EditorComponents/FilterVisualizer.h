@@ -5,7 +5,8 @@
 #ifndef DELAYLINES_FILTERVISUALIZER_H
 #define DELAYLINES_FILTERVISUALIZER_H
 
-#include "FilteredSquares.h"
+#include "FilterData.h"
+#include "BinaryData.h"
 #include "juce_gui_basics/juce_gui_basics.h"
 
 class FilterVisualizer : public juce::Component

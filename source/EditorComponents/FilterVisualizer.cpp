@@ -12,17 +12,17 @@ void FilterVisualizer::paint (juce::Graphics& g)
     int convertedLow = std::floor(low * 25);
     int convertedHigh = std::floor(high * 25);
 
-    auto matches = {
-        filteredSquares.find(convertedLow * 1000 + convertedHigh),
-        filteredSquares.find((convertedLow + 1) * 1000 + convertedHigh),
-        filteredSquares.find(convertedLow * 1000 + (convertedHigh + 1)),
-        filteredSquares.find((convertedLow + 1) * 1000 + (convertedHigh + 1)),
+    std::vector<const char*> matches = {
+        filterData[convertedLow][convertedHigh],
+        filterData[convertedLow + 1][convertedHigh],
+        filterData[convertedLow][convertedHigh + 1],
+        filterData[convertedLow + 1][convertedHigh + 1]
     };
 
     auto lpScore = 1 - (low * 25 - convertedLow);
     auto hpScore = 1 - (high * 25 - convertedHigh);
 
-    auto matchScores = {
+    std::vector<float> matchScores = {
         lpScore * hpScore,
         (1 - lpScore) * hpScore,
         lpScore * (1 - hpScore),
@@ -33,10 +33,8 @@ void FilterVisualizer::paint (juce::Graphics& g)
         for (unsigned y = 0; y * pixelSize < getHeight(); ++y) {
             auto pixelScore = 0.f;
             for (int m = 0; m < 4; ++m) {
-                auto match = matches.begin()[m];
-                if (match != filteredSquares.end()) {
-                    pixelScore += match->second[y * 100 + x] * matchScores.begin()[m];
-                }
+                auto match = matches[m];
+                pixelScore += match[y * 100 + x] * matchScores[m];
             }
             if (pixelScore > 255.f * 1/2) {
                 g.setColour(juce::Colours::white);
