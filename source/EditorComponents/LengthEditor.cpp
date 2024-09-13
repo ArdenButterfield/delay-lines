@@ -22,8 +22,8 @@ LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGr
 
     pitchSlider.setNormalisableRange({0, 127, 1});
 
-    beatNumerator.setNormalisableRange({1, 32, 1});
-    beatDenominator.setNormalisableRange({1, 32, 1});
+    beatNumerator.setNormalisableRange({1, 32, 1, 0.6});
+    beatDenominator.setNormalisableRange({1, 32, 1, 0.6});
 
     addAndMakeVisible(unitSelector);
 

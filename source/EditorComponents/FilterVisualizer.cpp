@@ -12,8 +12,6 @@ void FilterVisualizer::paint (juce::Graphics& g)
     int convertedLow = std::floor(low * 25);
     int convertedHigh = std::floor(high * 25);
 
-
-
     std::vector<const char*> matches(4);
     matches[0] = filterData[convertedLow][convertedHigh];
     matches[1] = (convertedLow + 1 < 26) ? filterData[convertedLow + 1][convertedHigh] : nullptr;
