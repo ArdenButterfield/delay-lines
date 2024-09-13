@@ -141,7 +141,7 @@ TEST_CASE("Import XML", "[importxml]")
                    "      <point id=\"3\" x=\"50.0\" y=\"0.0\" type=\"1\"/>\n"
                    "    </points>\n"
                    "    <lines>\n"
-                   "      <line id=\"2\" start=\"1\" end=\"2\">\n"
+                   "      <line id=\"2\" color=\"ff8fe800\" start=\"1\" end=\"2\">\n"
                    "        <parameters mutebypass=\"0.0\" lengthenvelopefollow=\"0.5\" moddepth=\"0.0\" modrate=\"0.03010033443570137\"\n"
                    "                    distortion=\"0.0\" hicut=\"1.0\" locut=\"0.5\" gain=\"0.5\" invert=\"0.0\"\n"
                    "                    gainenvelopefollow=\"0.5\" feedback=\"0.0\">\n"
@@ -189,7 +189,7 @@ TEST_CASE( "set preset", "[setpreset]")
                    <point id="3" x="539.0" y="281.0" type="0"/>
                    </points>
                    <lines>
-                   <line id="1" start="1" end="2">
+                   <line id="1" color="ff8fe800" start="1" end="2">
                    <parameters mutebypass="0.0" lengthenvelopefollow="0.5" moddepth="0.0" modrate="0.03010033443570137"
                        distortion="0.0" hicut="1.0" locut="0.0" gain="0.5" invert="0.0"
                        gainenvelopefollow="0.5" feedback="0.0">
@@ -197,7 +197,7 @@ TEST_CASE( "set preset", "[setpreset]")
                        pitch="100.0" numerator="1.0" denominator="4.0"/>
                    </parameters>
                    </line>
-                   <line id="3" start="2" end="3">
+                   <line id="3" color="ff8fe800" start="2" end="3">
                    <parameters mutebypass="0.0" lengthenvelopefollow="0.5" moddepth="0.0" modrate="0.03010033443570137"
                        distortion="0.0" hicut="1.0" locut="0.0" gain="0.5" invert="0.0"
                        gainenvelopefollow="0.5" feedback="0.0">
@@ -205,7 +205,7 @@ TEST_CASE( "set preset", "[setpreset]")
                        numerator="1.0" denominator="4.0"/>
                    </parameters>
                    </line>
-                   <line id="2" start="3" end="1">
+                   <line id="2" color="ff8fe800" start="3" end="1">
                    <parameters mutebypass="0.0" lengthenvelopefollow="0.5" moddepth="0.0" modrate="0.03010033443570137"
                        distortion="0.0" hicut="1.0" locut="0.0" gain="0.5" invert="0.0"
                        gainenvelopefollow="0.5" feedback="0.0">

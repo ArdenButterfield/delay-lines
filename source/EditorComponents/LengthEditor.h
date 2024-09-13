@@ -10,7 +10,12 @@
 #include "../DelayGraph.h"
 #include "../Line/GraphLine.h"
 
-class LengthEditor : public juce::Component, public juce::Timer, public juce::ComboBox::Listener, public juce::Slider::Listener
+#include "CompactSlider.h"
+#include "PitchCompactSlider.h"
+
+#include "BpmTapper.h"
+
+class LengthEditor : public juce::Component, public juce::Timer, public juce::ComboBox::Listener, public juce::Slider::Listener, public BpmTapper::Listener
 {
 public:
     LengthEditor(DelayGraph& delayGraph, const int& line);
@@ -21,19 +26,23 @@ public:
     void comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) override;
     void sliderValueChanged(juce::Slider *slider) override;
 private:
+    void tempoSet(juce::int64 interval) override;
+
     void updateSliders();
     void updateUnitSelector();
 
     juce::ComboBox unitSelector;
 
-    juce::Slider samplesSlider;
-    juce::Slider millisecondsSlider;
-    juce::Slider hertzSlider;
-    juce::Slider noteSlider;
-    juce::Slider pitchSlider;
+    BpmTapper bpmTapper;
 
-    juce::Slider beatNumerator;
-    juce::Slider beatDenominator;
+    CompactSlider samplesSlider;
+    CompactSlider millisecondsSlider;
+    CompactSlider hertzSlider;
+    CompactSlider noteSlider;
+    PitchCompactSlider pitchSlider;
+
+    CompactSlider beatNumerator;
+    CompactSlider beatDenominator;
 
     DelayGraph& delayGraph;
     const int& graphLine;

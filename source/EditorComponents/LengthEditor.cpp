@@ -8,7 +8,7 @@
 LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGraph(_delayGraph), graphLine(_line)
 {
     startTimerHz(60);
-    unitSelector.addItemList({"Milliseconds", "Samples", "Hertz", "Pitch", "Beat", "MIDI track"}, 1); // offset must start at 1: 0 is reserved for undefined
+    unitSelector.addItemList({"ms", "Samples", "Hz", "Pitch", "Beat", "MIDI track"}, 1); // offset must start at 1: 0 is reserved for undefined
     unitSelector.addListener(this);
 
     samplesSlider.setNormalisableRange({0,200});
@@ -22,8 +22,8 @@ LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGr
 
     pitchSlider.setNormalisableRange({0, 127, 1});
 
-    beatNumerator.setNormalisableRange({1, 32, 1});
-    beatDenominator.setNormalisableRange({1, 32, 1});
+    beatNumerator.setNormalisableRange({1, 32, 1, 0.6});
+    beatDenominator.setNormalisableRange({1, 32, 1, 0.6});
 
     addAndMakeVisible(unitSelector);
 
@@ -31,14 +31,18 @@ LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGr
              &samplesSlider,
              &millisecondsSlider,
              &hertzSlider,
-             &pitchSlider,
              &beatNumerator,
              &beatDenominator}) {
-        slider->setSliderStyle(juce::Slider::LinearBarVertical);
-        slider->setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 60, 20);
         addAndMakeVisible(slider);
         slider->addListener(this);
     }
+
+    addAndMakeVisible(pitchSlider);
+    pitchSlider.addListener(this);
+
+    addAndMakeVisible(bpmTapper);
+    bpmTapper.addListener(this);
+    bpmTapper.setTimeoutInterval(static_cast<juce::int64>(millisecondsSlider.getRange().getEnd()));
 
     updateSliders();
     updateUnitSelector();
@@ -46,15 +50,17 @@ LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGr
 
 void LengthEditor::resized()
 {
-    unitSelector.setBounds(getLocalBounds().withHeight(30));
-    auto sliderZone = getLocalBounds().withTop(unitSelector.getBottom());
+    unitSelector.setBounds(getLocalBounds().withWidth(80).withRightX(getRight()));
+    auto sliderZone = getLocalBounds().withRight(unitSelector.getX());
 
     samplesSlider.setBounds(sliderZone);
-    millisecondsSlider.setBounds(sliderZone);
+    bpmTapper.setBounds(sliderZone.withWidth(40));
+    millisecondsSlider.setBounds(sliderZone.withTrimmedLeft(bpmTapper.getWidth()));
+
     hertzSlider.setBounds(sliderZone);
     pitchSlider.setBounds(sliderZone);
 
-    beatNumerator.setBounds(sliderZone.withWidth(unitSelector.getWidth() / 2));
+    beatNumerator.setBounds(sliderZone.withWidth(sliderZone.getWidth() / 2));
     beatDenominator.setBounds(beatNumerator.getBounds().withX(beatNumerator.getRight()));
 
 }
@@ -146,10 +152,13 @@ void LengthEditor::updateUnitSelector()
     beatNumerator.setVisible(false);
     beatDenominator.setVisible(false);
 
+    bpmTapper.setVisible(false);
+
     switch (unitSelector.getSelectedId())
     {
         case 1:
             millisecondsSlider.setVisible(true);
+            bpmTapper.setVisible(true);
             line->parameters.length.setMode(DelayLength::ms);
             break;
         case 2:
@@ -173,4 +182,9 @@ void LengthEditor::updateUnitSelector()
             line->parameters.length.setMode(DelayLength::midiTrack);
         default: break;
     }
+}
+void LengthEditor::tempoSet (juce::int64 interval)
+{
+    std::cout << interval << "\n";
+    millisecondsSlider.setValue(static_cast<double>(interval), juce::sendNotification);
 }

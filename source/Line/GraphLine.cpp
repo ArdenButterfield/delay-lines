@@ -15,7 +15,7 @@ GraphLine::GraphLine(GraphPoint* _start, GraphPoint* _end, const int& id)
       numChannels(0),
       sampleRate(0)
 {
-
+    color = getRandomColour();
 }
 
 GraphLine::GraphLine (GraphPoint* _start, GraphPoint* _end, juce::XmlElement* element)
@@ -25,10 +25,21 @@ GraphLine::GraphLine (GraphPoint* _start, GraphPoint* _end, juce::XmlElement* el
       editorAttached(false),
       prepared(false),
       identifier(element->getIntAttribute("id")),
+      color(juce::Colour::fromString(element->getStringAttribute("color"))),
       numChannels(0),
       sampleRate(0)
 
 {
+}
+
+juce::Colour GraphLine::getRandomColour()
+{
+    auto random = juce::Random();
+    return {
+        random.nextFloat(),
+        1.0f,
+        random.nextFloat() * 0.3f + 0.7f,
+        1.0f};
 }
 
 
@@ -248,6 +259,7 @@ void GraphLine::exportToXml(juce::XmlElement* parent)
 {
     auto element = parent->createNewChildElement("line");
     element->setAttribute("id", std::to_string(identifier));
+    element->setAttribute("color", color.toString());
     parameters.exportToXml(element);
     element->setAttribute("start", start->identifier);
     element->setAttribute("end", end->identifier);
@@ -257,6 +269,10 @@ bool GraphLine::importFromXml (DelayGraph* dg, juce::XmlElement* parent)
 {
     auto element = parent->getChildByAttribute("id", std::to_string(identifier));
     if (element) {
+        auto colorString = element->getStringAttribute("color");
+        if (colorString.isNotEmpty()) {
+            color = juce::Colour::fromString(colorString);
+        }
         auto _start = dg->getPoint(element->getIntAttribute("start"));
         auto _end = dg->getPoint(element->getIntAttribute("end"));
         if (_start && _end) {
@@ -273,4 +289,8 @@ bool GraphLine::importFromXml (DelayGraph* dg, juce::XmlElement* parent)
 bool GraphLine::modulateIfPossible (ModulatableKey& key, float newValue)
 {
     return parameters.modulateIfPossible(key, newValue);
+}
+float GraphLine::getCurrentModPosition()
+{
+    return modOscillator->getCurrentValueWithoutTicking();
 }

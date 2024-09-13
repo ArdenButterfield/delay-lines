@@ -98,6 +98,8 @@ target_compile_features(SharedCode INTERFACE cxx_std_20)
 file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/source/*.h")
 target_sources(SharedCode INTERFACE ${SourceFiles})
 
+target_include_directories(SharedCode INTERFACE Filtered_Noise_Images)
+
 # Adds a BinaryData target for embedding assets into the binary
 include(Assets)
 
@@ -121,7 +123,7 @@ target_compile_definitions(SharedCode
     VERSION="${CURRENT_VERSION}"
 
     # JucePlugin_Name is for some reason doesn't use the nicer PRODUCT_NAME
-    PRODUCT_NAME_WITHOUT_VERSION="Pamplejuce"
+    PRODUCT_NAME_WITHOUT_VERSION="Delaylines"
 )
 
 #add_library(my_warning_flags INTERFACE)

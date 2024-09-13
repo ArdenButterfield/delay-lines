@@ -30,33 +30,37 @@ void GraphLineComponent::paint (juce::Graphics& g)
     if (!line) {
         return;
     }
+
+
+    auto startPoint = *(line->start) + playgroundComponent->getGlobalOffset();
+    auto endPoint = *(line->end) + playgroundComponent->getGlobalOffset();
     if (delayGraph.interactionState == DelayGraph::lineHover && delayGraph.activeLine == line) {
         g.setColour(juce::Colours::yellow);
-        g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 10);
+        g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 10);
     } else if (delayGraph.interactionState == DelayGraph::editingLine && delayGraph.activeLine == line) {
         g.setColour(juce::Colours::pink);
-        g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 10);
+        g.drawLine(line->start->x, startPoint.y, endPoint.x, endPoint.y, 10);
     }
 
     if (line->parameters.isMuted()) {
         g.setColour(juce::Colours::brown.withAlpha(0.1f));
-        g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
+        g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 3);
         return;
     }
 
     if (line->parameters.isBypassed()) {
         g.setColour(juce::Colours::brown.withAlpha(0.5f));
-        g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
+        g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 3);
         return;
     }
 
-    g.setColour(juce::Colours::brown);
+    g.setColour(line->getColor());
     auto leftLinePath = juce::Path();
     auto rightLinePath = juce::Path();
     leftLinePath.startNewSubPath(0,0);
     rightLinePath.startNewSubPath(0,0);
     float l,r;
-    auto numSteps = static_cast<int>(line->start->getDistanceFrom({line->end->x, line->start->x}));
+    auto numSteps = static_cast<int>(startPoint.getDistanceFrom({endPoint.x, startPoint.x}));
     for (auto step = 0; step < numSteps; step += 1) {
         auto proportion = static_cast<float>(step) / static_cast<float>(numSteps);
         line->getEnvelope(proportion, l, r);
@@ -68,9 +72,9 @@ void GraphLineComponent::paint (juce::Graphics& g)
     leftLinePath.closeSubPath();
     rightLinePath.closeSubPath();
 
-    g.fillPath(leftLinePath, makeTransform(*line->start + line->start->offset, *line->end + line->end->offset, 0));
-    g.fillPath(rightLinePath, makeTransform(*line->start + line->start->offset, *line->end + line->end->offset, 1));
-    g.drawLine(line->start->x, line->start->y, line->end->x, line->end->y, 3);
+    g.fillPath(leftLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
+    g.fillPath(rightLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
+    g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 3);
 }
 
 void GraphLineComponent::resized()

@@ -16,6 +16,7 @@ public:
         oscillator.prepare(spec);
         depthParam = initialDepth;
         setFrequency(initialRate);
+        currentValue = 0;
     }
 
     void setFrequency(float rate)
@@ -30,8 +31,11 @@ public:
     }
     float tick()
     {
-        return 1 + modDepth.getNextValue() * oscillator.processSample(0);
+        currentValue = oscillator.processSample(0);
+        return 1 + modDepth.getNextValue() * currentValue;
     }
+
+    float getCurrentValueWithoutTicking() { return currentValue * depthParam; }
 
 private:
     void recalculateDepth(float freq, float depth) {
@@ -41,7 +45,7 @@ private:
     float depthParam;
     juce::dsp::Oscillator<float> oscillator;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> modDepth;
-
+    float currentValue;
 };
 
 #endif //DELAYLINES_MODOSCILLATOR_H

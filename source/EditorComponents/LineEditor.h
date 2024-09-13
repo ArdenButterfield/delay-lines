@@ -9,6 +9,10 @@
 
 #include "../DelayGraph.h"
 #include "LengthEditor.h"
+#include "DelayLinesLookAndFeel.h"
+#include "ModVisualizer.h"
+#include "FilterVisualizer.h"
+#include "FilterSlider.h"
 
 class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::ToggleButton::Listener, public juce::Timer
 {
@@ -27,31 +31,41 @@ public:
 
     LengthEditor lengthEditor;
 
-    juce::Slider modDepthSlider;
-    juce::Slider modRateSlider;
+    CompactSlider modDepthSlider;
+    CompactSlider modRateSlider;
     juce::Slider timeEnvelopeFollowSlider;
 
     juce::Slider distortionSlider;
-    juce::Slider loCutSlider;
-    juce::Slider hiCutSlider;
+    CompactSlider loCutSlider;
+    CompactSlider hiCutSlider;
 
-    juce::Slider gainSlider;
+    CompactSlider gainSlider;
     juce::ToggleButton invertButton;
     juce::Slider gainEnvelopeFollowSlider;
 
-    juce::Slider feedbackSlider;
+    CompactSlider feedbackSlider;
 
 private:
+    juce::Label gainLabel;
+    juce::Label feedbackLabel;
+    juce::Label modLabel;
+    juce::Label modRateLabel;
+    juce::Label modDepthLabel;
+    juce::Label filterLabel;
+    juce::Label filterLoLabel;
+    juce::Label filterHiLabel;
+
+
     juce::Rectangle<int> topBar;
     juce::Rectangle<int> mainSection;
-
+    juce::Rectangle<int> modArea;
+    juce::Rectangle<int> filterArea;
 
     juce::ComponentDragger dragger;
 
     void sliderValueChanged(juce::Slider* slider) override;
     void buttonStateChanged(juce::Button *) override;
     void buttonClicked(juce::Button *) override;
-
 
     void timerCallback() override;
 
@@ -61,6 +75,11 @@ private:
     std::array<juce::Rectangle<int>, 3> panels;
 
     bool dragging;
+
+    DelayLinesLookAndFeel delayLinesLookAndFeel;
+
+    ModVisualizer modVisualizer;
+    FilterVisualizer filterVisualizer;
 };
 
 #endif //DELAYLINES_LINEEDITOR_H

@@ -2,9 +2,13 @@
 // Created by arden on 8/14/24.
 //
 
+
 #include "DelayLinesLookAndFeel.h"
+#include "BinaryData.h"
+
 DelayLinesLookAndFeel::DelayLinesLookAndFeel()
 {
+    setDefaultSansSerifTypeface(juce::Typeface::createSystemTypefaceFor(BinaryData::SonoRegular_ttf, BinaryData::SonoRegular_ttfSize));
 }
 void DelayLinesLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
                                             float sliderPos,
@@ -21,4 +25,20 @@ void DelayLinesLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, i
     } else {
         LookAndFeel_V4::drawLinearSlider (g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, slider);
     }
+}
+
+void DelayLinesLookAndFeel::drawToggleButton (juce::Graphics& g , juce::ToggleButton& b, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
+{
+    g.setFont(getMonoFont());
+    LookAndFeel_V4::drawToggleButton (g, b, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
+}
+
+juce::Font DelayLinesLookAndFeel::getPopupMenuFont()
+{
+    return juce::Font(getMonoFont()).withHeight(17.0f);
+}
+juce::Font DelayLinesLookAndFeel::getComboBoxFont (juce::ComboBox& box)
+{
+    return juce::Font(getMonoFont()).withHeight(juce::jmin (16.0f, (float) box.getHeight() * 0.85f));
+
 }
