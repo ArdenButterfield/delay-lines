@@ -142,7 +142,6 @@ target_compile_definitions(SharedCode
 target_link_libraries(SharedCode
     INTERFACE
     Assets
-    FilteredSquares
     juce_audio_utils
     juce_audio_processors
     juce_dsp
