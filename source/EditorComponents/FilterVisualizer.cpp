@@ -12,12 +12,13 @@ void FilterVisualizer::paint (juce::Graphics& g)
     int convertedLow = std::floor(low * 25);
     int convertedHigh = std::floor(high * 25);
 
-    std::vector<const char*> matches = {
-        filterData[convertedLow][convertedHigh],
-        filterData[convertedLow + 1][convertedHigh],
-        filterData[convertedLow][convertedHigh + 1],
-        filterData[convertedLow + 1][convertedHigh + 1]
-    };
+
+
+    std::vector<const char*> matches(4);
+    matches[0] = filterData[convertedLow][convertedHigh];
+    matches[1] = (convertedLow + 1 < 26) ? filterData[convertedLow + 1][convertedHigh] : nullptr;
+    matches[2] = (convertedHigh + 1 < 26) ? filterData[convertedLow][convertedHigh + 1] : nullptr;
+    matches[3] = (convertedLow + 1 < 26 && convertedHigh + 1 < 26) ? filterData[convertedLow + 1][convertedHigh + 1] : nullptr;
 
     auto lpScore = 1 - (low * 25 - convertedLow);
     auto hpScore = 1 - (high * 25 - convertedHigh);
@@ -33,14 +34,12 @@ void FilterVisualizer::paint (juce::Graphics& g)
         for (unsigned y = 0; y * pixelSize < getHeight(); ++y) {
             auto pixelScore = 0.f;
             for (int m = 0; m < 4; ++m) {
-                auto match = matches[m];
-                pixelScore += match[y * 100 + x] * matchScores[m];
+                if (matches[m]) {
+                    auto match = matches[m];
+                    pixelScore += match[y * 100 + x] * matchScores[m];
+                }
             }
-            if (pixelScore > 255.f * 1/2) {
-                g.setColour(juce::Colours::white);
-            } else {
-                g.setColour(juce::Colours::black);
-            }
+            g.setColour(juce::Colour().withBrightness(pixelScore / 100).withSaturation(0).withAlpha(1.0f));
             g.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
         }
     }

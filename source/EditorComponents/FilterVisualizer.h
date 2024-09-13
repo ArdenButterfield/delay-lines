@@ -25,7 +25,7 @@ public:
 private:
     float low;
     float high;
-    int pixelSize = 5;
+    int pixelSize = 3;
 };
 
 #endif //DELAYLINES_FILTERVISUALIZER_H

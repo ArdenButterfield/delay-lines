@@ -33,10 +33,10 @@ with open("FilterData.h", "w") as f:
     f.write("#pragma once\n")
     f.write('#include "BinaryData.h"\n')
     f.write('#include <array>\n')
-    f.write("const std::array<const std::array<const char*, 26>, 26> filterData = {\n")
+    f.write("const std::array<const std::array<const char*, 26>, 26> filterData = {{\n")
     for minimum in range(26):
         f.write("{")
         for maximum in range(26):
             f.write(f"BinaryData::bg_{minimum}_{maximum}_bin, ")
         f.write("},\n")
-    f.write("};")
+    f.write("}};")
