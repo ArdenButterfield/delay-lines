@@ -11,6 +11,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
         juce::ParameterID {MIX_PARAM_ID, 1},
         "mix",
         0.f, 100.f, 50.f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {CLEAR_PARAM_ID, 1},
+        "clear lines",
+        0.f, 1.f, 0.f));
     for (unsigned i = 0; i < NUM_MOD_PARAMETERS; ++i) {
         parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
             juce::ParameterID{ makeModParamId(i), 1},
@@ -42,7 +46,8 @@ PluginProcessor::PluginProcessor()
       parameters(*this, nullptr, juce::Identifier("DELAY LINE PARAMETERS"), makeParameters()),
         modulationEngine(parameters, makeModulationIds(), delayGraph)
 {
-    parameters.addParameterListener("mix", this);
+    parameters.addParameterListener(MIX_PARAM_ID, this);
+    parameters.addParameterListener(CLEAR_PARAM_ID, this);
     parametersNeedUpdating = true;
 
 }
@@ -155,7 +160,7 @@ bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void PluginProcessor::updateParameters()
 {
     parametersNeedUpdating = false;
-    mix.setCurrentAndTargetValue(((juce::AudioParameterFloat*)parameters.getParameter("mix"))->get() * 0.01);}
+    mix.setCurrentAndTargetValue(((juce::AudioParameterFloat*)parameters.getParameter(MIX_PARAM_ID))->get() * 0.01);}
 
 void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                               juce::MidiBuffer& midiMessages)
@@ -252,6 +257,7 @@ void PluginProcessor::printXml()
     delayGraph.exportToXml(&xml);
     std::cout << xml.toString();
 }
+
 juce::AudioProcessorValueTreeState& PluginProcessor::getValueTreeState()
 {
     return parameters;
@@ -259,9 +265,9 @@ juce::AudioProcessorValueTreeState& PluginProcessor::getValueTreeState()
 
 void PluginProcessor::parameterChanged (const juce::String& parameterID, float newValue)
 {
-    juce::ignoreUnused(newValue);
-
-    if (parameterID == "mix") {
+    if (parameterID == MIX_PARAM_ID) {
         parametersNeedUpdating = true;
+    } else if (parameterID == CLEAR_PARAM_ID && newValue > 0.5) {
+        delayGraph.clear();
     }
 }

@@ -1,22 +1,27 @@
 #include "PluginEditor.h"
-
+#include "parameters.h"
 PluginEditor::PluginEditor (PluginProcessor& p)
     : AudioProcessorEditor (&p),
       printXmlButton("Print XML"),
+      clearLinesButton("Clear lines"),
       presetBrowser(p.delayGraph),
       playgroundComponent(p.delayGraph),
       processorRef (p),
       modulatorOverlayButton("Modulator Overlay"),
+      mixAttachment(p.getValueTreeState(), MIX_PARAM_ID, mixSlider),
       modKnobs(p.modulationEngine)
 {
     setLookAndFeel(&delayLinesLookAndFeel);
 
     printXmlButton.addListener(this);
     modulatorOverlayButton.addListener(this);
+    clearLinesButton.addListener(this);
+
 
     addAndMakeVisible(mixSlider);
     addAndMakeVisible(presetBrowser);
     addAndMakeVisible(printXmlButton);
+    addAndMakeVisible(clearLinesButton);
     addAndMakeVisible(modulatorOverlayButton);
 //    addAndMakeVisible(modulatorOverlay.get()); TODO: bring back if neededp
     addAndMakeVisible(modKnobs);
@@ -45,7 +50,8 @@ void PluginEditor::resized()
     modKnobs.setBounds(getLocalBounds().withTop(playgroundComponent.getBottom() + 10));
     printXmlButton.setBounds(10,10, 100, 30);
     presetBrowser.setBounds(150, 10, 200, 60);
-    modulatorOverlayButton.setBounds(360, 10, 100, 30);
+//    modulatorOverlayButton.setBounds(360, 10, 100, 30);
+    clearLinesButton.setBounds(360, 10, 100, 30);
     mixSlider.setBounds(470, 10, 100, 30);
 }
 
@@ -56,6 +62,10 @@ void PluginEditor::buttonClicked (juce::Button* button)
     } else if (button == &modulatorOverlayButton) {
     }
 }
-void PluginEditor::buttonStateChanged (juce::Button*)
+
+void PluginEditor::buttonStateChanged (juce::Button* button)
 {
+    if (button == &clearLinesButton) {
+        processorRef.parameters.getParameter(CLEAR_PARAM_ID)->setValueNotifyingHost(button->isDown() ? 1.f : 0.f);
+    }
 }

@@ -26,6 +26,8 @@ public:
 
     juce::TextButton printXmlButton;
 private:
+    juce::TextButton clearLinesButton;
+
     PresetBrowser presetBrowser;
 
     PlaygroundComponent playgroundComponent;
@@ -41,7 +43,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
 
     juce::Slider mixSlider;
-
+    juce::AudioProcessorValueTreeState::SliderAttachment mixAttachment;
     ModKnobs modKnobs;
 
     DelayLinesLookAndFeel delayLinesLookAndFeel;

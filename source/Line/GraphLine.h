@@ -66,6 +66,8 @@ public:
 
     bool modulateIfPossible(ModulatableKey& key, float newValue);
     juce::Colour getColor() { return color; }
+
+    void clear();
 private:
     static juce::Colour getRandomColour();
 

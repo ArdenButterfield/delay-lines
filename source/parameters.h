@@ -13,7 +13,7 @@
 const int NUM_MOD_PARAMETERS = 10;
 
 const juce::String MIX_PARAM_ID = "mix";
-
+const juce::String CLEAR_PARAM_ID = "clear";
 static juce::String makeModParamId(unsigned index) {
     return "mod" + juce::String(index);
 }
@@ -22,7 +22,8 @@ static juce::String makeModParamName(unsigned index) {
     return "Modulator " + juce::String(index + 1);
 }
 
-const std::array<juce::String,  1> NON_MOD_PARAMETERS {
-    MIX_PARAM_ID
+const std::array<juce::String,  2> NON_MOD_PARAMETERS {
+    MIX_PARAM_ID,
+    CLEAR_PARAM_ID
 };
 

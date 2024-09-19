@@ -11,7 +11,8 @@ DelayGraph::DelayGraph() :
                            lineInProgressEndPoint(nullptr),
                            activePoint(nullptr),
                            interactionState(none),
-                           activeLine(nullptr)
+                           activeLine(nullptr),
+                           needsClearing(false)
 {
     points.push_back(std::make_unique<GraphPoint>(juce::Point<float>(0,0), GraphPoint::start, findUniquePointId()));
     startPoint = points.back().get();
@@ -22,6 +23,7 @@ DelayGraph::DelayGraph() :
 
 DelayGraph::DelayGraph (juce::XmlElement* element) : startPoint(nullptr), endPoint(nullptr)
 {
+    needsClearing = false;
     activePoint = nullptr;
     interactionState = none;
 
@@ -248,6 +250,20 @@ void DelayGraph::processSample (std::vector<float>& sample)
         std::fill(point->samples.begin(), point->samples.end(), 0);
     }
 
+
+    if (needsClearing) {
+        if (clearingFadeoutCounter > 0) {
+            clearingFadeoutCounter -= 1.f / clearingFadeoutLength;
+            for (auto& v : sample) {
+                v *= clearingFadeoutCounter;
+            }
+        } else {
+            for (auto& line : lines) {
+                line->clear();
+            }
+            needsClearing = false;
+        }
+    }
     criticalSection.exit();
 }
 
@@ -475,4 +491,9 @@ void DelayGraph::applyGlobalOffset (juce::Point<float> offset)
     for (auto& point : points) {
         *point += offset;
     }
+}
+void DelayGraph::clear()
+{
+    needsClearing = true;
+    clearingFadeoutCounter = 1.f;
 }

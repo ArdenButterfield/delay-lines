@@ -85,6 +85,7 @@ public:
     bool importFromXml(juce::XmlElement* parent);
 
     void applyGlobalOffset(juce::Point<float> offset);
+    void clear();
 private:
     std::set<Listener*> listeners;
     std::set<GraphPoint*> realGlobalInputs;
@@ -96,6 +97,9 @@ private:
 
     int findUniqueLineId();
     int findUniquePointId();
+    bool needsClearing;
+    const float clearingFadeoutLength = 100;
+    float clearingFadeoutCounter;
 };
 
 #endif //DELAYLINES_DELAYGRAPH_H

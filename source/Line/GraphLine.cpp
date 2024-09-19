@@ -294,3 +294,7 @@ float GraphLine::getCurrentModPosition()
 {
     return modOscillator->getCurrentValueWithoutTicking();
 }
+void GraphLine::clear()
+{
+    delayLineInternal->clearLines();
+}
