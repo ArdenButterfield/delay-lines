@@ -168,35 +168,6 @@ void LineEditor::resized()
     hiCutSlider.setBounds(filterArea.withWidth(thirdWidth).withRightX(filterArea.getRight()).withTrimmedTop(filterHiLabel.getHeight()));
 
     filterLabel.setBounds(filterArea.withX(loCutSlider.getRight()).withRight(hiCutSlider.getX()));
-
-
-//    panels[0] = mainSection.withWidth(mainSection.getWidth() / 3);
-//    panels[1] = panels[0].withX(mainSection.getWidth() / 3);
-//    panels[2] = mainSection.withTrimmedLeft(panels[1].getRight());
-//
-//    lengthEditor.setBounds(panels[0].withHeight(panels[0].getWidth()));
-//    timeEnvelopeFollowSlider.setBounds(panels[0].withTop(lengthEditor.getBottom()).withHeight(50));
-//
-//    auto modZone = panels[0].withTop(timeEnvelopeFollowSlider.getBottom());
-//
-//    modRateSlider.setBounds(modZone.withWidth(modZone.getWidth() / 2));
-//    modDepthSlider.setBounds(modZone.withLeft(modRateSlider.getRight()));
-//
-//    distortionSlider.setBounds(panels[1].withHeight(panels[1].getWidth()));
-//
-//    auto filterZone = panels[1].withTop(distortionSlider.getBottom());
-//    hiCutSlider.setBounds(filterZone.withHeight(filterZone.getHeight() / 2));
-//    loCutSlider.setBounds(filterZone.withTop(hiCutSlider.getBottom()));
-//
-//    gainSlider.setBounds(panels[2].withHeight(panels[2].getWidth()));
-//
-//    invertButton.setBounds(panels[2].withTop(gainSlider.getBottom()).withHeight(50));
-//
-//    auto bottomOfPanelTwo = panels[2].withTop(invertButton.getBottom());
-//
-//    gainEnvelopeFollowSlider.setBounds(bottomOfPanelTwo.withWidth(bottomOfPanelTwo.getWidth() / 2));
-//    feedbackSlider.setBounds(bottomOfPanelTwo.withLeft(gainEnvelopeFollowSlider.getRight()));
-
 }
 
 void LineEditor::paint (juce::Graphics& g)
@@ -213,10 +184,6 @@ void LineEditor::paint (juce::Graphics& g)
     g.fillRect(panels[1]);
     g.setColour(juce::Colours::black);
     g.drawRect(getLocalBounds(), 3);
-//    g.drawRect(modArea, 1);
-//    for (auto child : getChildren()) {
-//        g.drawRect(child->getBounds());
-//    }
 }
 
 void LineEditor::sliderValueChanged (juce::Slider* slider)
@@ -324,7 +291,6 @@ void LineEditor::buttonClicked (juce::Button* button)
             if (line) {
                 line->parameters.importFromXml(xml.get());
             }
-
         }
     }
 }
