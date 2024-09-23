@@ -34,6 +34,9 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
 
     invertButton.setButtonText("Invert");
 
+    copyButton.setButtonText("Copy");
+    pasteButton.setButtonText("Paste");
+
     feedbackSlider.setRange(0,1);
     feedbackSlider.setSuffix(" %");
 
@@ -78,6 +81,14 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
         button->addListener(this);
     }
 
+    for (auto button : {
+             &copyButton,
+             &pasteButton
+         }) {
+        addAndMakeVisible(button);
+        button->addListener(this);
+    }
+
     gainLabel.setText("GAIN", juce::dontSendNotification);
     feedbackLabel.setText("FEEDBACK", juce::dontSendNotification);
     modLabel.setText("MOD", juce::dontSendNotification);
@@ -116,6 +127,10 @@ void LineEditor::resized()
     bypassButton.changeWidthToFitText();
     muteButton.setBounds(topBar.withLeft(bypassButton.getRight()));
     muteButton.changeWidthToFitText();
+    copyButton.setBounds(topBar.withLeft(muteButton.getRight()));
+    copyButton.changeWidthToFitText();
+    pasteButton.setBounds(topBar.withLeft(copyButton.getRight()));
+    pasteButton.changeWidthToFitText();
 
     lengthEditor.setBounds(mainSection.withHeight(40));
 
@@ -295,5 +310,21 @@ void LineEditor::buttonClicked (juce::Button* button)
         delayGraph.setRealOutputs();
     } else if (button == &invertButton) {
         line->setInvert(invertButton.getToggleState());
+    } else if (button == &copyButton) {
+        auto xml = juce::XmlElement("line");
+        auto line = delayGraph.getLine(graphLine);
+        if (line) {
+            line->parameters.exportToXml(&xml);
+            juce::SystemClipboard::copyTextToClipboard(xml.toString());
+        }
+    } else if (button == &pasteButton) {
+        auto xml = juce::parseXML(juce::SystemClipboard::getTextFromClipboard());
+        if (xml) {
+            auto line = delayGraph.getLine(graphLine);
+            if (line) {
+                line->parameters.importFromXml(xml.get());
+            }
+
+        }
     }
 }

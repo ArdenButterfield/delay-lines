@@ -13,7 +13,9 @@ class ModVisualizer : public juce::Component, public juce::HighResolutionTimer
 {
 public:
     ModVisualizer(DelayGraph* dg, int l);
-    ~ModVisualizer() override = default;
+    ~ModVisualizer() override {
+        stopTimer();
+    }
     void paint(juce::Graphics &g) override;
     void resized() override;
     void hiResTimerCallback() override;

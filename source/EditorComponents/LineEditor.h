@@ -46,6 +46,9 @@ public:
     CompactSlider feedbackSlider;
 
 private:
+    juce::TextButton copyButton;
+    juce::TextButton pasteButton;
+
     juce::Label gainLabel;
     juce::Label feedbackLabel;
     juce::Label modLabel;
