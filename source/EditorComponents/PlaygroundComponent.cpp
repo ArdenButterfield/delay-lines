@@ -51,12 +51,7 @@ void PlaygroundComponent::addPoint (int identifier)
 
 void PlaygroundComponent::removePoint (int identifier)
 {
-    for (auto& p : pointComponents) {
-        if (p->getIdentifier() == identifier) {
-            removeChildComponent(p.get());
-            pointComponents.erase(p);
-        }
-    }
+    std::erase_if(pointComponents, [&identifier](auto& p) { return identifier == p->getIdentifier();});
 }
 
 void PlaygroundComponent::addLine (int identifier)
@@ -70,12 +65,7 @@ void PlaygroundComponent::addLine (int identifier)
 
 void PlaygroundComponent::removeLine (int identifier)
 {
-    for (auto& l : lineComponents) {
-        if (l->getIdentifier() == identifier) {
-            removeChildComponent(l.get());
-            lineComponents.erase(l);
-        }
-    }
+    std::erase_if(lineComponents, [&identifier](auto& l) { return identifier == l->getIdentifier();});
 }
 
 void PlaygroundComponent::mouseUp (const juce::MouseEvent& event)

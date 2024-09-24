@@ -116,8 +116,8 @@ void GraphLineComponent::mouseUp (const juce::MouseEvent& event)
     } else if (event.mouseWasClicked() && event.mods.isShiftDown()) {
         delayGraph.activeLine->toggleEnabled();
     } else if (event.mouseWasClicked() && event.mods.isRightButtonDown()) {
-        delayGraph.deleteLine(delayGraph.activeLine);
         delayGraph.interactionState = DelayGraph::none;
+        delayGraph.deleteLine(delayGraph.activeLine);
     } else if (event.mouseWasClicked()) {
         lineEditor = std::make_unique<LineEditor>(delayGraph, id);
         playgroundComponent->addAndMakeVisible(*lineEditor);
