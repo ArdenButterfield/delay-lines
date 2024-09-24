@@ -109,7 +109,6 @@ void LengthEditor::updateSliders()
         return;
     }
 
-
     switch (line->parameters.length.getMode()) {
         case DelayLength::ms:
             unitSelector.setSelectedId(1);

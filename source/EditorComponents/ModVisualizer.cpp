@@ -7,34 +7,40 @@
 
 ModVisualizer::ModVisualizer (DelayGraph* dg, int l) : delayGraph(dg), lineIndex(l)
 {
-    startTimer(10);
-    modValues.resize(60 * 3);
-    bufferPosition = 0;
+    startTimerHz(60);
 }
 
 void ModVisualizer::paint (juce::Graphics& g)
 {
+    auto line = delayGraph->getLine(lineIndex);
+    if (line != nullptr) {
+        auto oscillator = line->getModOscillator();
+        if (oscillator) {
+            oscillator->copyOutHistory (lows, highs, false);
+        }
+    }
+
     g.setColour(juce::Colours::black);
     auto path = juce::Path();
-    path.startNewSubPath(0,(1 + modValues[bufferPosition] * 0.8) * getHeight() / 2);
-    for (unsigned i = 0; i < modValues.size(); ++i) {
-        auto v = modValues[(bufferPosition + i) % modValues.size()];
-        path.lineTo((i * getWidth()) / getHeight(), (v * 0.8 + 1) * getHeight() / 2);
+    path.startNewSubPath(0,(1 + lows[0] * 0.8f) * getHeight() / 2.f);
+    for (unsigned i = 0; i < lows.size(); ++i) {
+        auto v = lows[i];
+        path.lineTo(i, (v * 0.8f + 1) * getHeight() / 2 + 4);
     }
-    g.strokePath(path, juce::PathStrokeType(7));
+    for (int i = highs.size() - 1; i >= 0; --i) {
+        auto v = highs[i];
+        path.lineTo(i, (v * 0.8f + 1) * getHeight() / 2 - 4);
+    }
+    path.closeSubPath();
+    g.fillPath(path);
 }
 
 void ModVisualizer::resized()
 {
-
+    lows.resize(static_cast<unsigned long> (getWidth()));
+    highs.resize(static_cast<unsigned long> (getWidth()));
 }
-
-void ModVisualizer::hiResTimerCallback()
+void ModVisualizer::timerCallback()
 {
-    auto line = delayGraph->getLine(lineIndex);
-    if (line != nullptr) {
-        modValues[bufferPosition] = line->getCurrentModPosition();
-        bufferPosition++;
-        bufferPosition %= modValues.size();
-    }
+    repaint();
 }

@@ -68,6 +68,9 @@ public:
     juce::Colour getColor() { return color; }
 
     void clear();
+    const ModOscillator* getModOscillator() {
+        return modOscillator.get();
+    }
 private:
     static juce::Colour getRandomColour();
 

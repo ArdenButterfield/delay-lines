@@ -9,7 +9,7 @@
 
 class DelayGraph;
 
-class ModVisualizer : public juce::Component, public juce::HighResolutionTimer
+class ModVisualizer : public juce::Component, public juce::Timer
 {
 public:
     ModVisualizer(DelayGraph* dg, int l);
@@ -18,12 +18,11 @@ public:
     }
     void paint(juce::Graphics &g) override;
     void resized() override;
-    void hiResTimerCallback() override;
+    void timerCallback() override;
 private:
-    std::vector<float> modValues;
-    unsigned bufferPosition;
     DelayGraph* delayGraph;
     int lineIndex;
+    std::vector<float> lows, highs;
 };
 
 #endif //DELAYLINES_MODVISUALIZER_H
