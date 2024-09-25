@@ -5,7 +5,7 @@
 #include "PlaygroundComponent.h"
 #include "../DelayGraph.h"
 
-PlaygroundComponent::PlaygroundComponent(DelayGraph& _delayGraph) : delayGraph(_delayGraph), globalOffset(0,0)
+PlaygroundComponent::PlaygroundComponent(ModulationMappingEngine& me, DelayGraph& _delayGraph) :  globalOffset(0,0), delayGraph(_delayGraph), mappingEngine(me)
 {
     delayGraph.addListener(this);
     for (auto id : delayGraph.getAllLineIds()) {
@@ -43,7 +43,7 @@ void PlaygroundComponent::paint (juce::Graphics& g)
 
 void PlaygroundComponent::addPoint (int identifier)
 {
-    auto newPoint = std::make_unique<GraphPointComponent>(delayGraph, this, identifier);
+    auto newPoint = std::make_unique<GraphPointComponent>(mappingEngine, delayGraph, this, identifier);
     addAndMakeVisible(newPoint.get(), -1);
     newPoint->setBounds(this->getLocalBounds());
     pointComponents.insert(std::move(newPoint));

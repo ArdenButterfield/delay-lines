@@ -9,13 +9,13 @@
 #include "../DelayGraph.h"
 #include "GraphLineComponent.h"
 #include "GraphPointComponent.h"
-
+#include "../Modulation/ModulationMappingEngine.h"
 #include <set>
 
 class PlaygroundComponent : public juce::Component, public DelayGraph::Listener, public juce::Timer
 {
 public:
-    explicit PlaygroundComponent(DelayGraph& _delayGraph);
+    explicit PlaygroundComponent(ModulationMappingEngine& me, DelayGraph& _delayGraph);
     ~PlaygroundComponent() override;
     void resized() override;
     void paint(juce::Graphics &g) override;
@@ -33,6 +33,7 @@ public:
     void timerCallback() override { repaint(); }
     juce::Point<float> getGlobalOffset() { return globalOffset; }
 private:
+
     void applyGlobalOffset();
     juce::Point<float> globalOffset;
     void mouseUp(const juce::MouseEvent &event) override;
@@ -40,6 +41,8 @@ private:
     DelayGraph& delayGraph;
     std::set<std::unique_ptr<GraphLineComponent>> lineComponents;
     std::set<std::unique_ptr<GraphPointComponent>> pointComponents;
+
+    ModulationMappingEngine& mappingEngine;
 };
 
 #endif //DELAYLINES_PLAYGROUNDCOMPONENT_H

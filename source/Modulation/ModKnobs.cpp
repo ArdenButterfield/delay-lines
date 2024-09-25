@@ -4,20 +4,43 @@
 
 #include "ModKnobs.h"
 
-ModKnobs::ModKnobs(ModulationEngine& me) : modulationEngine(me)
+ModKnobs::ModKnobs()
 {
-    for (const auto& id : modulationEngine.paramIds) {
-        sliders.push_back(std::make_unique<juce::Slider>());
-        attachments.push_back(std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-            modulationEngine.treeState,
-            id,
-            *sliders.back()
-            ));
-        addAndMakeVisible(*sliders.back());
-        sliders.back()->setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
-        sliders.back()->setTextBoxStyle(juce::Slider::TextBoxRight, false, 30, 15);
+}
+
+void ModKnobs::setMappingEngine (ModulationMappingEngine* me)
+{
+    if (!sliders.empty()) {
+        for (auto& slider : sliders) {
+            removeChildComponent(slider.get());
+        }
+        for (auto& mapButton : mapButtons) {
+            removeChildComponent(mapButton.get());
+        }
+        sliders.clear();
+        attachments.clear();
+    }
+
+    mappingEngine = me;
+    if (mappingEngine->modulationEngine != nullptr) {
+        for (const auto& id : mappingEngine->modulationEngine->paramIds) {
+            sliders.push_back(std::make_unique<juce::Slider>());
+            attachments.push_back(std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+                mappingEngine->modulationEngine->treeState,
+                id,
+                *sliders.back()
+                    ));
+            mapButtons.push_back(std::make_unique<juce::ToggleButton>("map " + id));
+            addAndMakeVisible(*mapButtons.back());
+            mapButtons.back()->addListener(this);
+            addAndMakeVisible(*sliders.back());
+
+            sliders.back()->setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+            sliders.back()->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+        }
     }
 }
+
 
 void ModKnobs::paint (juce::Graphics& g)
 {
@@ -26,7 +49,30 @@ void ModKnobs::paint (juce::Graphics& g)
 
 void ModKnobs::resized()
 {
-    for (auto i = 0; i < sliders.size(); ++i) {
-        sliders[i]->setBounds(getWidth() * i / sliders.size(), 0, getWidth() / sliders.size(), getHeight());
+    for (unsigned i = 0; i < sliders.size(); ++i) {
+        auto sliderArea = getLocalBounds().withWidth(getWidth() / sliders.size()).withX(getWidth() * i / sliders.size());
+        sliders[i]->setBounds(sliderArea.withHeight(getHeight() - 30));
+        mapButtons[i]->setBounds(sliderArea.withTrimmedTop(getHeight() - 30));
+    }
+}
+void ModKnobs::buttonStateChanged (juce::Button*)
+{
+}
+
+void ModKnobs::buttonClicked (juce::Button* b)
+{
+    for (unsigned i = 0; i < mapButtons.size(); ++i) {
+        if (mapButtons[i].get() == b) {
+            if (mapButtons[i]->getToggleState()) {
+                mappingEngine->enterModMappingMode(i);
+                for (auto& button : mapButtons) {
+                    if (button.get() != b) {
+                        button->setToggleState(false, juce::dontSendNotification);
+                    }
+                }
+            } else {
+                mappingEngine->exitModMappingMode();
+            }
+        }
     }
 }

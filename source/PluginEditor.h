@@ -12,6 +12,7 @@
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "EditorComponents/DelayLinesLookAndFeel.h"
 #include "Modulation/ModKnobs.h"
+#include "Modulation/ModulationMappingEngine.h"
 
 //==============================================================================
 class PluginEditor : public juce::AudioProcessorEditor, public juce::Button::Listener
@@ -45,6 +46,7 @@ private:
     juce::Slider mixSlider;
     juce::AudioProcessorValueTreeState::SliderAttachment mixAttachment;
     ModKnobs modKnobs;
+    ModulationMappingEngine modulationMappingEngine;
 
     DelayLinesLookAndFeel delayLinesLookAndFeel;
 };

@@ -11,7 +11,6 @@
 #include "Modulation/ModulatableKey.h"
 #include "Modulation/ModOverlayButton.h"
 
-
 class GraphPoint : public juce::Point<float>, juce::Timer {
 public:
     enum PointType {

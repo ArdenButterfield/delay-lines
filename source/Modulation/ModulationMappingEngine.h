@@ -22,6 +22,10 @@ public:
         inModMappingMode = true;
     }
 
+    void exitModMappingMode() {
+        inModMappingMode = false;
+    }
+
     void setModMap(const ModulatableKey& key) {
         if (inModMappingMode) {
             modulationEngine->setMapping(parameterIndex, key);
@@ -32,10 +36,10 @@ public:
     bool getInModMappingMode() {
         return inModMappingMode;
     }
+    ModulationEngine* modulationEngine;
 private:
     bool inModMappingMode;
     unsigned int parameterIndex;
-    ModulationEngine* modulationEngine;
 };
 
 #endif //DELAYLINES_MODULATIONMAPPINGENGINE_H

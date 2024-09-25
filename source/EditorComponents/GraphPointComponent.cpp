@@ -5,8 +5,8 @@
 #include "GraphPointComponent.h"
 #include "PlaygroundComponent.h"
 
-GraphPointComponent::GraphPointComponent (DelayGraph& _delayGraph, PlaygroundComponent* _playgroundComponent, int id)
-    : delayGraph(_delayGraph), playgroundComponent(_playgroundComponent), identifier(id) {
+GraphPointComponent::GraphPointComponent (ModulationMappingEngine& me, DelayGraph& _delayGraph, PlaygroundComponent* _playgroundComponent, int id)
+    : delayGraph(_delayGraph), playgroundComponent(_playgroundComponent), identifier(id), mappingEngine(me) {
 
 }
 
@@ -47,6 +47,11 @@ void GraphPointComponent::paint (juce::Graphics& g) {
     if (point->offset.getDistanceSquaredFromOrigin() > 0) {
         g.setColour(juce::Colours::magenta);
         g.drawEllipse(pointWithOffset.x + point->offset.x - 5, pointWithOffset.y + point->offset.y - 5, 10, 10, 3);
+    }
+
+    if (mappingEngine.getInModMappingMode()) {
+        g.setColour(juce::Colours::magenta.withAlpha(0.5f));
+        g.fillRect(pointWithOffset.x - 20, pointWithOffset.y - 20, 40.f, 40.f);
     }
 }
 

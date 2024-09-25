@@ -7,6 +7,8 @@
 
 #include "../DelayGraph.h"
 #include "juce_gui_basics/juce_gui_basics.h"
+#include "../Modulation/ModulationMappingEngine.h"
+
 class PlaygroundComponent;
 
 class LineGhostComponent : public juce::Component
@@ -23,7 +25,7 @@ public:
 class GraphPointComponent : public juce::Component
 {
 public:
-    GraphPointComponent(DelayGraph& delayGraph, PlaygroundComponent* _playgroundComponent, int id);
+    GraphPointComponent(ModulationMappingEngine& me, DelayGraph& delayGraph, PlaygroundComponent* _playgroundComponent, int id);
     ~GraphPointComponent() override {}
     void paint(juce::Graphics &g) override;
     void resized() override;
@@ -44,6 +46,7 @@ private:
     std::unique_ptr<LineGhostComponent> ghostComponent;
     const int innerHoverDistance = 5;
     const int outerHoverDistance = 10;
+    ModulationMappingEngine& mappingEngine;
 };
 
 

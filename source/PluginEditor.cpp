@@ -5,12 +5,15 @@ PluginEditor::PluginEditor (PluginProcessor& p)
       printXmlButton("Print XML"),
       clearLinesButton("Clear lines"),
       presetBrowser(p.delayGraph),
-      playgroundComponent(p.delayGraph),
+      playgroundComponent(modulationMappingEngine, p.delayGraph),
       processorRef (p),
       modulatorOverlayButton("Modulator Overlay"),
-      mixAttachment(p.getValueTreeState(), MIX_PARAM_ID, mixSlider),
-      modKnobs(p.modulationEngine)
+      mixAttachment(p.getValueTreeState(), MIX_PARAM_ID, mixSlider)
 {
+    modulationMappingEngine.setModulationEngine(&processorRef.modulationEngine);
+
+    modKnobs.setMappingEngine(&modulationMappingEngine);
+
     setLookAndFeel(&delayLinesLookAndFeel);
 
     printXmlButton.addListener(this);
@@ -59,7 +62,6 @@ void PluginEditor::buttonClicked (juce::Button* button)
 {
     if (button == &printXmlButton) {
         processorRef.printXml();
-    } else if (button == &modulatorOverlayButton) {
     }
 }
 
