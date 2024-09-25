@@ -3,8 +3,34 @@
 //
 
 #include "ModOverlayButton.h"
-void ModOverlayButton::paintButton (juce::Graphics& graphics, bool, bool)
+ModOverlayButton::ModOverlayButton (ModulationMappingEngine& me, ModulatableKey key) : mappingEngine(me), modKey(std::move(key))
 {
-    graphics.setColour(juce::Colours::magenta);
-    graphics.fillAll();
+    mappingEngine.addListener(this);
+}
+ModOverlayButton::~ModOverlayButton()
+{
+    mappingEngine.removeListener(this);
+}
+void ModOverlayButton::mappingModeEntered()
+{
+    setVisible(true);
+}
+void ModOverlayButton::mappingModeExited()
+{
+    setVisible(false);
+}
+void ModOverlayButton::paint (juce::Graphics& g)
+{
+    g.setColour(isMouseOver() ? overColor : bgColor);
+    g.fillAll();
+}
+void ModOverlayButton::resized()
+{
+
+}
+void ModOverlayButton::mouseUp (const juce::MouseEvent& event)
+{
+    if (event.mouseWasClicked()) {
+        mappingEngine.setModMap(modKey);
+    }
 }

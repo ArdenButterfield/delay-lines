@@ -9,6 +9,8 @@
 #include "../DelayGraph.h"
 #include "ModulatableKey.h"
 
+class DelayGraph;
+
 class ModulationEngine : juce::AudioProcessorValueTreeState::Listener
 {
 public:

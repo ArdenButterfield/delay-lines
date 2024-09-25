@@ -33,6 +33,7 @@ public:
     void timerCallback() override { repaint(); }
     juce::Point<float> getGlobalOffset() { return globalOffset; }
 private:
+    ModulationMappingEngine& mappingEngine;
 
     void applyGlobalOffset();
     juce::Point<float> globalOffset;
@@ -42,7 +43,6 @@ private:
     std::set<std::unique_ptr<GraphLineComponent>> lineComponents;
     std::set<std::unique_ptr<GraphPointComponent>> pointComponents;
 
-    ModulationMappingEngine& mappingEngine;
 };
 
 #endif //DELAYLINES_PLAYGROUNDCOMPONENT_H

@@ -6,8 +6,14 @@
 #include "PlaygroundComponent.h"
 
 GraphPointComponent::GraphPointComponent (ModulationMappingEngine& me, DelayGraph& _delayGraph, PlaygroundComponent* _playgroundComponent, int id)
-    : delayGraph(_delayGraph), playgroundComponent(_playgroundComponent), identifier(id), mappingEngine(me) {
-
+    : delayGraph(_delayGraph),
+      playgroundComponent(_playgroundComponent),
+      identifier(id),
+      mappingEngine(me),
+      xMod(mappingEngine, {ModulatableKey::point, id, "x"}),
+      yMod(mappingEngine, {ModulatableKey::point, id, "y"}) {
+    addChildComponent(xMod);
+    addChildComponent(yMod);
 }
 
 void GraphPointComponent::paint (juce::Graphics& g) {
@@ -48,15 +54,11 @@ void GraphPointComponent::paint (juce::Graphics& g) {
         g.setColour(juce::Colours::magenta);
         g.drawEllipse(pointWithOffset.x + point->offset.x - 5, pointWithOffset.y + point->offset.y - 5, 10, 10, 3);
     }
-
-    if (mappingEngine.getInModMappingMode()) {
-        g.setColour(juce::Colours::magenta.withAlpha(0.5f));
-        g.fillRect(pointWithOffset.x - 20, pointWithOffset.y - 20, 40.f, 40.f);
-    }
+    xMod.setBounds(pointWithOffset.x - 20, pointWithOffset.y - 5, 40, 10);
+    yMod.setBounds(pointWithOffset.x - 5, pointWithOffset.y - 20, 10, 40);
 }
 
 void GraphPointComponent::resized() {
-
 }
 
 bool GraphPointComponent::hitTest (int x, int y) {

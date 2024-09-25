@@ -5,29 +5,36 @@
 #ifndef DELAYLINES_MODOVERLAYBUTTON_H
 #define DELAYLINES_MODOVERLAYBUTTON_H
 
+#include <utility>
+
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "ModulatableKey.h"
+#include "ModulationMappingEngine.h"
 
-class ModOverlayButton : public juce::ShapeButton
+
+class ModOverlayButton : public juce::Component, public ModulationMappingEngine::Listener
 {
 public:
-    explicit ModOverlayButton(const ModulatableKey& key, juce::Button::Listener* l)
-        : juce::ShapeButton(juce::String(key.pointOrLineId) + "-" + key.parameterId.toString(),
-            juce::Colours::magenta.withAlpha(0.3f),
-            juce::Colours::magenta.withAlpha(0.5f),
-            juce::Colours::magenta.withAlpha(0.8f)),
-          modKey(key),
-          listener(l)
-    {
-        if (listener) {
-            addListener(listener);
-        }
-    }
+    ModOverlayButton(ModulationMappingEngine& me, ModulatableKey  key);
+
+    ~ModOverlayButton() override;
+
+    void mappingModeEntered() override;
+
+    void mappingModeExited() override;
+
+    ModulationMappingEngine& mappingEngine;
     const ModulatableKey modKey;
 
-    void paintButton(juce::Graphics &, bool, bool) override;
+    void paint(juce::Graphics &g) override;
+
+    void resized() override;
+
+    void mouseUp(const juce::MouseEvent &event) override;
+
 private:
-    juce::Button::Listener* listener;
+    const juce::Colour bgColor = juce::Colours::magenta;
+    const juce::Colour overColor = juce::Colours::yellow;
 };
 
 #endif //DELAYLINES_MODOVERLAYBUTTON_H

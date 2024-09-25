@@ -5,41 +5,41 @@
 #ifndef DELAYLINES_MODULATIONMAPPINGENGINE_H
 #define DELAYLINES_MODULATIONMAPPINGENGINE_H
 
-#include "ModulationEngine.h"
 #include "ModulatableKey.h"
+
+class ModulationEngine;
 
 class ModulationMappingEngine
 {
 public:
-    ModulationMappingEngine() : inModMappingMode(false), modulationEngine(nullptr) {}
+    class Listener {
+    public:
+        Listener() = default;
+        ~Listener() = default;
+        virtual void mappingModeEntered() = 0;
+        virtual void mappingModeExited() = 0;
+    };
+    ModulationMappingEngine();
 
-    void setModulationEngine(ModulationEngine* me) {
-        modulationEngine = me;
-    }
+    void setModulationEngine(ModulationEngine* me);
 
-    void enterModMappingMode(int _parameterIndex) {
-        parameterIndex = _parameterIndex;
-        inModMappingMode = true;
-    }
+    void enterModMappingMode(int _parameterIndex);
 
-    void exitModMappingMode() {
-        inModMappingMode = false;
-    }
+    void exitModMappingMode();
 
-    void setModMap(const ModulatableKey& key) {
-        if (inModMappingMode) {
-            modulationEngine->setMapping(parameterIndex, key);
-            inModMappingMode = false;
-        }
-    }
+    void setModMap(const ModulatableKey& key);
 
-    bool getInModMappingMode() {
-        return inModMappingMode;
-    }
+    [[nodiscard]] bool getInModMappingMode() const;
+
+    void addListener(Listener* listener);
+
+    void removeListener(Listener* listener);
+
     ModulationEngine* modulationEngine;
 private:
+    std::set<Listener*> listeners;
     bool inModMappingMode;
-    unsigned int parameterIndex;
+    unsigned int parameterIndex{};
 };
 
 #endif //DELAYLINES_MODULATIONMAPPINGENGINE_H

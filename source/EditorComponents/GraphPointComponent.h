@@ -8,6 +8,7 @@
 #include "../DelayGraph.h"
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "../Modulation/ModulationMappingEngine.h"
+#include "../Modulation/ModOverlayButton.h"
 
 class PlaygroundComponent;
 
@@ -47,6 +48,8 @@ private:
     const int innerHoverDistance = 5;
     const int outerHoverDistance = 10;
     ModulationMappingEngine& mappingEngine;
+
+    ModOverlayButton xMod, yMod;
 };
 
 

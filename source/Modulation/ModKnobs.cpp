@@ -3,9 +3,16 @@
 //
 
 #include "ModKnobs.h"
+#include "ModulationMappingEngine.h"
+#include "ModulationEngine.h"
 
 ModKnobs::ModKnobs()
 {
+}
+
+ModKnobs::~ModKnobs()
+{
+    mappingEngine->removeListener(this);
 }
 
 void ModKnobs::setMappingEngine (ModulationMappingEngine* me)
@@ -22,6 +29,9 @@ void ModKnobs::setMappingEngine (ModulationMappingEngine* me)
     }
 
     mappingEngine = me;
+
+    mappingEngine->addListener(this);
+
     if (mappingEngine->modulationEngine != nullptr) {
         for (const auto& id : mappingEngine->modulationEngine->paramIds) {
             sliders.push_back(std::make_unique<juce::Slider>());
@@ -57,6 +67,7 @@ void ModKnobs::resized()
 }
 void ModKnobs::buttonStateChanged (juce::Button*)
 {
+
 }
 
 void ModKnobs::buttonClicked (juce::Button* b)
@@ -74,5 +85,15 @@ void ModKnobs::buttonClicked (juce::Button* b)
                 mappingEngine->exitModMappingMode();
             }
         }
+    }
+}
+void ModKnobs::mappingModeEntered()
+{
+
+}
+void ModKnobs::mappingModeExited()
+{
+    for (auto& button : mapButtons) {
+        button->setToggleState(false, juce::dontSendNotification);
     }
 }

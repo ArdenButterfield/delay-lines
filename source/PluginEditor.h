@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BinaryData.h"
-#include "EditorComponents/PlaygroundViewOld.h"
 #include "EditorComponents/PresetBrowser.h"
 
 #include "EditorComponents/PlaygroundComponent.h"
@@ -30,6 +29,7 @@ private:
     juce::TextButton clearLinesButton;
 
     PresetBrowser presetBrowser;
+    ModulationMappingEngine modulationMappingEngine;
 
     PlaygroundComponent playgroundComponent;
 
@@ -46,7 +46,6 @@ private:
     juce::Slider mixSlider;
     juce::AudioProcessorValueTreeState::SliderAttachment mixAttachment;
     ModKnobs modKnobs;
-    ModulationMappingEngine modulationMappingEngine;
 
     DelayLinesLookAndFeel delayLinesLookAndFeel;
 };
