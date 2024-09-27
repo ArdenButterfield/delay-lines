@@ -244,6 +244,12 @@ bool GraphLine::modulateIfPossible (ModulatableKey& key, float newValue)
     return parameters.modulateIfPossible(key, newValue);
 }
 
+bool GraphLine::getModulationValue (ModulatableKey& key, float& val)
+{
+    return parameters.getModulationValue(key, val);
+}
+
+
 float GraphLine::getCurrentModPosition()
 {
     return modOscillator->getCurrentValueWithoutTicking();

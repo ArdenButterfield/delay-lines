@@ -40,6 +40,7 @@ public:
     std::vector<std::unique_ptr<GraphLine>>& getLines();
 
     bool modulateIfPossible(ModulatableKey& key, float newValue);
+    bool getModulationValue(ModulatableKey& key, float& val);
 
     enum InteractionState {
         none = 0,

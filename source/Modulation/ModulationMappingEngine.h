@@ -6,6 +6,7 @@
 #define DELAYLINES_MODULATIONMAPPINGENGINE_H
 
 #include "ModulatableKey.h"
+#include "juce_events/juce_events.h"
 
 class ModulationEngine;
 
@@ -20,6 +21,8 @@ public:
         virtual void mappingModeExited() = 0;
     };
     ModulationMappingEngine();
+    ModulationMappingEngine( const ModulationMappingEngine& ) = delete; // non construction-copyable
+    ModulationMappingEngine& operator=( const ModulationMappingEngine& ) = delete; // non copyable
 
     void setModulationEngine(ModulationEngine* me);
 
@@ -37,8 +40,6 @@ public:
 
     ModulationEngine* modulationEngine;
 
-    ModulationMappingEngine( const ModulationMappingEngine& ) = delete; // non construction-copyable
-    ModulationMappingEngine& operator=( const ModulationMappingEngine& ) = delete; // non copyable
 private:
     std::set<Listener*> listeners;
     bool inModMappingMode;

@@ -54,6 +54,8 @@ public:
     bool importFromXml(DelayGraph* dg, juce::XmlElement* parent);
 
     bool modulateIfPossible(ModulatableKey& key, float newValue);
+    bool getModulationValue(ModulatableKey& key, float& val);
+
     juce::Colour getColor() { return color; }
 
     void clear();

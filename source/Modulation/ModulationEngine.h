@@ -11,7 +11,7 @@
 
 class DelayGraph;
 
-class ModulationEngine : juce::AudioProcessorValueTreeState::Listener
+class ModulationEngine : juce::AudioProcessorValueTreeState::Listener, juce::Timer
 {
 public:
     ModulationEngine(juce::AudioProcessorValueTreeState& treeState, std::vector<juce::String> paramIds, DelayGraph& delayGraph);
@@ -28,7 +28,8 @@ public:
 private:
     std::vector<std::unique_ptr<ModulatableKey>> mappings;
     DelayGraph& delayGraph;
-
+    void timerCallback() override;
+    void setParametersToInternalState();
 };
 
 #endif //DELAYLINES_MODULATIONENGINE_H

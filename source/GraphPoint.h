@@ -41,6 +41,7 @@ public:
     bool importFromXml(juce::XmlElement* parent);
 
     bool modulateIfPossible(ModulatableKey& key, float newValue);
+    bool getModulationValue(ModulatableKey& key, float& val);
 };
 
 #endif //DELAYLINES_GRAPHPOINT_H

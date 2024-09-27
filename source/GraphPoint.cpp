@@ -73,3 +73,15 @@ bool GraphPoint::modulateIfPossible (ModulatableKey& key, float newValue)
     }
     return false;
 }
+
+bool GraphPoint::getModulationValue (ModulatableKey& key, float& val)
+{
+    if (key.parameterId == juce::Identifier("x")) {
+        val = key.range.convertTo0to1(this->x);
+        return true;
+    } else if (key.parameterId == juce::Identifier("y")) {
+        val = key.range.convertTo0to1(this->y);
+        return true;
+    }
+    return false;
+}

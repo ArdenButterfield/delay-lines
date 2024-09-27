@@ -434,13 +434,13 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
 
 bool DelayGraph::modulateIfPossible (ModulatableKey& key, float newValue)
 {
-    if (key.type == ModulatableKey::Type::point) {
+    if (key.type == ModulatableKey::point) {
         for (auto& point : points) {
             if (point->identifier == key.pointOrLineId) {
                 return point->modulateIfPossible(key, newValue);
             }
         }
-    } else if (key.type == ModulatableKey::Type::line) {
+    } else if (key.type == ModulatableKey::line) {
         for (auto& line : lines) {
             if (line->identifier == key.pointOrLineId) {
                 return line->modulateIfPossible(key, newValue);
@@ -449,6 +449,25 @@ bool DelayGraph::modulateIfPossible (ModulatableKey& key, float newValue)
     }
     return false;
 }
+
+bool DelayGraph::getModulationValue (ModulatableKey& key, float& val)
+{
+    if (key.type == ModulatableKey::point) {
+        for (auto& point : points) {
+            if (point->identifier == key.pointOrLineId) {
+                return point->getModulationValue(key, val);
+            }
+        }
+    } else if (key.type == ModulatableKey::line) {
+        for (auto& line : lines) {
+            if (line->identifier == key.pointOrLineId) {
+                return line->getModulationValue(key, val);
+            }
+        }
+    }
+    return false;
+}
+
 
 void DelayGraph::setMidiTrackNote (int pitch)
 {

@@ -16,7 +16,7 @@ ModulationEngine::ModulationEngine(juce::AudioProcessorValueTreeState& _treeStat
         treeState.addParameterListener(paramId, this);
     }
     mappings.resize(paramIds.size());
-
+    startTimerHz(60);
 }
 
 ModulationEngine::~ModulationEngine()
@@ -39,7 +39,6 @@ void ModulationEngine::parameterChanged(const juce::String &parameterID, float n
 void ModulationEngine::setParameterValue (unsigned int index, float value)
 {
     auto p = treeState.getParameter(paramIds[index]);
-
     p->beginChangeGesture();
     p->setValueNotifyingHost(value);
     p->endChangeGesture();
@@ -66,3 +65,19 @@ bool ModulationEngine::isMapped (unsigned int index)
     return mappings[index].operator bool();
 }
 
+void ModulationEngine::timerCallback()
+{
+    setParametersToInternalState();
+}
+
+void ModulationEngine::setParametersToInternalState()
+{
+    for (unsigned i = 0; i < paramIds.size(); ++i) {
+        if (mappings[i]) {
+            float val;
+            if (delayGraph.getModulationValue(*mappings[i], val)) {
+                setParameterValue(i, val);
+            }
+        }
+    }
+}
