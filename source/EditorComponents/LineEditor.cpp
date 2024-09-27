@@ -3,9 +3,9 @@
 //
 
 #include "LineEditor.h"
-
-LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
-    : lengthEditor(_delayGraph, _line), delayGraph(_delayGraph), graphLine(_line), dragging(false), modVisualizer(&_delayGraph, _line)
+#include "../parameters.h"
+LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, const int& _line)
+    : lengthEditor(_delayGraph, _line), delayGraph(_delayGraph), graphLine(_line), dragging(false), modVisualizer(&_delayGraph, _line), mappingEngine(me)
 {
     setLookAndFeel(&delayLinesLookAndFeel);
     timeEnvelopeFollowSlider.setRange(-1, 1);
@@ -55,20 +55,21 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
 
     for (auto slider : {
              &loCutSlider,
-             &hiCutSlider}) {
-        addAndMakeVisible(slider);
-        slider->addListener(this);
-    }
-    for (auto slider : {
+             &hiCutSlider,
              &gainSlider,
              &feedbackSlider,
              &modDepthSlider,
              &modRateSlider}) {
         addAndMakeVisible(slider);
         slider->addListener(this);
+        slider->setMappingEngine(&mappingEngine);
     }
-
-
+    loCutSlider.setModKey({ModulatableKey::line, graphLine, LOCUT_ID, loCutSlider.getNormalisableRange()});
+    hiCutSlider.setModKey({ModulatableKey::line, graphLine, HICUT_ID, hiCutSlider.getNormalisableRange()});
+    gainSlider.setModKey({ModulatableKey::line, graphLine, GAIN_ID, gainSlider.getNormalisableRange()});
+    feedbackSlider.setModKey({ModulatableKey::line, graphLine, FEEDBACK_ID, feedbackSlider.getNormalisableRange()});
+    modDepthSlider.setModKey({ModulatableKey::line, graphLine, MOD_DEPTH_ID, modDepthSlider.getNormalisableRange()});
+    modRateSlider.setModKey({ModulatableKey::line, graphLine, MOD_RATE_ID, modRateSlider.getNormalisableRange()});
 
     addAndMakeVisible(lengthEditor);
 
@@ -114,8 +115,9 @@ LineEditor::LineEditor (DelayGraph& _delayGraph, const int& _line)
     startTimerHz(60);
 }
 
-LineEditor::~LineEditor()
-= default;
+LineEditor::~LineEditor() {
+    setLookAndFeel(nullptr);
+}
 
 
 void LineEditor::resized()
@@ -193,29 +195,29 @@ void LineEditor::sliderValueChanged (juce::Slider* slider)
         return;
     }
     if (slider == &gainSlider) {
-        line->setGain(static_cast<float>(gainSlider.getValue()));
+        line->parameters.gain = gainSlider.getValue();
     } else if (slider == &timeEnvelopeFollowSlider) {
-        line->setLengthEnvelopeFollow(static_cast<float>(timeEnvelopeFollowSlider.getValue()));
+        line->parameters.lengthEnvelopeFollow = timeEnvelopeFollowSlider.getValue();
     } else if (slider == &modRateSlider) {
-        line->setModRate(static_cast<float>(modRateSlider.getValue()));
+        line->parameters.modRate = modRateSlider.getValue();
     } else if (slider == &modDepthSlider) {
-        line->setModDepth (static_cast<float>(modDepthSlider.getValue()));
+        line->parameters.modDepth = modDepthSlider.getValue();
     } else if (slider == &distortionSlider) {
-        line->setDistortionAmount(static_cast<float>(distortionSlider.getValue()));
+        line->parameters.distortion = distortionSlider.getValue();
     } else if (slider == &loCutSlider) {
-        line->setLowCutFilter(static_cast<float>(loCutSlider.getValue()));
+        line->parameters.loCut = loCutSlider.getValue();
         filterVisualizer.setFilters(
             loCutSlider.valueToProportionOfLength(loCutSlider.getValue()),
             hiCutSlider.valueToProportionOfLength(hiCutSlider.getValue()));
     } else if (slider == &hiCutSlider) {
-        line->setHighCutFilter(static_cast<float>(hiCutSlider.getValue()));
+        line->parameters.hiCut = hiCutSlider.getValue();
         filterVisualizer.setFilters(
             loCutSlider.valueToProportionOfLength(loCutSlider.getValue()),
             hiCutSlider.valueToProportionOfLength(hiCutSlider.getValue()));
     } else if (slider == &gainEnvelopeFollowSlider) {
-        line->setGainEnvelopeFollow(static_cast<float>(gainEnvelopeFollowSlider.getValue()));
+        line->parameters.gainEnvelopeFollow = gainEnvelopeFollowSlider.getValue();
     } else if (slider == &feedbackSlider) {
-        line->setFeedback(static_cast<float>(feedbackSlider.getValue()));
+        line->parameters.feedback = feedbackSlider.getValue();
     }
 }
 

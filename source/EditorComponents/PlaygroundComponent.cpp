@@ -56,7 +56,7 @@ void PlaygroundComponent::removePoint (int identifier)
 
 void PlaygroundComponent::addLine (int identifier)
 {
-    auto newLine = std::make_unique<GraphLineComponent>(delayGraph, this, identifier);
+    auto newLine = std::make_unique<GraphLineComponent>(mappingEngine, delayGraph, this, identifier);
     addAndMakeVisible(newLine.get(), 0); // Lines should be under points
     newLine->setBounds(this->getLocalBounds());
     lineComponents.insert(std::move(newLine));

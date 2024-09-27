@@ -23,6 +23,7 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
+    DelayLinesLookAndFeel delayLinesLookAndFeel;
 
     juce::TextButton printXmlButton;
 private:
@@ -47,5 +48,4 @@ private:
     juce::AudioProcessorValueTreeState::SliderAttachment mixAttachment;
     ModKnobs modKnobs;
 
-    DelayLinesLookAndFeel delayLinesLookAndFeel;
 };

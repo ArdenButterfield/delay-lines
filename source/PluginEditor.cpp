@@ -36,7 +36,9 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     setSize (800, 600);
 }
 
-PluginEditor::~PluginEditor() = default;
+PluginEditor::~PluginEditor() {
+    setLookAndFeel(nullptr);
+}
 
 void PluginEditor::paint (juce::Graphics& g)
 {

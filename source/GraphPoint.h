@@ -34,7 +34,7 @@ public:
 
     std::vector<float> samples;
     juce::Point<float> offset;
-
+    juce::Point<float> modulationOffset;
     const int identifier;
 
     void exportToXml(juce::XmlElement* parent);

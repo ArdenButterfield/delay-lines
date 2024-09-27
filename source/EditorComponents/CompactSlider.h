@@ -8,7 +8,9 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "BinaryData.h"
 
-class CompactSlider : public juce::Slider, public juce::Label::Listener
+#include "ModulatableSlider.h"
+
+class CompactSlider : public ModulatableSlider, public juce::Label::Listener
 {
 public:
     CompactSlider();

@@ -10,8 +10,8 @@ GraphPointComponent::GraphPointComponent (ModulationMappingEngine& me, DelayGrap
       playgroundComponent(_playgroundComponent),
       identifier(id),
       mappingEngine(me),
-      xMod(mappingEngine, {ModulatableKey::point, id, "x"}),
-      yMod(mappingEngine, {ModulatableKey::point, id, "y"}) {
+      xMod(mappingEngine, {ModulatableKey::point, id, "x", {0, 1}}),
+      yMod(mappingEngine, {ModulatableKey::point, id, "y", {0, 1}}) {
     addChildComponent(xMod);
     addChildComponent(yMod);
 }
@@ -59,6 +59,8 @@ void GraphPointComponent::paint (juce::Graphics& g) {
 }
 
 void GraphPointComponent::resized() {
+    xMod.modKey.range = {0, static_cast<float>(getWidth())};
+    yMod.modKey.range = {0, static_cast<float>(getHeight())};
 }
 
 bool GraphPointComponent::hitTest (int x, int y) {

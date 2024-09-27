@@ -65,6 +65,7 @@ void ModKnobs::resized()
         mapButtons[i]->setBounds(sliderArea.withTrimmedTop(getHeight() - 30));
     }
 }
+
 void ModKnobs::buttonStateChanged (juce::Button*)
 {
 

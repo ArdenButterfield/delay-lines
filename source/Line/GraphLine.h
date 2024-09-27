@@ -17,23 +17,12 @@
 
 class DelayGraph;
 
-class GraphLine : public juce::Timer {
+class GraphLine : public juce::Timer, juce::AudioProcessorParameter::Listener {
 public:
     GraphLine(GraphPoint* start, GraphPoint* end, const int& id);
     GraphLine(GraphPoint* start, GraphPoint* end, juce::XmlElement* element);
 
     void timerCallback() override;
-
-    void setBypass(bool bypass);
-    void setMute(bool mute);
-
-    void setLengthEnvelopeFollow(float amt);
-    void setModDepth(float depth);
-    void setModRate(float rate);
-    void setDistortionAmount(float amt);
-    void setLowCutFilter(float freq);
-    void setHighCutFilter(float freq);
-    void setGain(float gain);
 
     void setInvert(bool invert);
     void setGainEnvelopeFollow(float amt);
@@ -71,7 +60,12 @@ public:
     const ModOscillator* getModOscillator() {
         return modOscillator.get();
     }
+
+    void setBypass (bool bypass);
+    void setMute (bool mute);
 private:
+    void parameterValueChanged(int parameterIndex, float newValue) override;
+    void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {}
     static juce::Colour getRandomColour();
 
     juce::Colour color;
@@ -79,7 +73,7 @@ private:
     std::unique_ptr<DelayLineInternal> delayLineInternal;
 
     void calculateInternalLength();
-
+    void recalculateParameters();
     unsigned numChannels;
     float sampleRate;
 

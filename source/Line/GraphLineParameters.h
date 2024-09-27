@@ -10,6 +10,7 @@
 #include "../Modulation/ModulatableKey.h"
 #include "juce_audio_processors/juce_audio_processors.h"
 
+
 struct DelayLength {
     DelayLength() : mode(ms), samplesLength(0), millisecondsLength(500), hertz(10), midiNote(100), beatLength({1,4}) {}
     explicit DelayLength(juce::XmlElement* parent);
@@ -134,25 +135,14 @@ private:
     float millisecondsLength;
     float hertz;
     float midiNote;
-    float midiTrackNote;
+    float midiTrackNote{};
     std::array<float, 2> beatLength;
 
 };
 
 
 struct Parameters {
-    Parameters() : muteBypass("mutebypass", "mute bypass", {"none", "mute", "bypass"}, 0),
-                   lengthEnvelopeFollow("lengthenvelopefollow", "length envelope follow", -1.f, 1.f, 0.f),
-                   modDepth("moddepth", "mod depth", 0.f, 1.f, 0.f),
-                   modRate("modrate", "mod rate", 0.1f, 30.f, 1.f),
-                   distortion("distortion", "distortion", 0.f, 1.f, 0.f),
-                   hiCut("hicut", "hi cut", 0.f, 20000.f, 20000.f),
-                   loCut("locut", "lo cut", 0.f, 20000.f, 0.f),
-                   gain("gain", "gain", 0.f, 2.f, 1.f),
-                   invert("invert", "invert", false),
-                   gainEnvelopeFollow("gainenvelopefollow", "gain envelope follow", -1.f, 1.f, 0.f),
-                   feedback("feedback", "feedback", 0.f, 1.f, 0.f)
-    {}
+    Parameters();
 
     explicit Parameters(juce::XmlElement* parent);
 

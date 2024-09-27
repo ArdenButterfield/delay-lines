@@ -6,6 +6,7 @@
 #include "PlaygroundComponent.h"
 #include "LineEditor.h"
 #include "../DelayGraph.h"
+#include "../Modulation/ModulationMappingEngine.h"
 
 static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point<float> end, int channel) {
     auto transform = juce::AffineTransform();
@@ -16,8 +17,8 @@ static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point
 }
 
 
-GraphLineComponent::GraphLineComponent (DelayGraph& _delayGraph, PlaygroundComponent* _playgroundComponent, int _id)
-    : playgroundComponent(_playgroundComponent), delayGraph(_delayGraph), id(_id) {
+GraphLineComponent::GraphLineComponent (ModulationMappingEngine& me, DelayGraph& _delayGraph, PlaygroundComponent* _playgroundComponent, int _id)
+    : playgroundComponent(_playgroundComponent), delayGraph(_delayGraph), id(_id), mappingEngine(me) {
 }
 
 GraphLineComponent::~GraphLineComponent()
@@ -119,7 +120,7 @@ void GraphLineComponent::mouseUp (const juce::MouseEvent& event)
         delayGraph.interactionState = DelayGraph::none;
         delayGraph.deleteLine(delayGraph.activeLine);
     } else if (event.mouseWasClicked()) {
-        lineEditor = std::make_unique<LineEditor>(delayGraph, id);
+        lineEditor = std::make_unique<LineEditor>(mappingEngine, delayGraph, id);
         playgroundComponent->addAndMakeVisible(*lineEditor);
         lineEditor->setBounds(10,10,250,350);
     }

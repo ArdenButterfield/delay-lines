@@ -17,7 +17,14 @@ struct ModulatableKey
     Type type;
 
     int pointOrLineId;
+
     juce::Identifier parameterId;
+
+    juce::NormalisableRange<double> range;
+
+    float get(float modPosition) {
+        return range.convertFrom0to1(modPosition);
+    }
 };
 
 #endif //DELAYLINES_MODULATABLEKEY_H

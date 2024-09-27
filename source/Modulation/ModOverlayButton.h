@@ -24,7 +24,7 @@ public:
     void mappingModeExited() override;
 
     ModulationMappingEngine& mappingEngine;
-    const ModulatableKey modKey;
+    ModulatableKey modKey;
 
     void paint(juce::Graphics &g) override;
 

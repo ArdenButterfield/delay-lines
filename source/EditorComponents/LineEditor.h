@@ -14,10 +14,13 @@
 #include "FilterVisualizer.h"
 #include "FilterSlider.h"
 
+#include "../Modulation/ModulationMappingEngine.h"
+#include "../Modulation/ModOverlayButton.h"
+
 class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::ToggleButton::Listener, public juce::Timer
 {
 public:
-    LineEditor(DelayGraph& delayGraph, const int& line);
+    LineEditor(ModulationMappingEngine& me, DelayGraph& delayGraph, const int& line);
     ~LineEditor() override;
     void resized() override;
     void paint(juce::Graphics &g) override;
@@ -83,6 +86,7 @@ private:
 
     ModVisualizer modVisualizer;
     FilterVisualizer filterVisualizer;
+    ModulationMappingEngine& mappingEngine;
 };
 
 #endif //DELAYLINES_LINEEDITOR_H

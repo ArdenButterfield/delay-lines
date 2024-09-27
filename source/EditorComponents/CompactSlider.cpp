@@ -5,7 +5,9 @@
 #include "CompactSlider.h"
 #include "DelayLinesLookAndFeel.h"
 
-CompactSlider::CompactSlider() : suffix("") {
+CompactSlider::CompactSlider()
+    : suffix("")
+{
     setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     addAndMakeVisible(valueLabel);
@@ -44,6 +46,7 @@ void CompactSlider::resized()
 {
     juce::Slider::resized();
     valueLabel.setBounds(getLocalBounds().withTrimmedBottom(4));
+    ModulatableSlider::resized();
 }
 
 void CompactSlider::editorShown (juce::Label* label, juce::TextEditor& textEditor)

@@ -77,12 +77,6 @@ void GraphLine::calculateInternalLength()
     delayLineInternal->setTargetLength(currentLength);
 }
 
-void GraphLine::setGain (float _gain)
-{
-    parameters.gain = _gain;
-    gain.setTargetValue(_gain);
-}
-
 void GraphLine::pushSample (std::vector<float>& sample)
 {
     if ((!prepared) || (parameters.isMuted())) {
@@ -153,6 +147,7 @@ void GraphLine::toggleEnabled()
 void GraphLine::timerCallback()
 {
     calculateInternalLength();
+    recalculateParameters();
 }
 
 void GraphLine::getEnvelope (float proportion, float& left, float& right)
@@ -164,6 +159,7 @@ void GraphLine::getEnvelope (float proportion, float& left, float& right)
     }
     delayLineInternal->getEnvelope(proportion, left, right);
 }
+
 void GraphLine::setBypass (bool bypass)
 {
     if (bypass) {
@@ -177,51 +173,8 @@ void GraphLine::setMute (bool mute)
 {
     if (mute) {
         parameters.muteBypass = Parameters::mute;
-        delayLineInternal->clearLines();
     } else if (parameters.muteBypass == Parameters::mute) {
         parameters.muteBypass = Parameters::none;
-    }
-}
-
-void GraphLine::setLengthEnvelopeFollow (float amt)
-{
-    parameters.lengthEnvelopeFollow = amt;
-}
-
-void GraphLine::setModDepth (float depth)
-{
-    parameters.modDepth = depth;
-    modOscillator->setDepth(depth);
-}
-
-void GraphLine::setModRate (float rate)
-{
-    parameters.modRate = rate;
-    modOscillator->setFrequency(rate);
-}
-
-void GraphLine::setDistortionAmount (float amt)
-{
-    parameters.distortion = amt;
-}
-
-void GraphLine::setLowCutFilter (float freq)
-{
-    if (!juce::approximatelyEqual(freq, (float)parameters.loCut)) {
-        parameters.loCut = freq;
-        for (auto& f : loCutFilters) {
-            f.setCoefficients(juce::IIRCoefficients::makeHighPass(sampleRate, std::max(freq, 5.f)));
-        }
-    }
-}
-
-void GraphLine::setHighCutFilter (float freq)
-{
-    if (!juce::approximatelyEqual(freq, (float)parameters.loCut)) {
-        parameters.hiCut = freq;
-        for (auto& f : hiCutFilters) {
-            f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, std::min(freq, sampleRate / 2)));
-        }
     }
 }
 
@@ -290,11 +243,39 @@ bool GraphLine::modulateIfPossible (ModulatableKey& key, float newValue)
 {
     return parameters.modulateIfPossible(key, newValue);
 }
+
 float GraphLine::getCurrentModPosition()
 {
     return modOscillator->getCurrentValueWithoutTicking();
 }
+
 void GraphLine::clear()
 {
     delayLineInternal->clearLines();
+}
+
+void GraphLine::parameterValueChanged (int parameterIndex, float newValue)
+{
+    recalculateParameters();
+}
+
+void GraphLine::recalculateParameters()
+{
+    gain.setTargetValue(parameters.gain);
+    modOscillator->setDepth(parameters.modDepth);
+    modOscillator->setFrequency(parameters.modRate);
+
+    for (auto& f : loCutFilters) {
+        f.setCoefficients(juce::IIRCoefficients::makeHighPass(sampleRate,
+            std::min(std::max((float)parameters.loCut, 5.f), sampleRate / 2)));
+    }
+
+    for (auto& f : hiCutFilters) {
+        f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate,
+            std::min(std::max((float)parameters.hiCut, 5.f), sampleRate / 2)));
+    }
+
+    if (parameters.isMuted()) {
+        delayLineInternal->clearLines();
+    }
 }

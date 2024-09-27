@@ -36,6 +36,9 @@ public:
     void removeListener(Listener* listener);
 
     ModulationEngine* modulationEngine;
+
+    ModulationMappingEngine( const ModulationMappingEngine& ) = delete; // non construction-copyable
+    ModulationMappingEngine& operator=( const ModulationMappingEngine& ) = delete; // non copyable
 private:
     std::set<Listener*> listeners;
     bool inModMappingMode;

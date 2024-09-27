@@ -10,11 +10,12 @@
 class LineEditor;
 class DelayGraph;
 class PlaygroundComponent;
+class ModulationMappingEngine;
 
 class GraphLineComponent : public juce::Component
 {
 public:
-    GraphLineComponent(DelayGraph& _delayGraph, PlaygroundComponent* _playgroundComponent, int _id);
+    GraphLineComponent(ModulationMappingEngine& me, DelayGraph& _delayGraph, PlaygroundComponent* _playgroundComponent, int _id);
     ~GraphLineComponent() override;
     void paint(juce::Graphics &g) override;
     void resized() override;
@@ -31,6 +32,7 @@ private:
     PlaygroundComponent* playgroundComponent;
 
     const int lineHoverDistance = 10;
+    ModulationMappingEngine& mappingEngine;
 };
 
 #endif //DELAYLINES_GRAPHLINECOMPONENT_H
