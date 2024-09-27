@@ -238,6 +238,10 @@ void LineEditor::timerCallback()
     invertButton.setToggleState(line->parameters.invert, juce::dontSendNotification);
     muteButton.setToggleState(line->parameters.isMuted(), juce::dontSendNotification);
     bypassButton.setToggleState(line->parameters.isBypassed(), juce::dontSendNotification);
+
+    filterVisualizer.setFilters(
+        line->parameters.loCut.convertTo0to1(line->parameters.loCut),
+        line->parameters.hiCut.convertTo0to1(line->parameters.hiCut));
 }
 
 void LineEditor::mouseDown (const juce::MouseEvent& event)
