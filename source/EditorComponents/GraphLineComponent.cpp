@@ -5,7 +5,7 @@
 #include "GraphLineComponent.h"
 #include "../DelayGraph.h"
 #include "../Modulation/ModulationMappingEngine.h"
-#include "LineEditor.h"
+#include "LineEditor/LineEditor.h"
 #include "PlaygroundInterface.h"
 
 static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point<float> end, int channel) {

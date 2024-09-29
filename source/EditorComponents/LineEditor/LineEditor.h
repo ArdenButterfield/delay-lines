@@ -7,15 +7,14 @@
 
 #include "juce_gui_basics/juce_gui_basics.h"
 
-#include "../DelayGraph.h"
+#include "../../DelayGraph.h"
 #include "LengthEditor.h"
-#include "DelayLinesLookAndFeel.h"
+#include "../DelayLinesLookAndFeel.h"
 #include "ModVisualizer.h"
 #include "FilterVisualizer.h"
-#include "FilterSlider.h"
 
-#include "../Modulation/ModulationMappingEngine.h"
-#include "../Modulation/ModOverlayButton.h"
+#include "../../Modulation/ModulationMappingEngine.h"
+#include "../../Modulation/ModOverlayButton.h"
 
 class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::ToggleButton::Listener, public juce::Timer
 {

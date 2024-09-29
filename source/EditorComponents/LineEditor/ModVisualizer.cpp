@@ -3,7 +3,7 @@
 //
 
 #include "ModVisualizer.h"
-#include "../DelayGraph.h"
+#include "../../DelayGraph.h"
 
 ModVisualizer::ModVisualizer (DelayGraph* dg, int l) : delayGraph(dg), lineIndex(l)
 {

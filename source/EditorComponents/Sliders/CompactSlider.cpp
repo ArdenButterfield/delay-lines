@@ -3,7 +3,7 @@
 //
 
 #include "CompactSlider.h"
-#include "DelayLinesLookAndFeel.h"
+#include "../DelayLinesLookAndFeel.h"
 
 CompactSlider::CompactSlider()
     : suffix("")

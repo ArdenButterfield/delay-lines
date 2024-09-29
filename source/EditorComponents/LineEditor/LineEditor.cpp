@@ -3,7 +3,7 @@
 //
 
 #include "LineEditor.h"
-#include "../parameters.h"
+#include "../../parameters.h"
 LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, const int& _line)
     : lengthEditor(_delayGraph, _line), delayGraph(_delayGraph), graphLine(_line), dragging(false), modVisualizer(&_delayGraph, _line), mappingEngine(me)
 {

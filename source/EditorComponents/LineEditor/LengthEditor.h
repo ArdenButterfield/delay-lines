@@ -7,11 +7,11 @@
 
 #include "juce_gui_basics/juce_gui_basics.h"
 
-#include "../DelayGraph.h"
-#include "../Line/GraphLine.h"
+#include "../../DelayGraph.h"
+#include "../../Line/GraphLine.h"
 
-#include "CompactSlider.h"
-#include "PitchCompactSlider.h"
+#include "../Sliders/CompactSlider.h"
+#include "../Sliders/PitchCompactSlider.h"
 
 #include "BpmTapper.h"
 

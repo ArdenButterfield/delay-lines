@@ -3,9 +3,9 @@
 //
 
 #include "ModulatableSlider.h"
-#include "../Modulation/ModOverlayButton.h"
-#include "../Modulation/ModulatableKey.h"
-#include "../Modulation/ModulationMappingEngine.h"
+#include "../../Modulation/ModOverlayButton.h"
+#include "../../Modulation/ModulatableKey.h"
+#include "../../Modulation/ModulationMappingEngine.h"
 
 ModulatableSlider::ModulatableSlider() : mappingEngine(nullptr)
 {
