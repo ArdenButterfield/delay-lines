@@ -38,7 +38,7 @@ public:
     CompactSlider modRateSlider;
     juce::Slider timeEnvelopeFollowSlider;
 
-    juce::Slider distortionSlider;
+    CompactSlider distortionSlider;
     CompactSlider loCutSlider;
     CompactSlider hiCutSlider;
 
@@ -66,6 +66,7 @@ private:
     juce::Rectangle<int> mainSection;
     juce::Rectangle<int> modArea;
     juce::Rectangle<int> filterArea;
+    juce::Rectangle<int> distortionArea;
 
     juce::ComponentDragger dragger;
 
@@ -76,7 +77,7 @@ private:
     void timerCallback() override;
 
     DelayGraph& delayGraph;
-    const int& graphLine;
+    const int graphLine;
 
     std::array<juce::Rectangle<int>, 3> panels;
 

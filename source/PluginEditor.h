@@ -3,7 +3,8 @@
 #include "BinaryData.h"
 #include "EditorComponents/PresetBrowser.h"
 
-#include "EditorComponents/PlaygroundComponent.h"
+#include "EditorComponents/PlaygroundInterface.h"
+#include "EditorComponents/ModularInterface.h"
 
 #include "PlaygroundControllerOld.h"
 #include "PluginProcessor.h"
@@ -32,7 +33,9 @@ private:
     PresetBrowser presetBrowser;
     ModulationMappingEngine modulationMappingEngine;
 
-    PlaygroundComponent playgroundComponent;
+    PlaygroundInterface playgroundInterface;
+    ModularInterface modularInterface;
+    juce::TextButton switchInterface;
 
     void buttonClicked(juce::Button *) override;
 

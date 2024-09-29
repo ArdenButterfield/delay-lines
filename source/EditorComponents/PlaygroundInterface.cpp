@@ -2,10 +2,10 @@
 // Created by arden on 8/13/24.
 //
 
-#include "PlaygroundComponent.h"
+#include "PlaygroundInterface.h"
 #include "../DelayGraph.h"
 
-PlaygroundComponent::PlaygroundComponent(ModulationMappingEngine& me, DelayGraph& _delayGraph) :  globalOffset(0,0), delayGraph(_delayGraph), mappingEngine(me)
+PlaygroundInterface::PlaygroundInterface (ModulationMappingEngine& me, DelayGraph& _delayGraph) :  globalOffset(0,0), delayGraph(_delayGraph), mappingEngine(me)
 {
     delayGraph.addListener(this);
     for (auto id : delayGraph.getAllLineIds()) {
@@ -17,12 +17,12 @@ PlaygroundComponent::PlaygroundComponent(ModulationMappingEngine& me, DelayGraph
 
     startTimerHz(60);
 }
-PlaygroundComponent::~PlaygroundComponent()
+PlaygroundInterface::~PlaygroundInterface()
 {
     delayGraph.removeListener(this);
 }
 
-void PlaygroundComponent::resized()
+void PlaygroundInterface::resized()
 {
     for (auto& point : pointComponents) {
         point->setBounds(getLocalBounds());
@@ -33,7 +33,7 @@ void PlaygroundComponent::resized()
     }
 }
 
-void PlaygroundComponent::paint (juce::Graphics& g)
+void PlaygroundInterface::paint (juce::Graphics& g)
 {
     g.setColour(juce::Colours::white);
     g.fillAll();
@@ -41,7 +41,7 @@ void PlaygroundComponent::paint (juce::Graphics& g)
     g.drawRect(getLocalBounds());
 }
 
-void PlaygroundComponent::addPoint (int identifier)
+void PlaygroundInterface::addPoint (int identifier)
 {
     auto newPoint = std::make_unique<GraphPointComponent>(mappingEngine, delayGraph, this, identifier);
     addAndMakeVisible(newPoint.get(), -1);
@@ -49,12 +49,12 @@ void PlaygroundComponent::addPoint (int identifier)
     pointComponents.insert(std::move(newPoint));
 }
 
-void PlaygroundComponent::removePoint (int identifier)
+void PlaygroundInterface::removePoint (int identifier)
 {
     std::erase_if(pointComponents, [&identifier](auto& p) { return identifier == p->getIdentifier();});
 }
 
-void PlaygroundComponent::addLine (int identifier)
+void PlaygroundInterface::addLine (int identifier)
 {
     auto newLine = std::make_unique<GraphLineComponent>(mappingEngine, delayGraph, this, identifier);
     addAndMakeVisible(newLine.get(), 0); // Lines should be under points
@@ -63,12 +63,12 @@ void PlaygroundComponent::addLine (int identifier)
 
 }
 
-void PlaygroundComponent::removeLine (int identifier)
+void PlaygroundInterface::removeLine (int identifier)
 {
     std::erase_if(lineComponents, [&identifier](auto& l) { return identifier == l->getIdentifier();});
 }
 
-void PlaygroundComponent::mouseUp (const juce::MouseEvent& event)
+void PlaygroundInterface::mouseUp (const juce::MouseEvent& event)
 {
     if (event.mouseWasClicked()) {
         delayGraph.addPoint(event.position, false);
@@ -78,7 +78,7 @@ void PlaygroundComponent::mouseUp (const juce::MouseEvent& event)
     }
 }
 
-void PlaygroundComponent::mouseDrag (const juce::MouseEvent& event)
+void PlaygroundInterface::mouseDrag (const juce::MouseEvent& event)
 {
     globalOffset = {
         static_cast<float>(event.getOffsetFromDragStart().x),

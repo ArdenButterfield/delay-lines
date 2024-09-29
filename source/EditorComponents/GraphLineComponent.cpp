@@ -3,10 +3,10 @@
 //
 
 #include "GraphLineComponent.h"
-#include "PlaygroundComponent.h"
-#include "LineEditor.h"
 #include "../DelayGraph.h"
 #include "../Modulation/ModulationMappingEngine.h"
+#include "LineEditor.h"
+#include "PlaygroundInterface.h"
 
 static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point<float> end, int channel) {
     auto transform = juce::AffineTransform();
@@ -17,8 +17,8 @@ static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point
 }
 
 
-GraphLineComponent::GraphLineComponent (ModulationMappingEngine& me, DelayGraph& _delayGraph, PlaygroundComponent* _playgroundComponent, int _id)
-    : playgroundComponent(_playgroundComponent), delayGraph(_delayGraph), id(_id), mappingEngine(me) {
+GraphLineComponent::GraphLineComponent (ModulationMappingEngine& me, DelayGraph& _delayGraph, PlaygroundInterface* _playgroundInterface, int _id)
+    : playgroundInterface(_playgroundInterface), delayGraph(_delayGraph), id(_id), mappingEngine(me) {
 }
 
 GraphLineComponent::~GraphLineComponent()
@@ -33,8 +33,8 @@ void GraphLineComponent::paint (juce::Graphics& g)
     }
 
 
-    auto startPoint = *(line->start) + playgroundComponent->getGlobalOffset();
-    auto endPoint = *(line->end) + playgroundComponent->getGlobalOffset();
+    auto startPoint = *(line->start) + playgroundInterface->getGlobalOffset();
+    auto endPoint = *(line->end) + playgroundInterface->getGlobalOffset();
     if (delayGraph.interactionState == DelayGraph::lineHover && delayGraph.activeLine == line) {
         g.setColour(juce::Colours::yellow);
         g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 10);
@@ -112,7 +112,7 @@ void GraphLineComponent::mouseExit (const juce::MouseEvent& event)
 void GraphLineComponent::mouseUp (const juce::MouseEvent& event)
 {
     if (event.mouseWasClicked() && lineEditor && lineEditor->isVisible()) {
-        playgroundComponent->removeChildComponent(lineEditor.get());
+        playgroundInterface->removeChildComponent(lineEditor.get());
         lineEditor.reset();
     } else if (event.mouseWasClicked() && event.mods.isShiftDown()) {
         delayGraph.activeLine->toggleEnabled();
@@ -121,7 +121,7 @@ void GraphLineComponent::mouseUp (const juce::MouseEvent& event)
         delayGraph.deleteLine(delayGraph.activeLine);
     } else if (event.mouseWasClicked()) {
         lineEditor = std::make_unique<LineEditor>(mappingEngine, delayGraph, id);
-        playgroundComponent->addAndMakeVisible(*lineEditor);
-        lineEditor->setBounds(10,10,250,350);
+        playgroundInterface->addAndMakeVisible(*lineEditor);
+        lineEditor->setBounds(10,10,270,430);
     }
 }

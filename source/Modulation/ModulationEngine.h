@@ -30,6 +30,8 @@ private:
     DelayGraph& delayGraph;
     void timerCallback() override;
     void setParametersToInternalState();
+
+    juce::CriticalSection parameterChangeLock;
 };
 
 #endif //DELAYLINES_MODULATIONENGINE_H

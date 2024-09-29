@@ -3,11 +3,11 @@
 //
 
 #include "GraphPointComponent.h"
-#include "PlaygroundComponent.h"
+#include "PlaygroundInterface.h"
 
-GraphPointComponent::GraphPointComponent (ModulationMappingEngine& me, DelayGraph& _delayGraph, PlaygroundComponent* _playgroundComponent, int id)
+GraphPointComponent::GraphPointComponent (ModulationMappingEngine& me, DelayGraph& _delayGraph, PlaygroundInterface* _playgroundInterface, int id)
     : delayGraph(_delayGraph),
-      playgroundComponent(_playgroundComponent),
+      playgroundInterface(_playgroundInterface),
       identifier(id),
       mappingEngine(me),
       xMod(mappingEngine, {ModulatableKey::point, id, "x", {0, 1}}),
@@ -23,7 +23,7 @@ void GraphPointComponent::paint (juce::Graphics& g) {
         return;
     }
 
-    auto pointWithOffset = *point + playgroundComponent->getGlobalOffset();
+    auto pointWithOffset = *point + playgroundInterface->getGlobalOffset();
 
     if (point == delayGraph.lineInProgressEndPoint) {
         g.setColour(juce::Colours::green);

@@ -39,6 +39,7 @@ void ModulationEngine::parameterChanged(const juce::String &parameterID, float n
 void ModulationEngine::setParameterValue (unsigned int index, float value)
 {
     auto p = treeState.getParameter(paramIds[index]);
+    const juce::ScopedLock scopedLock(parameterChangeLock);
     p->beginChangeGesture();
     p->setValueNotifyingHost(value);
     p->endChangeGesture();

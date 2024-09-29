@@ -110,14 +110,17 @@ void GraphLine::popSample ()
 
     auto gainVal = gain.getNextValue();
     for (unsigned channel = 0; channel < numChannels; ++channel) {
-
         auto s = val[channel] * gainVal;
+        if (!std::isfinite(s)) {
+            s = 0;
+        }
         s = parameters.distortion > 0 ? distortSample(s) : s;
         s *= parameters.invert ? -1 : 1;
 
         s = parameters.loCut > 5 ? loCutFilters[channel].processSingleSampleRaw(s) : s;
         s = parameters.hiCut < 19999 ? hiCutFilters[channel].processSingleSampleRaw(s) : s;
 
+        s = std::min(std::max(s, -5.f), 5.f);
 
 #if false
         float gain;

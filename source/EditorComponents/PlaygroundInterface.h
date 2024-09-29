@@ -2,8 +2,8 @@
 // Created by arden on 8/13/24.
 //
 
-#ifndef DELAYLINES_PLAYGROUNDCOMPONENT_H
-#define DELAYLINES_PLAYGROUNDCOMPONENT_H
+#ifndef DELAYLINES_PLAYGROUNDINTERFACE_H
+#define DELAYLINES_PLAYGROUNDINTERFACE_H
 
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "../DelayGraph.h"
@@ -12,11 +12,11 @@
 #include "../Modulation/ModulationMappingEngine.h"
 #include <set>
 
-class PlaygroundComponent : public juce::Component, public DelayGraph::Listener, public juce::Timer
+class PlaygroundInterface : public juce::Component, public DelayGraph::Listener, public juce::Timer
 {
 public:
-    explicit PlaygroundComponent(ModulationMappingEngine& me, DelayGraph& _delayGraph);
-    ~PlaygroundComponent() override;
+    explicit PlaygroundInterface(ModulationMappingEngine& me, DelayGraph& _delayGraph);
+    ~PlaygroundInterface() override;
     void resized() override;
     void paint(juce::Graphics &g) override;
 
@@ -45,4 +45,4 @@ private:
 
 };
 
-#endif //DELAYLINES_PLAYGROUNDCOMPONENT_H
+#endif //DELAYLINES_PLAYGROUNDINTERFACE_H

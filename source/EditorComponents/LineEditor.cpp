@@ -42,7 +42,6 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
 
     for (auto slider : {
              &timeEnvelopeFollowSlider,
-             &distortionSlider,
              &gainEnvelopeFollowSlider}) {
         slider->setSliderStyle(juce::Slider::RotaryVerticalDrag);
         slider->setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 60, 20);
@@ -59,7 +58,9 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
              &gainSlider,
              &feedbackSlider,
              &modDepthSlider,
-             &modRateSlider}) {
+             &modRateSlider,
+             &distortionSlider
+         }) {
         addAndMakeVisible(slider);
         slider->addListener(this);
         slider->setMappingEngine(&mappingEngine);
@@ -70,6 +71,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     feedbackSlider.setModKey({ModulatableKey::line, graphLine, FEEDBACK_ID, feedbackSlider.getNormalisableRange()});
     modDepthSlider.setModKey({ModulatableKey::line, graphLine, MOD_DEPTH_ID, modDepthSlider.getNormalisableRange()});
     modRateSlider.setModKey({ModulatableKey::line, graphLine, MOD_RATE_ID, modRateSlider.getNormalisableRange()});
+    distortionSlider.setModKey({ModulatableKey::line, graphLine, DISTORTION_ID, distortionSlider.getNormalisableRange()});
 
     addAndMakeVisible(lengthEditor);
 
@@ -145,6 +147,7 @@ void LineEditor::resized()
     gainLabel.setBounds(gainArea.withTrimmedTop(gainSlider.getHeight()));
     feedbackLabel.setBounds(feedbackArea.withTrimmedTop(feedbackSlider.getHeight()));
 
+    // Modding length
     modArea = mainSection.withTrimmedTop(gainAndFeedbackArea.getBottom()).withHeight(80);
 
     modVisualizer.setBounds(modArea);
@@ -158,6 +161,7 @@ void LineEditor::resized()
 
     modLabel.setBounds(modArea.withX(modDepthSlider.getRight()).withRight(modRateSlider.getX()));
 
+    // Filter
     filterArea = mainSection.withTrimmedTop(modArea.getBottom()).withHeight(80);
 
     filterVisualizer.setBounds(filterArea);
@@ -170,6 +174,11 @@ void LineEditor::resized()
     hiCutSlider.setBounds(filterArea.withWidth(thirdWidth).withRightX(filterArea.getRight()).withTrimmedTop(filterHiLabel.getHeight()));
 
     filterLabel.setBounds(filterArea.withX(loCutSlider.getRight()).withRight(hiCutSlider.getX()));
+
+    // Distortion
+    distortionArea = mainSection.withTrimmedTop(filterArea.getBottom()).withHeight(80);
+    distortionSlider.setBounds(distortionArea.withSizeKeepingCentre(distortionArea.getHeight(), distortionArea.getHeight()));
+
 }
 
 void LineEditor::paint (juce::Graphics& g)

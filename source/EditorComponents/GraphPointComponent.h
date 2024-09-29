@@ -10,7 +10,7 @@
 #include "../Modulation/ModulationMappingEngine.h"
 #include "../Modulation/ModOverlayButton.h"
 
-class PlaygroundComponent;
+class PlaygroundInterface;
 
 class LineGhostComponent : public juce::Component
 {
@@ -26,7 +26,7 @@ public:
 class GraphPointComponent : public juce::Component
 {
 public:
-    GraphPointComponent(ModulationMappingEngine& me, DelayGraph& delayGraph, PlaygroundComponent* _playgroundComponent, int id);
+    GraphPointComponent(ModulationMappingEngine& me, DelayGraph& delayGraph, PlaygroundInterface* _playgroundInterface, int id);
     ~GraphPointComponent() override {}
     void paint(juce::Graphics &g) override;
     void resized() override;
@@ -34,7 +34,7 @@ public:
     int getIdentifier() { return identifier; }
 private:
     DelayGraph& delayGraph;
-    PlaygroundComponent* playgroundComponent;
+    PlaygroundInterface* playgroundInterface;
     int identifier;
     void mouseEnter(const juce::MouseEvent &event) override;
     void mouseExit(const juce::MouseEvent &event) override;

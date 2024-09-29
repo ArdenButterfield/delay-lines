@@ -5,7 +5,9 @@ PluginEditor::PluginEditor (PluginProcessor& p)
       printXmlButton("Print XML"),
       clearLinesButton("Clear lines"),
       presetBrowser(p.delayGraph),
-      playgroundComponent(modulationMappingEngine, p.delayGraph),
+      playgroundInterface(modulationMappingEngine, p.delayGraph),
+      modularInterface(modulationMappingEngine, p.delayGraph),
+      switchInterface("Switch interface"),
       processorRef (p),
       modulatorOverlayButton("Modulator Overlay"),
       mixAttachment(p.getValueTreeState(), MIX_PARAM_ID, mixSlider)
@@ -19,16 +21,18 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     printXmlButton.addListener(this);
     modulatorOverlayButton.addListener(this);
     clearLinesButton.addListener(this);
-
+    switchInterface.addListener(this);
 
     addAndMakeVisible(mixSlider);
     addAndMakeVisible(presetBrowser);
     addAndMakeVisible(printXmlButton);
+    addAndMakeVisible(switchInterface);
     addAndMakeVisible(clearLinesButton);
     addAndMakeVisible(modulatorOverlayButton);
 //    addAndMakeVisible(modulatorOverlay.get()); TODO: bring back if neededp
     addAndMakeVisible(modKnobs);
-    addAndMakeVisible(playgroundComponent);
+    addAndMakeVisible(playgroundInterface);
+    addChildComponent(modularInterface);
 //    setResizable(true, true);
 
     // Make sure that before the constructor has finished, you've set the
@@ -49,21 +53,27 @@ void PluginEditor::paint (juce::Graphics& g)
 void PluginEditor::resized()
 {
     // layout the positions of your child components here
-    playgroundComponent.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 150));
+    playgroundInterface.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 150));
 
 
-    modKnobs.setBounds(getLocalBounds().withTop(playgroundComponent.getBottom() + 10));
-    printXmlButton.setBounds(10,10, 100, 30);
+    modKnobs.setBounds(getLocalBounds().withTop(playgroundInterface.getBottom() + 10));
+    switchInterface.setBounds(10,10, 100, 30);
     presetBrowser.setBounds(150, 10, 200, 60);
 //    modulatorOverlayButton.setBounds(360, 10, 100, 30);
     clearLinesButton.setBounds(360, 10, 100, 30);
     mixSlider.setBounds(470, 10, 100, 30);
+
+    modularInterface.setBounds(playgroundInterface.getBounds());
 }
 
 void PluginEditor::buttonClicked (juce::Button* button)
 {
     if (button == &printXmlButton) {
         processorRef.printXml();
+    } else if (button == &switchInterface) {
+        auto modWasVisible = modularInterface.isVisible();
+        playgroundInterface.setVisible(modWasVisible);
+        modularInterface.setVisible(!modWasVisible);
     }
 }
 

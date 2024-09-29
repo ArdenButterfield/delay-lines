@@ -9,13 +9,13 @@
 
 class LineEditor;
 class DelayGraph;
-class PlaygroundComponent;
+class PlaygroundInterface;
 class ModulationMappingEngine;
 
 class GraphLineComponent : public juce::Component
 {
 public:
-    GraphLineComponent(ModulationMappingEngine& me, DelayGraph& _delayGraph, PlaygroundComponent* _playgroundComponent, int _id);
+    GraphLineComponent(ModulationMappingEngine& me, DelayGraph& _delayGraph, PlaygroundInterface* _playgroundInterface, int _id);
     ~GraphLineComponent() override;
     void paint(juce::Graphics &g) override;
     void resized() override;
@@ -29,7 +29,7 @@ private:
     std::unique_ptr<LineEditor> lineEditor;
     const int id;
     DelayGraph& delayGraph;
-    PlaygroundComponent* playgroundComponent;
+    PlaygroundInterface* playgroundInterface;
 
     const int lineHoverDistance = 10;
     ModulationMappingEngine& mappingEngine;
