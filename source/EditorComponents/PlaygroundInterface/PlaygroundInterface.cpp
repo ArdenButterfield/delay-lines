@@ -3,7 +3,7 @@
 //
 
 #include "PlaygroundInterface.h"
-#include "../DelayGraph.h"
+#include "../../DelayGraph.h"
 
 PlaygroundInterface::PlaygroundInterface (ModulationMappingEngine& me, DelayGraph& _delayGraph) :  globalOffset(0,0), delayGraph(_delayGraph), mappingEngine(me)
 {

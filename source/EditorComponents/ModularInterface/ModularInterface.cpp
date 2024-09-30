@@ -3,7 +3,7 @@
 //
 
 #include "ModularInterface.h"
-#include "../Modulation/ModulationMappingEngine.h"
+#include "../../Modulation/ModulationMappingEngine.h"
 
 ModularInterface::ModularInterface (ModulationMappingEngine& me, DelayGraph& dg) : mappingEngine(me), delayGraph(dg)
 {

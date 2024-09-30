@@ -5,10 +5,10 @@
 #ifndef DELAYLINES_GRAPHPOINTCOMPONENT_H
 #define DELAYLINES_GRAPHPOINTCOMPONENT_H
 
-#include "../DelayGraph.h"
+#include "../../DelayGraph.h"
 #include "juce_gui_basics/juce_gui_basics.h"
-#include "../Modulation/ModulationMappingEngine.h"
-#include "../Modulation/ModOverlayButton.h"
+#include "../../Modulation/ModulationMappingEngine.h"
+#include "../../Modulation/ModOverlayButton.h"
 
 class PlaygroundInterface;
 

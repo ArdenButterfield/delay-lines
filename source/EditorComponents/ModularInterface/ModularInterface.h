@@ -6,7 +6,7 @@
 #define DELAYLINES_MODULARINTERFACE_H
 
 #include "juce_gui_basics/juce_gui_basics.h"
-#include "../DelayGraph.h"
+#include "../../DelayGraph.h"
 #include "GraphLineModule.h"
 
 class ModulationMappingEngine;

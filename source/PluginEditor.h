@@ -3,8 +3,8 @@
 #include "BinaryData.h"
 #include "EditorComponents/PresetBrowser.h"
 
-#include "EditorComponents/PlaygroundInterface.h"
-#include "EditorComponents/ModularInterface.h"
+#include "EditorComponents/PlaygroundInterface/PlaygroundInterface.h"
+#include "EditorComponents/ModularInterface/ModularInterface.h"
 
 #include "PlaygroundControllerOld.h"
 #include "PluginProcessor.h"

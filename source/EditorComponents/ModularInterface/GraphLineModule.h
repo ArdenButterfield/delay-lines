@@ -6,9 +6,9 @@
 #define DELAYLINES_GRAPHLINEMODULE_H
 
 #include "juce_gui_basics/juce_gui_basics.h"
-#include "../DelayGraph.h"
-#include "../Modulation/ModulationMappingEngine.h"
-#include "LineEditor/LineEditor.h"
+#include "../../DelayGraph.h"
+#include "../../Modulation/ModulationMappingEngine.h"
+#include "../LineEditor/LineEditor.h"
 class GraphLineModule : public juce::Component
 {
 public:

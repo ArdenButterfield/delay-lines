@@ -6,10 +6,10 @@
 #define DELAYLINES_PLAYGROUNDINTERFACE_H
 
 #include "juce_gui_basics/juce_gui_basics.h"
-#include "../DelayGraph.h"
+#include "../../DelayGraph.h"
 #include "GraphLineComponent.h"
 #include "GraphPointComponent.h"
-#include "../Modulation/ModulationMappingEngine.h"
+#include "../../Modulation/ModulationMappingEngine.h"
 #include <set>
 
 class PlaygroundInterface : public juce::Component, public DelayGraph::Listener, public juce::Timer
