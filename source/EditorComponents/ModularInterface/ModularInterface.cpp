@@ -7,13 +7,9 @@
 
 ModularInterface::ModularInterface (ModulationMappingEngine& me, DelayGraph& dg) : mappingEngine(me), delayGraph(dg)
 {
-    for (auto& lineID : delayGraph.getAllLineIds()) {
-        lineModules.push_back(std::make_unique<GraphLineModule>(mappingEngine, delayGraph, lineID));
-    }
-    for (auto& module : lineModules) {
-        addAndMakeVisible(module.get());
-    }
-    delayGraph.addListener(this);
+    boxOfLineEditors = std::make_unique<BoxOfLineEditors>(mappingEngine, delayGraph);
+    addAndMakeVisible(lineEditorsViewport);
+    lineEditorsViewport.setViewedComponent(boxOfLineEditors.get(), false);
 }
 
 ModularInterface::~ModularInterface()
@@ -22,38 +18,18 @@ ModularInterface::~ModularInterface()
 
 void ModularInterface::resized()
 {
-    juce::FlexBox fb;
-    fb.flexWrap = juce::FlexBox::Wrap::wrap;
-    fb.justifyContent = juce::FlexBox::JustifyContent::center;
-    fb.alignContent = juce::FlexBox::AlignContent::center;
-
-    for (auto& module : lineModules) {
-        fb.items.add(juce::FlexItem(*module).withMinWidth(200).withMinHeight(200));
-    }
-    fb.performLayout(getLocalBounds());
+    lineEditorsViewport.setBounds(getLocalBounds()
+                                     .withTrimmedTop(10)
+                                     .withTrimmedLeft(10)
+                                     .withTrimmedRight(10)
+                                     .withTrimmedBottom(10));
+    std::cout << lineEditorsViewport.getViewWidth() << "\n";
+    boxOfLineEditors->setSize(lineEditorsViewport.getWidth() - lineEditorsViewport.getScrollBarThickness(), 1000);
 }
 
 void ModularInterface::paint (juce::Graphics& g)
 {
     g.fillAll(juce::Colours::pink);
-}
-void ModularInterface::addPoint (int identifier)
-{
-}
-
-void ModularInterface::removePoint (int identifier)
-{
-}
-
-void ModularInterface::addLine (int identifier)
-{
-    lineModules.push_back(std::make_unique<GraphLineModule>(mappingEngine, delayGraph, identifier));
-    addAndMakeVisible(lineModules.back().get());
-    resized();
-}
-
-void ModularInterface::removeLine (int identifier)
-{
 }
 
 void ModularInterface::timerCallback()

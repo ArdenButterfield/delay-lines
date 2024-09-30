@@ -121,6 +121,6 @@ void GraphLineComponent::mouseUp (const juce::MouseEvent& event)
     } else if (event.mouseWasClicked()) {
         lineEditor = std::make_unique<LineEditor>(mappingEngine, delayGraph, id);
         playgroundInterface->addAndMakeVisible(*lineEditor);
-        lineEditor->setBounds(10,10,270,430);
+        lineEditor->setBounds(LineEditor::getDesiredBounds());
     }
 }

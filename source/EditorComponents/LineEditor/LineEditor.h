@@ -47,6 +47,9 @@ public:
 
     CompactSlider feedbackSlider;
 
+    static const juce::Rectangle<int> getDesiredBounds() {
+        return {10,10,270,430};
+    }
 private:
     juce::TextButton copyButton;
     juce::TextButton pasteButton;
