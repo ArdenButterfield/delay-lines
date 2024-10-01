@@ -10,13 +10,14 @@ BoxOfLineEditors::BoxOfLineEditors (ModulationMappingEngine& me, DelayGraph& dg)
     }
     for (auto& module : lineModules) {
         addAndMakeVisible(module.get());
+        module->setBounds(LineEditor::getDesiredBounds());
     }
     delayGraph.addListener(this);
-
 }
 
 BoxOfLineEditors::~BoxOfLineEditors()
 {
+    delayGraph.removeListener(this);
 }
 void BoxOfLineEditors::addPoint (int identifier)
 {
@@ -34,10 +35,12 @@ void BoxOfLineEditors::addLine (int identifier)
 void BoxOfLineEditors::removeLine (int identifier)
 {
 }
+
 void BoxOfLineEditors::paint (juce::Graphics& g)
 {
     g.fillAll(juce::Colours::red);
 }
+
 void BoxOfLineEditors::resized()
 {
     auto fb = juce::FlexBox();
@@ -46,7 +49,7 @@ void BoxOfLineEditors::resized()
     fb.alignContent = juce::FlexBox::AlignContent::center;
 
     for (auto& module : lineModules) {
-        fb.items.add(juce::FlexItem(*module).withMinWidth(LineEditor::getDesiredBounds().getWidth()).withMinHeight(LineEditor::getDesiredBounds().getHeight()));
+        fb.items.add(juce::FlexItem(*module).withMinWidth(GraphLineModule::getDesiredBounds().getWidth()).withMinHeight(GraphLineModule::getDesiredBounds().getHeight()));
     }
     fb.performLayout(getLocalBounds());
 }

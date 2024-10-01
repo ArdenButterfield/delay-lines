@@ -97,6 +97,7 @@ int DelayGraph::findUniqueLineId()
 
 int DelayGraph::findUniquePointId()
 {
+    // IDs start at 1 to avoid issues with juce comboboxes, which don't allow an ID of 0
     auto id = 0;
     auto idConflict = true;
     while (idConflict) {

@@ -33,6 +33,7 @@ public:
 
     GraphPoint* start;
     GraphPoint* end;
+
     void pushSample(std::vector<float>& sample);
     void popSample();
     void prepareToPlay(juce::dsp::ProcessSpec& spec);
@@ -87,4 +88,5 @@ private:
     std::vector<juce::IIRFilter> hiCutFilters;
     std::unique_ptr<ModOscillator> modOscillator;
 };
+
 #endif //DELAYLINES_GRAPHLINE_H

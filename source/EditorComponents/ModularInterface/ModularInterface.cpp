@@ -23,7 +23,6 @@ void ModularInterface::resized()
                                      .withTrimmedLeft(10)
                                      .withTrimmedRight(10)
                                      .withTrimmedBottom(10));
-    std::cout << lineEditorsViewport.getViewWidth() << "\n";
     boxOfLineEditors->setSize(lineEditorsViewport.getWidth() - lineEditorsViewport.getScrollBarThickness(), 1000);
 }
 
