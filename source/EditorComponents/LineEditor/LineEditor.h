@@ -16,7 +16,7 @@
 #include "../../Modulation/ModulationMappingEngine.h"
 #include "../../Modulation/ModOverlayButton.h"
 
-class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::ToggleButton::Listener, public juce::Timer
+class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::ToggleButton::Listener, public juce::Timer, juce::ComboBox::Listener
 {
 public:
     LineEditor(ModulationMappingEngine& me, DelayGraph& delayGraph, const int& line);
@@ -38,6 +38,8 @@ public:
     juce::Slider timeEnvelopeFollowSlider;
 
     CompactSlider distortionSlider;
+    juce::ComboBox distortionTypeSelector;
+
     CompactSlider loCutSlider;
     CompactSlider hiCutSlider;
 
@@ -73,6 +75,7 @@ private:
     juce::ComponentDragger dragger;
 
     void sliderValueChanged(juce::Slider* slider) override;
+    void comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) override;
     void buttonStateChanged(juce::Button *) override;
     void buttonClicked(juce::Button *) override;
 

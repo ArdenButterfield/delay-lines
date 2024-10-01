@@ -114,6 +114,9 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
         addAndMakeVisible(label);
     }
 
+    addAndMakeVisible(distortionTypeSelector);
+    distortionTypeSelector.addItemList(DISTORTION_TYPE_OPTIONS, 1);
+    distortionTypeSelector.addListener(this);
     startTimerHz(60);
 }
 
@@ -176,8 +179,9 @@ void LineEditor::resized()
     filterLabel.setBounds(filterArea.withX(loCutSlider.getRight()).withRight(hiCutSlider.getX()));
 
     // Distortion
-    distortionArea = mainSection.withTrimmedTop(filterArea.getBottom()).withHeight(80);
-    distortionSlider.setBounds(distortionArea.withSizeKeepingCentre(distortionArea.getHeight(), distortionArea.getHeight()));
+    distortionArea = mainSection.withTrimmedTop(filterArea.getBottom()).withBottom(getBottom());
+    distortionTypeSelector.setBounds(distortionArea.withWidth(100));
+    distortionSlider.setBounds(distortionArea.withTrimmedLeft(distortionTypeSelector.getRight()));
 
 }
 
@@ -251,6 +255,7 @@ void LineEditor::timerCallback()
     filterVisualizer.setFilters(
         line->parameters.loCut.convertTo0to1(line->parameters.loCut),
         line->parameters.hiCut.convertTo0to1(line->parameters.hiCut));
+    distortionTypeSelector.setSelectedId(line->parameters.distortionType + 1);
 }
 
 void LineEditor::mouseDown (const juce::MouseEvent& event)
@@ -307,5 +312,15 @@ void LineEditor::buttonClicked (juce::Button* button)
                 line->parameters.importFromXml(xml.get());
             }
         }
+    }
+}
+void LineEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
+{
+    auto line = delayGraph.getLine(graphLine);
+    if (!line) {
+        return;
+    }
+    if (comboBoxThatHasChanged == &distortionTypeSelector) {
+        line->parameters.distortionType = distortionTypeSelector.getSelectedItemIndex();
     }
 }

@@ -166,6 +166,7 @@ struct Parameters {
     juce::AudioParameterFloat modDepth;
     juce::AudioParameterFloat modRate;
     juce::AudioParameterFloat distortion;
+    juce::AudioParameterChoice distortionType;
     juce::AudioParameterFloat hiCut;
     juce::AudioParameterFloat loCut;
     juce::AudioParameterFloat gain;
@@ -173,12 +174,14 @@ struct Parameters {
     juce::AudioParameterFloat gainEnvelopeFollow;
     juce::AudioParameterFloat feedback;
 
+
     std::vector<juce::RangedAudioParameter*> params {
         &muteBypass,
         &lengthEnvelopeFollow,
         &modDepth,
         &modRate,
         &distortion,
+        &distortionType,
         &hiCut,
         &loCut,
         &gain,

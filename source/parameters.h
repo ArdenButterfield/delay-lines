@@ -33,9 +33,12 @@ const juce::String LENGTH_ENVELOPE_FOLLOW_ID = "lengthenvelopefollow";
 const juce::String MOD_DEPTH_ID = "moddepth";
 const juce::String MOD_RATE_ID = "modrate";
 const juce::String DISTORTION_ID = "distortion";
+const juce::String DISTORTION_TYPE_ID = "distortiontype";
 const juce::String HICUT_ID = "hicut";
 const juce::String LOCUT_ID = "locut";
 const juce::String GAIN_ID = "gain";
 const juce::String INVERT_ID = "invert";
 const juce::String GAIN_ENVELOPE_FOLLOW_ID = "gainenvelopefollow";
 const juce::String FEEDBACK_ID = "feedback";
+
+const juce::StringArray DISTORTION_TYPE_OPTIONS = {"analog clip", "digital clip", "wave fold", "bitcrush", "packetloss"};

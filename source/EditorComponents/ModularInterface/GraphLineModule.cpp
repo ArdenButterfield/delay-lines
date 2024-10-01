@@ -51,6 +51,7 @@ juce::String GraphLineModule::makeComboboxNameForId (int id)
     }
     return juce::String(id);
 }
+
 void GraphLineModule::rebuildPointSelectors()
 {
     inputSelector.clear();
@@ -71,6 +72,7 @@ void GraphLineModule::rebuildPointSelectors()
         }
     }
 }
+
 void GraphLineModule::timerCallback()
 {
     rebuildPointSelectors();
