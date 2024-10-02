@@ -54,7 +54,18 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec& spec)
 
     gain.setCurrentAndTargetValue(parameters.gain);
 
-
+    lossmodel.clear();
+    lossFilters.clear();
+    currentLossState.clear();
+    for (unsigned i = 0; i < spec.numChannels; ++i) {
+        lossmodel.push_back(std::make_unique<LossModel>(spec.sampleRate));
+        lossmodel.back()->setParameters(0.1, 0);
+        lossFilters.emplace_back();
+        lossFilters.back().prepare({spec.sampleRate, spec.maximumBlockSize, 1});
+        lossFilters.back().setAttackTime(0.5);
+        lossFilters.back().setReleaseTime(10);
+        currentLossState.push_back(0);
+    }
 
     hiCutFilters.resize(numChannels);
     loCutFilters.resize(numChannels);
@@ -92,10 +103,40 @@ void GraphLine::pushSample (std::vector<float>& sample)
     delayLineInternal->pushSample(val);
 }
 
-float GraphLine::distortSample (float samp) const
+float GraphLine::distortSample (unsigned channel, float samp) const
 {
-    auto distorted = juce::dsp::FastMathApproximations::tanh(samp * parameters.distortion * 5);
-    return parameters.distortion * distorted + (1 - parameters.distortion) * samp;
+    float wet, multiplier;
+    float distortionAmount = parameters.distortion;
+    if (juce::approximatelyEqual(distortionAmount, 0.f)) {
+        return samp;
+    }
+
+    switch (parameters.distortionType.getIndex())
+    {
+        case 0:
+            // analog clip
+            wet = juce::dsp::FastMathApproximations::tanh(samp * distortionAmount * 5);
+            return distortionAmount * wet + (1 - distortionAmount) * samp;
+        case 1:
+            // digital clip
+            wet = std::max(std::min(samp * 1 + distortionAmount, 1.f), -1.f);
+            return distortionAmount * wet + (1 - distortionAmount) * samp;
+        case 2:
+            wet = sin(samp * (distortionAmount * 5 + 1));
+            return distortionAmount * wet + (1 - distortionAmount) * samp;
+        case 3:
+            // bitcrush
+            multiplier = std::pow(2.f, 16 - 16 * distortionAmount);
+            return std::round(samp * multiplier) / multiplier;
+        case 4:
+            // packet loss
+            return currentLossState[channel] * samp;
+        case 5:
+            // packet loss stereo
+            return currentLossState[channel] * samp;
+        default:
+            return samp;
+    }
 }
 
 void GraphLine::popSample ()
@@ -109,12 +150,24 @@ void GraphLine::popSample ()
     delayLineInternal->popSample(val);
 
     auto gainVal = gain.getNextValue();
+    if (parameters.distortionType.getIndex() == 4) {
+        // mono
+        auto v = lossmodel[0]->tick() ? 0.f : 1.f;
+        for (unsigned channel = 0; channel < numChannels; ++channel) {
+            currentLossState[channel] = lossFilters[channel].processSample(0,v);
+        }
+    } else if (parameters.distortionType.getIndex() == 5) {
+        for (unsigned channel = 0; channel < numChannels; ++channel) {
+            auto v = lossmodel[channel]->tick() ? 0.f : 1.f;
+            currentLossState[channel] = lossFilters[channel].processSample(0,v);
+        }
+    }
     for (unsigned channel = 0; channel < numChannels; ++channel) {
         auto s = val[channel] * gainVal;
         if (!std::isfinite(s)) {
             s = 0;
         }
-        s = parameters.distortion > 0 ? distortSample(s) : s;
+        s = parameters.distortion > 0 ? distortSample(channel, s) : s;
         s *= parameters.invert ? -1 : 1;
 
         s = parameters.loCut > 5 ? loCutFilters[channel].processSingleSampleRaw(s) : s;
@@ -286,5 +339,9 @@ void GraphLine::recalculateParameters()
 
     if (parameters.isMuted()) {
         delayLineInternal->clearLines();
+    }
+
+    for (auto& model : lossmodel) {
+        model->setParameters(0.1, parameters.distortion);
     }
 }
