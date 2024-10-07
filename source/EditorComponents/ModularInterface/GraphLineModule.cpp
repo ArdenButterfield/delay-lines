@@ -66,7 +66,8 @@ void GraphLineModule::rebuildPointSelectors()
         for (auto& id : delayGraph.getAllPointIds()) {
             if (id == lineComponent->start->identifier) {
                 inputSelector.setSelectedId(id);
-            } else if (id == lineComponent->end->identifier) {
+            }
+            if (id == lineComponent->end->identifier) {
                 outputSelector.setSelectedId(id);
             }
         }
@@ -84,7 +85,14 @@ void GraphLineModule::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
         if (comboBoxThatHasChanged == &inputSelector) {
             delayGraph.getLine(lineID)->start = delayGraph.getPoint(inputSelector.getSelectedId());
         } else if (comboBoxThatHasChanged == &outputSelector) {
-            delayGraph.getLine(lineID)->end = delayGraph.getPoint(outputSelector.getSelectedId());
+            auto id = outputSelector.getSelectedId();
+            auto point = delayGraph.getPoint(id);
+            if (point == nullptr) {
+                return;
+            }
+            if (point != delayGraph.getLine(lineID)->end) {
+                delayGraph.getLine(lineID)->end = point;
+            }
         }
     }
 }

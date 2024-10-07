@@ -78,10 +78,13 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec& spec)
 
 void GraphLine::calculateInternalLength()
 {
-    if (!delayLineInternal) {
-            return;
-}
+    if (!delayLineInternal || start == nullptr || end == nullptr || start == end) {
+        return;
+    }
     auto lineVector = end->getDistanceFrom({start->x, start->y});
+    if (juce::approximatelyEqual(lineVector, 0.f)) {
+        return;
+    }
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
     auto currentLength = parameters.length.getLengthInSamples(sampleRate, 120) * realLineVector / lineVector; // TODO: BPM
 
