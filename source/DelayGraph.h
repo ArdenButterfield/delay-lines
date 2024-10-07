@@ -42,6 +42,8 @@ public:
     bool modulateIfPossible(ModulatableKey& key, float newValue);
     bool getModulationValue(ModulatableKey& key, float& val);
 
+    std::vector<int> getAllLinesBetweenPoints(GraphPoint* pointA, GraphPoint* pointB);
+
     enum InteractionState {
         none = 0,
         innerSelected = 1,

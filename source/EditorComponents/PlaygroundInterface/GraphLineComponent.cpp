@@ -31,10 +31,12 @@ void GraphLineComponent::paint (juce::Graphics& g)
         return;
     }
 
-
+    auto linesSharingSpace = delayGraph.getAllLinesBetweenPoints(line->start, line->end);
+    bool isHovered = false;
     auto startPoint = *(line->start) + playgroundInterface->getGlobalOffset();
     auto endPoint = *(line->end) + playgroundInterface->getGlobalOffset();
     if (delayGraph.interactionState == DelayGraph::lineHover && delayGraph.activeLine == line) {
+        isHovered = true;
         g.setColour(juce::Colours::yellow);
         g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 10);
     } else if (delayGraph.interactionState == DelayGraph::editingLine && delayGraph.activeLine == line) {
@@ -55,6 +57,11 @@ void GraphLineComponent::paint (juce::Graphics& g)
     }
 
     g.setColour(line->getColor());
+
+    if (isHovered) {
+        g.setColour(line->getColor().withMultipliedLightness(1.4));
+    }
+
     auto leftLinePath = juce::Path();
     auto rightLinePath = juce::Path();
     leftLinePath.startNewSubPath(0,0);
@@ -72,8 +79,16 @@ void GraphLineComponent::paint (juce::Graphics& g)
     leftLinePath.closeSubPath();
     rightLinePath.closeSubPath();
 
-    g.fillPath(leftLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
-    g.fillPath(rightLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
+    if (linesSharingSpace.size() == 1) {
+        g.fillPath(leftLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
+        g.fillPath(rightLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
+    } else if (linesSharingSpace.size() == 2) {
+        if ((id == linesSharingSpace[0]) == line->isGoingBackwards()) {
+            g.fillPath(leftLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
+        } else {
+            g.fillPath(rightLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
+        }
+    }
     g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 3);
 }
 
@@ -91,10 +106,37 @@ bool GraphLineComponent::hitTest (int x, int y)
     if (line == nullptr) {
         return false;
     }
-    auto l = juce::Line<float>(*line->start, *line->end);
-    auto pointOnLine = juce::Point<float>();
-    return (l.getDistanceFromPoint({static_cast<float>(x), static_cast<float>(y)}, pointOnLine)
-            < static_cast<float>(lineHoverDistance));
+
+    if (juce::approximatelyEqual(line->start->getDistanceSquaredFrom(*line->end), 0.f)) {
+        return false;
+    }
+
+    auto linesSharingSpace = delayGraph.getAllLinesBetweenPoints(line->start, line->end);
+    auto startPoint = *(line->start) + playgroundInterface->getGlobalOffset() + line->start->offset;
+    auto endPoint = *(line->end) + playgroundInterface->getGlobalOffset() + line->end->offset;
+    auto backwards = line->isGoingBackwards();
+    auto reverseTransform = makeTransform(backwards ? endPoint : startPoint, backwards ? startPoint : endPoint, 0).inverted();
+
+    auto transx = static_cast<float>(x);
+    auto transy = static_cast<float>(y);
+    reverseTransform.transformPoint(transx, transy);
+    if (0 < transx && transx < 1) {
+        auto above = false;
+        auto below = false;
+        if (0 <= transy && transy < 1) {
+            above = true;
+        } else if (-1 < transy && transy <= 0) {
+            below = true;
+        }
+        auto linesSharingSpace = delayGraph.getAllLinesBetweenPoints(line->start, line->end);
+        if (linesSharingSpace.size() < 2) {
+            return above || below;
+        } else if (linesSharingSpace.size() == 2) {
+            auto shouldBeAbove = (id == linesSharingSpace[0]) == line->isGoingBackwards();
+            return (above && shouldBeAbove) || (below && !shouldBeAbove);
+        }
+    }
+    return false;
 }
 
 void GraphLineComponent::mouseEnter (const juce::MouseEvent& event)

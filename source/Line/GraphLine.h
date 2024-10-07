@@ -111,6 +111,10 @@ public:
 
     void setBypass (bool bypass);
     void setMute (bool mute);
+
+    bool isGoingBackwards() const {
+        return start != nullptr && end != nullptr && (start->identifier > end->identifier);
+    }
 private:
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {}

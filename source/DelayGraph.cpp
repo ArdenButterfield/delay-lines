@@ -517,3 +517,13 @@ void DelayGraph::clear()
     needsClearing = true;
     clearingFadeoutCounter = 1.f;
 }
+std::vector<int> DelayGraph::getAllLinesBetweenPoints (GraphPoint* pointA, GraphPoint* pointB)
+{
+    auto linesIds = std::vector<int>();
+    for (auto& line : lines) {
+        if ((line->start == pointA && line->end == pointB) || (line->start == pointB && line->end == pointA)) {
+            linesIds.push_back(line->identifier);
+        }
+    }
+    return linesIds;
+}

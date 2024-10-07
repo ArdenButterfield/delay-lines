@@ -31,7 +31,7 @@ private:
     DelayGraph& delayGraph;
     PlaygroundInterface* playgroundInterface;
 
-    const int lineHoverDistance = 10;
+    const int lineHoverDistance = 30;
     ModulationMappingEngine& mappingEngine;
 };
 
