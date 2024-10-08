@@ -28,8 +28,8 @@ void GraphPointComponent::paint (juce::Graphics& g) {
     if (point == delayGraph.lineInProgressEndPoint) {
         g.setColour(juce::Colours::green);
         g.fillEllipse(pointWithOffset.x - 10, pointWithOffset.y - 10, 20, 20);
-
     }
+
     if (point == delayGraph.activePoint) {
         if (delayGraph.interactionState == DelayGraph::outerSelected) {
             g.setColour(juce::Colours::blue);
@@ -43,8 +43,7 @@ void GraphPointComponent::paint (juce::Graphics& g) {
         }
     } else if (point->pointType == GraphPoint::start) {
         g.setColour(juce::Colours::green);
-    } else if (point->pointType == GraphPoint::end)
-    {
+    } else if (point->pointType == GraphPoint::end) {
         g.setColour (juce::Colours::red);
     } else {
         g.setColour(juce::Colours::brown);
@@ -64,6 +63,10 @@ void GraphPointComponent::resized() {
 }
 
 bool GraphPointComponent::hitTest (int x, int y) {
+    if ((xMod.isVisible() && xMod.getBounds().contains(x,y)) ||
+        (yMod.isVisible() && yMod.getBounds().contains(x,y))) {
+        return true;
+    }
     auto point = delayGraph.getPoint(identifier);
     if (point != nullptr) {
         auto distance = point->getDistanceSquaredFrom({static_cast<float>(x), static_cast<float>(y)});
@@ -102,6 +105,7 @@ void GraphPointComponent::updateFocus (const juce::Point<float>& mousePoint)
         }
     }
 }
+
 void GraphPointComponent::mouseDown (const juce::MouseEvent& event)
 {
     if (delayGraph.interactionState == DelayGraph::outerSelected) {
@@ -125,6 +129,7 @@ void GraphPointComponent::mouseDown (const juce::MouseEvent& event)
         }
     }
 }
+
 void GraphPointComponent::mouseDrag (const juce::MouseEvent& event)
 {
     if (delayGraph.interactionState == DelayGraph::movingPoint || delayGraph.interactionState == DelayGraph::stretchingPoint) {
@@ -133,7 +138,7 @@ void GraphPointComponent::mouseDrag (const juce::MouseEvent& event)
         delayGraph.lineInProgressEnd = event.position;
         delayGraph.lineInProgressEndPoint = nullptr;
         for (const auto& point : delayGraph.getPoints()) {
-            if  ((point.get() != delayGraph.activePoint) && (point->getDistanceSquaredFrom(delayGraph.lineInProgressEnd) < static_cast<float>(outerHoverDistance * outerHoverDistance))) {
+            if  (/*(point.get() != delayGraph.activePoint) && */(point->getDistanceSquaredFrom(delayGraph.lineInProgressEnd) < static_cast<float>(outerHoverDistance * outerHoverDistance))) {
                 delayGraph.lineInProgressEndPoint = point.get();
                 delayGraph.lineInProgressEnd = *point;
             }
@@ -141,6 +146,7 @@ void GraphPointComponent::mouseDrag (const juce::MouseEvent& event)
         ghostComponent->end = delayGraph.lineInProgressEnd;
     }
 }
+
 void GraphPointComponent::mouseUp (const juce::MouseEvent& event)
 {
     if (delayGraph.interactionState == DelayGraph::movingPoint) {

@@ -115,8 +115,9 @@ void GraphLineComponent::paint (juce::Graphics& g)
         for (auto step = 0; step < numSteps; step += 1) {
             auto proportion = static_cast<float>(step) / static_cast<float>(numSteps);
             line->getEnvelope(proportion, l, r);
-            leftLinePath.lineTo(proportion, l);
-            rightLinePath.lineTo(proportion, r);
+            auto window = juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * proportion);
+            leftLinePath.lineTo(proportion, l * window);
+            rightLinePath.lineTo(proportion, r * window);
         }
         leftLinePath.lineTo(1,0);
         rightLinePath.lineTo(1,0);

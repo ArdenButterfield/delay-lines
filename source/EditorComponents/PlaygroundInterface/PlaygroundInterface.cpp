@@ -82,5 +82,6 @@ void PlaygroundInterface::mouseDrag (const juce::MouseEvent& event)
 {
     globalOffset = {
         static_cast<float>(event.getOffsetFromDragStart().x),
-        static_cast<float>(event.getOffsetFromDragStart().y)};
+        static_cast<float>(event.getOffsetFromDragStart().y)
+    };
 }

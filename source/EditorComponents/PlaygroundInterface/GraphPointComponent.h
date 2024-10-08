@@ -18,6 +18,9 @@ public:
     LineGhostComponent(juce::Point<float> _start, juce::Point<float> _end) : start(_start), end(_end) {}
     void paint(juce::Graphics &g) override {
         g.setColour(juce::Colours::green);
+        if (start == end) {
+            g.drawEllipse(start.x - 20, start.y - 20, 40, 40, 2);
+        }
         g.drawLine({start, end}, 2.0);
     }
     juce::Point<float> start, end;
