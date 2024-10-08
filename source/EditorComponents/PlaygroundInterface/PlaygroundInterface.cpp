@@ -35,8 +35,7 @@ void PlaygroundInterface::resized()
 
 void PlaygroundInterface::paint (juce::Graphics& g)
 {
-    g.setColour(juce::Colours::white);
-    g.fillAll();
+    paintBackground(g);
     g.setColour(juce::Colours::black);
     g.drawRect(getLocalBounds());
 }
@@ -74,7 +73,10 @@ void PlaygroundInterface::mouseUp (const juce::MouseEvent& event)
         delayGraph.addPoint(event.position, false);
     } else {
         delayGraph.applyGlobalOffset(globalOffset);
-        globalOffset = {0.f, 0.f};
+        auto gx = std::fmod(globalOffset.x, gridSize);
+        auto gy = std::fmod(globalOffset.y, gridSize);
+        gridOffset = {gx < 0 ? gx + gridSize : gx, gy < 0 ? gy + gridSize : gy};
+        globalOffset = {0,0};
     }
 }
 
@@ -84,4 +86,16 @@ void PlaygroundInterface::mouseDrag (const juce::MouseEvent& event)
         static_cast<float>(event.getOffsetFromDragStart().x),
         static_cast<float>(event.getOffsetFromDragStart().y)
     };
+}
+void PlaygroundInterface::paintBackground (juce::Graphics& g)
+{
+    g.setColour(juce::Colours::white);
+    g.fillAll();
+    g.setColour(juce::Colours::lightblue.withAlpha(0.2f));
+    for (auto y = gridOffset.y + std::fmod(globalOffset.y, gridSize) - gridSize; y < getHeight() + gridSize; y += gridSize) {
+        g.drawHorizontalLine(y, 0, getWidth());
+    }
+    for (auto x = gridOffset.x + std::fmod(globalOffset.x, gridSize) - gridSize; x < getWidth() + gridSize; x += gridSize) {
+        g.drawVerticalLine(x, 0, getHeight());
+    }
 }

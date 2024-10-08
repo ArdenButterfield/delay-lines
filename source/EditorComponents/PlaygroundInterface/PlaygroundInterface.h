@@ -33,7 +33,12 @@ public:
     void timerCallback() override { repaint(); }
     juce::Point<float> getGlobalOffset() { return globalOffset; }
 private:
+    juce::Point<float> gridOffset;
+
     ModulationMappingEngine& mappingEngine;
+
+    void paintBackground(juce::Graphics &g);
+    const float gridSize = 20.0f;
 
     void applyGlobalOffset();
     juce::Point<float> globalOffset;
