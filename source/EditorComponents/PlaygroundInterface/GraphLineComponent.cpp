@@ -180,9 +180,9 @@ bool GraphLineComponent::hitTest (int x, int y)
     if (0 < transx && transx < 1) {
         auto above = false;
         auto below = false;
-        if (0 <= transy && transy < 1) {
+        if (0 <= transy && transy < juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * transx)) {
             above = true;
-        } else if (-1 < transy && transy <= 0) {
+        } else if (-juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * transx) < transy && transy <= 0) {
             below = true;
         }
         auto linesSharingSpace = delayGraph.getAllLinesBetweenPoints(line->start, line->end);
