@@ -227,7 +227,7 @@ bool GraphLineComponent::getLoopbackStatus (int& index, float& radius)
 {
     auto line = delayGraph.getLine(id);
     if (!line) {
-        false;
+        return false;
     }
 
     bool lineLoopsBack = false;
