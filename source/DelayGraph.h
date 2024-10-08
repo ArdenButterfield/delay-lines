@@ -43,6 +43,7 @@ public:
     bool getModulationValue(ModulatableKey& key, float& val);
 
     std::vector<int> getAllLinesBetweenPoints(GraphPoint* pointA, GraphPoint* pointB);
+    std::vector<int> getAllLinesStartingAndEndingAtSamePoint(GraphPoint* point);
 
     enum InteractionState {
         none = 0,

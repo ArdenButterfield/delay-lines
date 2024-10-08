@@ -25,6 +25,9 @@ public:
     void mouseEnter(const juce::MouseEvent &event) override;
     void mouseExit(const juce::MouseEvent &event) override;
     void mouseUp(const juce::MouseEvent &event) override;
+
+    const float loopingBackRadius = 20;
+    const float loopingBackStep = 10;
 private:
     std::unique_ptr<LineEditor> lineEditor;
     const int id;
@@ -33,6 +36,8 @@ private:
 
     const int lineHoverDistance = 30;
     ModulationMappingEngine& mappingEngine;
+
+    bool getLoopbackStatus(int& index, float& radius);
 };
 
 #endif //DELAYLINES_GRAPHLINECOMPONENT_H

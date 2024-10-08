@@ -527,3 +527,14 @@ std::vector<int> DelayGraph::getAllLinesBetweenPoints (GraphPoint* pointA, Graph
     }
     return linesIds;
 }
+
+std::vector<int> DelayGraph::getAllLinesStartingAndEndingAtSamePoint (GraphPoint* point)
+{
+    auto linesIds = std::vector<int>();
+    for (auto& line : lines) {
+        if (line->start == point && line->end == point) {
+            linesIds.push_back(line->identifier);
+        }
+    }
+    return linesIds;
+}
