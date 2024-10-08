@@ -168,6 +168,10 @@ void DelayGraph::deletePoint (const GraphPoint* point)
     }
     for (auto iter = lines.begin(); iter != lines.end(); ) {
         if (iter->get()->start == point || iter->get()->end == point) {
+            auto lineId = iter->get()->identifier;
+            for (auto& listener : listeners) {
+                listener->lineRemoved(lineId);
+            }
             iter = lines.erase(iter);
         } else {
             ++iter;

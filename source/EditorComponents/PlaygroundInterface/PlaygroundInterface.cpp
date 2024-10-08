@@ -87,6 +87,7 @@ void PlaygroundInterface::mouseDrag (const juce::MouseEvent& event)
         static_cast<float>(event.getOffsetFromDragStart().y)
     };
 }
+
 void PlaygroundInterface::paintBackground (juce::Graphics& g)
 {
     g.setColour(juce::Colours::white);

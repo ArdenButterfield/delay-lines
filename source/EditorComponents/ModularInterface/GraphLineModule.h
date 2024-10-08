@@ -18,6 +18,7 @@ public:
     void resized() override;
     void paint(juce::Graphics &g) override;
     static const juce::Rectangle<int> getDesiredBounds();
+    int getIdentifier() const { return lineID; }
 private:
     static const int padding = 10;
     void timerCallback() override;

@@ -23,7 +23,8 @@ void ModularInterface::resized()
                                      .withTrimmedLeft(10)
                                      .withTrimmedRight(10)
                                      .withTrimmedBottom(10));
-    boxOfLineEditors->setSize(lineEditorsViewport.getWidth() - lineEditorsViewport.getScrollBarThickness(), 1000);
+    boxOfLineEditors->minimumHeight = lineEditorsViewport.getHeight();
+    boxOfLineEditors->setSize(lineEditorsViewport.getWidth() - lineEditorsViewport.getScrollBarThickness(), lineEditorsViewport.getHeight());
 }
 
 void ModularInterface::paint (juce::Graphics& g)

@@ -3,7 +3,7 @@
 //
 
 #include "BoxOfLineEditors.h"
-BoxOfLineEditors::BoxOfLineEditors (ModulationMappingEngine& me, DelayGraph& dg) : mappingEngine(me), delayGraph(dg)
+BoxOfLineEditors::BoxOfLineEditors (ModulationMappingEngine& me, DelayGraph& dg) : mappingEngine(me), delayGraph(dg), minimumHeight(0)
 {
     for (auto& lineID : delayGraph.getAllLineIds()) {
         lineModules.push_back(std::make_unique<GraphLineModule>(mappingEngine, delayGraph, lineID));
@@ -34,6 +34,10 @@ void BoxOfLineEditors::addLine (int identifier)
 }
 void BoxOfLineEditors::removeLine (int identifier)
 {
+    std::cout << "len before " << lineModules.size() << "\n";
+    std::erase_if(lineModules, [&identifier](auto& l) { return identifier == l->getIdentifier();});
+    std::cout << "len after " << lineModules.size() << "\n";
+    setSize(getWidth(), minimumHeight);
 }
 
 void BoxOfLineEditors::paint (juce::Graphics& g)
@@ -45,11 +49,17 @@ void BoxOfLineEditors::resized()
 {
     auto fb = juce::FlexBox();
     fb.flexWrap = juce::FlexBox::Wrap::wrap;
-    fb.justifyContent = juce::FlexBox::JustifyContent::center;
-    fb.alignContent = juce::FlexBox::AlignContent::center;
+    fb.justifyContent = juce::FlexBox::JustifyContent::flexStart;
+    fb.alignContent = juce::FlexBox::AlignContent::flexStart;
 
     for (auto& module : lineModules) {
         fb.items.add(juce::FlexItem(*module).withMinWidth(GraphLineModule::getDesiredBounds().getWidth()).withMinHeight(GraphLineModule::getDesiredBounds().getHeight()));
     }
     fb.performLayout(getLocalBounds());
+    if (!lineModules.empty()) {
+        auto requiredHeight = lineModules.back()->getBounds().getBottom();
+        if (requiredHeight > getHeight()) {
+            setSize(getWidth(), requiredHeight);
+        }
+    }
 }

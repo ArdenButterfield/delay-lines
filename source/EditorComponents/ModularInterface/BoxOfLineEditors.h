@@ -27,6 +27,7 @@ public:
     void addLine(int identifier);
     void removeLine(int identifier);
 
+    int minimumHeight;
 private:
     void paint(juce::Graphics &g) override;
     void resized() override;
