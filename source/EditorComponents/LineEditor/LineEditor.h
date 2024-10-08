@@ -12,6 +12,7 @@
 #include "../DelayLinesLookAndFeel.h"
 #include "ModVisualizer.h"
 #include "FilterVisualizer.h"
+#include "DistortionVisualizer.h"
 
 #include "../../Modulation/ModulationMappingEngine.h"
 #include "../../Modulation/ModOverlayButton.h"
@@ -92,6 +93,7 @@ private:
 
     ModVisualizer modVisualizer;
     FilterVisualizer filterVisualizer;
+    DistortionVisualizer distortionVisualizer;
     ModulationMappingEngine& mappingEngine;
 };
 

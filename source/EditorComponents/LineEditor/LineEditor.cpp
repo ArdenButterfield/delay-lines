@@ -52,6 +52,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
 
     addAndMakeVisible(modVisualizer);
     addAndMakeVisible(filterVisualizer);
+    addAndMakeVisible(distortionVisualizer);
 
     for (auto slider : {
              &loCutSlider,
@@ -169,7 +170,6 @@ void LineEditor::resized()
     filterArea = mainSection.withTrimmedTop(modArea.getBottom()).withHeight(80);
 
     filterVisualizer.setBounds(filterArea);
-
     thirdWidth = modArea.getWidth() / 3;
     filterLoLabel.setBounds(filterArea.withWidth(thirdWidth).withHeight(10));
     loCutSlider.setBounds(filterArea.withWidth(thirdWidth).withTrimmedTop(filterLoLabel.getHeight()));
@@ -183,7 +183,7 @@ void LineEditor::resized()
     distortionArea = mainSection.withTrimmedTop(filterArea.getBottom()).withBottom(getBottom());
     distortionTypeSelector.setBounds(distortionArea.withWidth(100));
     distortionSlider.setBounds(distortionArea.withTrimmedLeft(distortionTypeSelector.getRight()));
-
+    distortionVisualizer.setBounds(distortionArea);
 }
 
 void LineEditor::paint (juce::Graphics& g)
@@ -220,14 +220,8 @@ void LineEditor::sliderValueChanged (juce::Slider* slider)
         line->parameters.distortion = distortionSlider.getValue();
     } else if (slider == &loCutSlider) {
         line->parameters.loCut = loCutSlider.getValue();
-        filterVisualizer.setFilters(
-            loCutSlider.valueToProportionOfLength(loCutSlider.getValue()),
-            hiCutSlider.valueToProportionOfLength(hiCutSlider.getValue()));
     } else if (slider == &hiCutSlider) {
         line->parameters.hiCut = hiCutSlider.getValue();
-        filterVisualizer.setFilters(
-            loCutSlider.valueToProportionOfLength(loCutSlider.getValue()),
-            hiCutSlider.valueToProportionOfLength(hiCutSlider.getValue()));
     } else if (slider == &gainEnvelopeFollowSlider) {
         line->parameters.gainEnvelopeFollow = gainEnvelopeFollowSlider.getValue();
     } else if (slider == &feedbackSlider) {
@@ -257,6 +251,7 @@ void LineEditor::timerCallback()
         line->parameters.loCut.convertTo0to1(line->parameters.loCut),
         line->parameters.hiCut.convertTo0to1(line->parameters.hiCut));
     distortionTypeSelector.setSelectedId(line->parameters.distortionType + 1);
+    distortionVisualizer.setDistortion(line->parameters.distortionType, line->parameters.distortion);
 }
 
 void LineEditor::mouseDown (const juce::MouseEvent& event)

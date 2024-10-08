@@ -125,6 +125,7 @@ float GraphLine::distortSample (unsigned channel, float samp) const
             wet = std::max(std::min(samp * 1 + distortionAmount, 1.f), -1.f);
             return distortionAmount * wet + (1 - distortionAmount) * samp;
         case 2:
+            // wavefold
             wet = sin(samp * (distortionAmount * 5 + 1));
             return distortionAmount * wet + (1 - distortionAmount) * samp;
         case 3:
