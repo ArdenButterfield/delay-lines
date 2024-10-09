@@ -184,6 +184,5 @@ void LengthEditor::updateUnitSelector()
 }
 void LengthEditor::tempoSet (juce::int64 interval)
 {
-    std::cout << interval << "\n";
     millisecondsSlider.setValue(static_cast<double>(interval), juce::sendNotification);
 }

@@ -7,9 +7,11 @@
 DistortionVisualizer::DistortionVisualizer() : distortionAmount(0), distortionType(0)
 {
 }
+
 DistortionVisualizer::~DistortionVisualizer()
 {
 }
+
 void DistortionVisualizer::setDistortion (int type, float amount)
 {
     distortionType = type;
@@ -41,7 +43,6 @@ void fillValuesRandom(std::vector<float>& vals, int seed, float distortionAmount
         }
         ++ctr;
     }
-    std::cout << "\n";
 }
 
 void DistortionVisualizer::fillValues()
@@ -98,6 +99,7 @@ void DistortionVisualizer::fillValues()
             return;
     }
 }
+
 void DistortionVisualizer::resized()
 {
     for (auto& value : values) {

@@ -51,7 +51,7 @@ public:
     CompactSlider feedbackSlider;
 
     static const juce::Rectangle<int> getDesiredBounds() {
-        return {10,10,270,430};
+        return {0,0,300,260};
     }
 private:
     juce::TextButton copyButton;
@@ -68,7 +68,10 @@ private:
 
 
     juce::Rectangle<int> topBar;
-    juce::Rectangle<int> mainSection;
+    juce::Rectangle<int> topBarUnderline;
+    juce::Rectangle<int> firstColumn;
+    juce::Rectangle<int> secondColumn;
+    juce::Rectangle<int> columnGutter;
     juce::Rectangle<int> modArea;
     juce::Rectangle<int> filterArea;
     juce::Rectangle<int> distortionArea;
@@ -95,6 +98,8 @@ private:
     FilterVisualizer filterVisualizer;
     DistortionVisualizer distortionVisualizer;
     ModulationMappingEngine& mappingEngine;
+
+    void textureArea(juce::Graphics& g, juce::Rectangle<int> area);
 };
 
 #endif //DELAYLINES_LINEEDITOR_H

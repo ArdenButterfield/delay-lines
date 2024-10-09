@@ -33,8 +33,8 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(modKnobs);
     addAndMakeVisible(playgroundInterface);
     addChildComponent(modularInterface);
-//    setResizable(true, true);
-
+    setResizable(true, true);
+    setResizeLimits(500,500,10000,10000);
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (800, 600);

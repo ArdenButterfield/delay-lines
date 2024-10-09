@@ -120,6 +120,11 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     distortionTypeSelector.addItemList(DISTORTION_TYPE_OPTIONS, 1);
     distortionTypeSelector.addListener(this);
     startTimerHz(60);
+
+    gainLabel.setColour(juce::Label::textColourId, juce::Colours::black);
+    feedbackLabel.setColour(juce::Label::textColourId, juce::Colours::black);
+    gainSlider.setColour(juce::Slider::ColourIds::textBoxTextColourId, juce::Colours::black);
+    feedbackSlider.setColour(juce::Slider::ColourIds::textBoxTextColourId, juce::Colours::black);
 }
 
 LineEditor::~LineEditor() {
@@ -130,31 +135,37 @@ LineEditor::~LineEditor() {
 void LineEditor::resized()
 {
     topBar = getLocalBounds().withHeight(30);
-    mainSection = getLocalBounds().withTrimmedTop(topBar.getHeight());
+    topBarUnderline = getLocalBounds().withTrimmedTop(topBar.getBottom()).withHeight(4);
 
-    bypassButton.setBounds(topBar);
-    bypassButton.changeWidthToFitText();
-    muteButton.setBounds(topBar.withLeft(bypassButton.getRight()));
-    muteButton.changeWidthToFitText();
-    copyButton.setBounds(topBar.withLeft(muteButton.getRight()));
+    firstColumn = getLocalBounds().withTrimmedTop(topBarUnderline.getBottom()).withWidth(getWidth() / 2);
+    secondColumn = firstColumn.withRight(getRight()).withTrimmedLeft(firstColumn.getRight());
+
+    firstColumn = firstColumn.withTrimmedRight(1);
+    secondColumn = secondColumn.withTrimmedLeft(1);
+    columnGutter = firstColumn.withRight(secondColumn.getX()).withLeft(firstColumn.getRight());
+
+    copyButton.setBounds(topBar.withTrimmedTop(2).withTrimmedLeft(2).withTrimmedBottom(2));
     copyButton.changeWidthToFitText();
-    pasteButton.setBounds(topBar.withLeft(copyButton.getRight()));
+    pasteButton.setBounds(copyButton.getBounds().withX(copyButton.getRight() + 2));
     pasteButton.changeWidthToFitText();
 
-    lengthEditor.setBounds(mainSection.withHeight(40));
+    auto firstColumnInner = firstColumn.withSize(firstColumn.getWidth() - 4, firstColumn.getHeight() - 4);
 
-    auto gainAndFeedbackArea = mainSection.withTrimmedTop(lengthEditor.getHeight()).withHeight(50);
+    bypassButton.setBounds(firstColumnInner.withHeight(25));
+    muteButton.setBounds(firstColumnInner.withTrimmedTop(bypassButton.getHeight() + 2).withHeight(25));
+
+    lengthEditor.setBounds(firstColumnInner.withTop(muteButton.getBottom() + 2).withHeight(40));
+
+    auto gainAndFeedbackArea = firstColumnInner.withTop(lengthEditor.getBottom()).withHeight(50);
     auto gainArea = gainAndFeedbackArea.withWidth(gainAndFeedbackArea.getWidth() / 2);
     auto feedbackArea = gainAndFeedbackArea.withTrimmedLeft(gainArea.getRight());
-
-    gainSlider.setBounds(gainArea.withHeight(40));
-    feedbackSlider.setBounds(feedbackArea.withHeight(40));
-    gainLabel.setBounds(gainArea.withTrimmedTop(gainSlider.getHeight()));
-    feedbackLabel.setBounds(feedbackArea.withTrimmedTop(feedbackSlider.getHeight()));
+    gainLabel.setBounds(gainArea.withHeight(12));
+    feedbackLabel.setBounds(feedbackArea.withHeight(12));
+    gainSlider.setBounds(gainArea.withTop(gainLabel.getBottom()));
+    feedbackSlider.setBounds(feedbackArea.withTop(feedbackLabel.getBottom()));
 
     // Modding length
-    modArea = mainSection.withTrimmedTop(gainAndFeedbackArea.getBottom()).withHeight(80);
-
+    modArea = secondColumn.withHeight(secondColumn.getHeight() / 3);
     modVisualizer.setBounds(modArea);
 
     auto thirdWidth = modArea.getWidth() / 3;
@@ -167,7 +178,7 @@ void LineEditor::resized()
     modLabel.setBounds(modArea.withX(modDepthSlider.getRight()).withRight(modRateSlider.getX()));
 
     // Filter
-    filterArea = mainSection.withTrimmedTop(modArea.getBottom()).withHeight(80);
+    filterArea = secondColumn.withTop(modArea.getBottom()).withHeight(secondColumn.getHeight() / 3);
 
     filterVisualizer.setBounds(filterArea);
     thirdWidth = modArea.getWidth() / 3;
@@ -180,26 +191,45 @@ void LineEditor::resized()
     filterLabel.setBounds(filterArea.withX(loCutSlider.getRight()).withRight(hiCutSlider.getX()));
 
     // Distortion
-    distortionArea = mainSection.withTrimmedTop(filterArea.getBottom()).withBottom(getBottom());
+    distortionArea = secondColumn.withTop(filterArea.getBottom());
     distortionTypeSelector.setBounds(distortionArea.withWidth(100));
     distortionSlider.setBounds(distortionArea.withTrimmedLeft(distortionTypeSelector.getRight()));
     distortionVisualizer.setBounds(distortionArea);
 }
 
+void LineEditor::textureArea (juce::Graphics& g, juce::Rectangle<int> area)
+{
+    const float step = 8;
+    bool odd = false;
+    g.setColour(juce::Colour(0xfffff7ce));
+    int ctr = 0;
+    for (float y = area.getY(); y < area.getBottom(); y += step * std::sqrt(3.f/4.f)) {
+        for (float x = area.getX() + (odd ? step / 2 : 0); x < area.getRight(); x += step) {
+            g.fillEllipse(x, y, 3.f, 3.f);
+            if (++ctr > 10000) {
+                DBG("safety hit in drawing texture area");
+                return;
+                // safety for if we get passed a huge area
+            }
+        }
+        odd = !odd;
+    }
+}
+
 void LineEditor::paint (juce::Graphics& g)
 {
-    g.setColour(juce::Colours::red);
+    g.setColour(juce::Colour(0xffffdb93));
     g.fillAll();
-    g.setColour(juce::Colours::brown);
+    textureArea (g, topBar);
     auto line = delayGraph.getLine(graphLine);
     if (line) {
         g.setColour (line->getColor());
+        bypassButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, line->getColor());
+        muteButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, line->getColor());
     }
-    g.fillRect(topBar);
-    g.setColour(juce::Colours::orangered);
-    g.fillRect(panels[1]);
-    g.setColour(juce::Colours::black);
-    g.drawRect(getLocalBounds(), 3);
+
+    g.fillRect(topBarUnderline);
+    g.fillRect(columnGutter);
 }
 
 void LineEditor::sliderValueChanged (juce::Slider* slider)

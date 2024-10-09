@@ -37,7 +37,7 @@ void FilterVisualizer::paint (juce::Graphics& g)
                     pixelScore += match[y * 100 + x] * matchScores[m];
                 }
             }
-            g.setColour(juce::Colour().withBrightness(pixelScore / 100).withSaturation(0).withAlpha(1.0f));
+            g.setColour(juce::Colours::black.withAlpha(std::min(std::max(0.f, pixelScore / 100), 1.f)));
             g.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
         }
     }
@@ -45,6 +45,7 @@ void FilterVisualizer::paint (juce::Graphics& g)
 
 void FilterVisualizer::setFilters (float _low, float _high)
 {
-    low = _low, high = _high;
+    low = std::pow(std::min(std::max(0.f, _low), 1.f), 0.25);
+    high = std::pow(std::min(std::max(0.f, _high), 1.f), 0.25);
     repaint();
 }

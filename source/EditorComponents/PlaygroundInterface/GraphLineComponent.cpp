@@ -86,6 +86,14 @@ void GraphLineComponent::paint (juce::Graphics& g)
         g.setColour(line->getColor().withMultipliedLightness(1.4));
     }
 
+    g.setColour(line->getColor());
+
+    if (lineLoopsBack) {
+        g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
+    } else {
+        g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 3);
+    }
+
     if (lineLoopsBack) {
         auto linePath = juce::Path();
         linePath.startNewSubPath(startPoint.translated(0, radius));
@@ -108,37 +116,53 @@ void GraphLineComponent::paint (juce::Graphics& g)
     } else {
         auto leftLinePath = juce::Path();
         auto rightLinePath = juce::Path();
-        leftLinePath.startNewSubPath(0,0);
-        rightLinePath.startNewSubPath(0,0);
+        auto innerLeftPath = juce::Path();
+        auto innerRightPath = juce::Path();
+        leftLinePath.startNewSubPath(0,-0.005);
+        rightLinePath.startNewSubPath(0,-0.005);
+        innerLeftPath.startNewSubPath(0,-0.005);
+        innerRightPath.startNewSubPath(0,-0.005);
         float l,r;
         auto numSteps = static_cast<int>(startPoint.getDistanceFrom({endPoint.x, startPoint.x}));
         for (auto step = 0; step < numSteps; step += 1) {
             auto proportion = static_cast<float>(step) / static_cast<float>(numSteps);
             line->getEnvelope(proportion, l, r);
             auto window = juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * proportion);
-            leftLinePath.lineTo(proportion, l * window);
-            rightLinePath.lineTo(proportion, r * window);
+            leftLinePath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(l * window));
+            rightLinePath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(r * window));
+            innerLeftPath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(l * 0.5f * window));
+            innerRightPath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(r * 0.5f * window));
         }
-        leftLinePath.lineTo(1,0);
-        rightLinePath.lineTo(1,0);
+        leftLinePath.lineTo(1,-0.005);
+        rightLinePath.lineTo(1,-0.005);
+        innerLeftPath.lineTo(1,-0.005);
+        innerRightPath.lineTo(1,-0.005);
         leftLinePath.closeSubPath();
         rightLinePath.closeSubPath();
+        innerLeftPath.closeSubPath();
+        innerRightPath.closeSubPath();
 
         if (linesSharingSpace.size() == 1) {
+            g.setColour(line->getColor());
             g.fillPath(leftLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
             g.fillPath(rightLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
+            g.setColour(line->getColor().withMultipliedBrightness(0.5f));
+            g.fillPath(innerLeftPath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
+            g.fillPath(innerRightPath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
+
         } else if (linesSharingSpace.size() == 2) {
             if ((id == linesSharingSpace[0]) == line->isGoingBackwards()) {
+                g.setColour(line->getColor());
                 g.fillPath(leftLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
+                g.setColour(line->getColor().withMultipliedBrightness(0.5f));
+                g.fillPath(innerLeftPath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
             } else {
+                g.setColour(line->getColor());
                 g.fillPath(rightLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
+                g.setColour(line->getColor().withMultipliedBrightness(0.5f));
+                g.fillPath(innerRightPath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
             }
         }
-    }
-    if (lineLoopsBack) {
-        g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
-    } else {
-        g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 3);
     }
 }
 

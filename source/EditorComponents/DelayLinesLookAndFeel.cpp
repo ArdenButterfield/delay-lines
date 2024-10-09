@@ -9,6 +9,9 @@
 DelayLinesLookAndFeel::DelayLinesLookAndFeel()
 {
     setDefaultSansSerifTypeface(juce::Typeface::createSystemTypefaceFor(BinaryData::SonoRegular_ttf, BinaryData::SonoRegular_ttfSize));
+    setColour(juce::ToggleButton::ColourIds::textColourId, juce::Colours::black);
+    setColour(juce::ToggleButton::ColourIds::tickColourId, juce::Colours::black);
+    setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, juce::Colours::grey);
 }
 void DelayLinesLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
                                             float sliderPos,
