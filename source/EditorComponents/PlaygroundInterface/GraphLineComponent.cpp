@@ -123,7 +123,7 @@ void GraphLineComponent::paint (juce::Graphics& g)
         innerLeftPath.startNewSubPath(0,-0.005);
         innerRightPath.startNewSubPath(0,-0.005);
         float l,r;
-        auto numSteps = static_cast<int>(startPoint.getDistanceFrom({endPoint.x, startPoint.x}));
+        auto numSteps = static_cast<int>(startPoint.getDistanceFrom({endPoint.x, endPoint.y}));
         for (auto step = 0; step < numSteps; step += 1) {
             auto proportion = static_cast<float>(step) / static_cast<float>(numSteps);
             line->getEnvelope(proportion, l, r);
