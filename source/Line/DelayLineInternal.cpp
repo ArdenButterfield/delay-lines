@@ -12,8 +12,8 @@ DelayLineInternal::DelayLineInternal (juce::dsp::ProcessSpec _spec, float initia
     delayLine.setDelay(initialLength);
     envelopeDelayLine.setDelay(initialLength);
     envelopeFilter.prepare(spec);
-    envelopeFilter.setAttackTime(5); // TODO: tweak these
-    envelopeFilter.setReleaseTime(50);
+    envelopeFilter.setAttackTime(5);
+    envelopeFilter.setReleaseTime(100);
 
     length.setCurrentAndTargetValue(initialLength);
     length.reset(spec.sampleRate, 0.2);

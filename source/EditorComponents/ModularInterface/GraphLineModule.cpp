@@ -32,7 +32,7 @@ void GraphLineModule::paint (juce::Graphics& g)
 {
     g.fillAll(juce::Colours::tan);
     g.setColour(juce::Colours::brown);
-    g.drawRect(getBounds(), 2);
+    g.drawRect(getLocalBounds(), 2);
 }
 
 const juce::Rectangle<int> GraphLineModule::getDesiredBounds()

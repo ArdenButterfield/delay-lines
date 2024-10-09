@@ -13,6 +13,8 @@ BoxOfLineEditors::BoxOfLineEditors (ModulationMappingEngine& me, DelayGraph& dg)
         module->setBounds(LineEditor::getDesiredBounds());
     }
     delayGraph.addListener(this);
+    newLineButton = std::make_unique<NewLineButton>(delayGraph);
+    addAndMakeVisible(newLineButton.get());
 }
 
 BoxOfLineEditors::~BoxOfLineEditors()
@@ -53,13 +55,16 @@ void BoxOfLineEditors::resized()
     fb.alignContent = juce::FlexBox::AlignContent::flexStart;
 
     for (auto& module : lineModules) {
-        fb.items.add(juce::FlexItem(*module).withMinWidth(GraphLineModule::getDesiredBounds().getWidth()).withMinHeight(GraphLineModule::getDesiredBounds().getHeight()));
+        fb.items.add(juce::FlexItem(*module)
+                          .withMinWidth(GraphLineModule::getDesiredBounds().getWidth())
+                          .withMinHeight(GraphLineModule::getDesiredBounds().getHeight()));
     }
+    fb.items.add(juce::FlexItem(*newLineButton)
+                      .withMinWidth(GraphLineModule::getDesiredBounds().getWidth())
+                      .withMinHeight(GraphLineModule::getDesiredBounds().getHeight()));
     fb.performLayout(getLocalBounds());
-    if (!lineModules.empty()) {
-        auto requiredHeight = lineModules.back()->getBounds().getBottom();
-        if (requiredHeight > getHeight()) {
-            setSize(getWidth(), requiredHeight);
-        }
+    auto requiredHeight = newLineButton->getBounds().getBottom();
+    if (requiredHeight > getHeight()) {
+        setSize(getWidth(), requiredHeight);
     }
 }

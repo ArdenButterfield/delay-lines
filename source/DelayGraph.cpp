@@ -12,7 +12,8 @@ DelayGraph::DelayGraph() :
                            activePoint(nullptr),
                            interactionState(none),
                            activeLine(nullptr),
-                           needsClearing(false)
+                           needsClearing(false),
+                           bpm(120)
 {
     points.push_back(std::make_unique<GraphPoint>(juce::Point<float>(0,0), GraphPoint::start, findUniquePointId()));
     startPoint = points.back().get();

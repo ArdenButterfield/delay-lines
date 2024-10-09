@@ -90,7 +90,14 @@ public:
 
     void applyGlobalOffset(juce::Point<float> offset);
     void clear();
+    void setBpm(float _bpm) {
+        bpm = _bpm;
+        for (auto& line : lines) {
+            line->setBpm(bpm);
+        }
+    }
 private:
+    float bpm;
     std::set<Listener*> listeners;
     std::set<GraphPoint*> realGlobalInputs;
     juce::CriticalSection criticalSection;

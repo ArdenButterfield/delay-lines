@@ -13,7 +13,8 @@ GraphLine::GraphLine(GraphPoint* _start, GraphPoint* _end, const int& id)
       prepared(false),
       identifier(id),
       numChannels(0),
-      sampleRate(0)
+      sampleRate(0),
+      bpm(120)
 {
     color = getRandomColour();
 }
@@ -86,7 +87,7 @@ void GraphLine::calculateInternalLength()
         return;
     }
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
-    auto currentLength = parameters.length.getLengthInSamples(sampleRate, 120) * realLineVector / lineVector; // TODO: BPM
+    auto currentLength = parameters.length.getLengthInSamples(sampleRate, bpm) * realLineVector / lineVector; // TODO: BPM
 
     delayLineInternal->setTargetLength(currentLength);
 }

@@ -215,6 +215,9 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             buffer.setSample(channel, s, dry + wet);
         }
     }
+    if (auto bpmFromHost = *getPlayHead()->getPosition()->getBpm()) {
+        delayGraph.setBpm(bpmFromHost);
+    }
 }
 
 //==============================================================================

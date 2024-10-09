@@ -115,7 +115,11 @@ public:
     bool isGoingBackwards() const {
         return start != nullptr && end != nullptr && (start->identifier > end->identifier);
     }
+    void setBpm(float _bpm) {
+        bpm = _bpm;
+    }
 private:
+    float bpm;
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {}
     static juce::Colour getRandomColour();

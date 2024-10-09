@@ -8,6 +8,7 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "../../DelayGraph.h"
 #include "GraphLineModule.h"
+#include "NewLineButton.h"
 
 class ModulationMappingEngine;
 
@@ -37,7 +38,7 @@ private:
     DelayGraph& delayGraph;
 
     std::vector<std::unique_ptr<GraphLineModule>> lineModules;
-
+    std::unique_ptr<NewLineButton> newLineButton;
 };
 
 #endif //DELAYLINES_BOXOFLINEEDITORS_H
