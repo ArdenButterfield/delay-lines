@@ -154,7 +154,7 @@ void LineEditor::resized()
     bypassButton.setBounds(firstColumnInner.withHeight(25));
     muteButton.setBounds(firstColumnInner.withTrimmedTop(bypassButton.getHeight() + 2).withHeight(25));
 
-    lengthEditor.setBounds(firstColumnInner.withTop(muteButton.getBottom() + 2).withHeight(40));
+    lengthEditor.setBounds(firstColumnInner.withTop(muteButton.getBottom() + 2).withHeight(80));
 
     auto gainAndFeedbackArea = firstColumnInner.withTop(lengthEditor.getBottom()).withHeight(50);
     auto gainArea = gainAndFeedbackArea.withWidth(gainAndFeedbackArea.getWidth() / 2);
@@ -192,9 +192,9 @@ void LineEditor::resized()
 
     // Distortion
     distortionArea = secondColumn.withTop(filterArea.getBottom());
-    distortionTypeSelector.setBounds(distortionArea.withWidth(100));
-    distortionSlider.setBounds(distortionArea.withTrimmedLeft(distortionTypeSelector.getRight()));
-    distortionVisualizer.setBounds(distortionArea);
+    distortionTypeSelector.setBounds(distortionArea.withHeight(40).withBottomY(distortionArea.getBottom()));
+    distortionSlider.setBounds(distortionArea.withBottom(distortionTypeSelector.getY()));
+    distortionVisualizer.setBounds(distortionSlider.getBounds());
 }
 
 void LineEditor::textureArea (juce::Graphics& g, juce::Rectangle<int> area)

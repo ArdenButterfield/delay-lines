@@ -42,7 +42,7 @@ LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGr
 
     addAndMakeVisible(bpmTapper);
     bpmTapper.addListener(this);
-    bpmTapper.setTimeoutInterval(static_cast<juce::int64>(millisecondsSlider.getRange().getEnd()));
+    bpmTapper.setTimeoutInterval(static_cast<juce::int64>(millisecondsSlider.getRange().getEnd()) * 0.8);
 
     updateSliders();
     updateUnitSelector();
@@ -50,8 +50,8 @@ LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGr
 
 void LengthEditor::resized()
 {
-    unitSelector.setBounds(getLocalBounds().withWidth(80).withRightX(getRight()));
-    auto sliderZone = getLocalBounds().withRight(unitSelector.getX());
+    unitSelector.setBounds(getLocalBounds().withHeight(40).withBottomY(getHeight()));
+    auto sliderZone = getLocalBounds().withTrimmedBottom(unitSelector.getY());
 
     samplesSlider.setBounds(sliderZone);
     bpmTapper.setBounds(sliderZone.withWidth(40));
