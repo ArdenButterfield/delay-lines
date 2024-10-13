@@ -5,7 +5,7 @@
 #include "GraphLineModule.h"
 
 GraphLineModule::GraphLineModule(ModulationMappingEngine& me, DelayGraph& dg, const int& _line) : delayGraph(dg), lineID(_line) {
-    lineEditor = std::make_unique<LineEditor>(me, delayGraph, lineID);
+    lineEditor = std::make_unique<LineEditor>(me, delayGraph, lineID, false);
     addAndMakeVisible(lineEditor.get());
 
     addAndMakeVisible(inputSelector);

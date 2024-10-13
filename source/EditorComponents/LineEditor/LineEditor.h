@@ -20,7 +20,7 @@
 class LineEditor : public juce::Component, public juce::Slider::Listener, public juce::ToggleButton::Listener, public juce::Timer, juce::ComboBox::Listener
 {
 public:
-    LineEditor(ModulationMappingEngine& me, DelayGraph& delayGraph, const int& line);
+    LineEditor(ModulationMappingEngine& me, DelayGraph& delayGraph, const int& line, bool canBeDragged=true);
     ~LineEditor() override;
     void resized() override;
     void paint(juce::Graphics &g) override;
@@ -91,6 +91,7 @@ private:
     std::array<juce::Rectangle<int>, 3> panels;
 
     bool dragging;
+    const bool canBeDragged;
 
     DelayLinesLookAndFeel delayLinesLookAndFeel;
 

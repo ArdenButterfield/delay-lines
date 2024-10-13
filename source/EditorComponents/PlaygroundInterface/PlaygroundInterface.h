@@ -38,7 +38,6 @@ private:
     ModulationMappingEngine& mappingEngine;
 
     void paintBackground(juce::Graphics &g);
-    const float gridSize = 20.0f;
 
     void applyGlobalOffset();
     juce::Point<float> globalOffset;

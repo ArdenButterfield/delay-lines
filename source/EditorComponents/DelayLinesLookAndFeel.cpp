@@ -45,3 +45,16 @@ juce::Font DelayLinesLookAndFeel::getComboBoxFont (juce::ComboBox& box)
     return juce::Font(getMonoFont()).withHeight(juce::jmin (16.0f, (float) box.getHeight() * 0.85f));
 
 }
+void DelayLinesLookAndFeel::drawGraphPaperBackround (juce::Graphics& g, juce::Point<float> offset, juce::Component* component)
+{
+    const float gridSize = 10;
+    g.setColour(juce::Colours::white);
+    g.fillAll();
+    g.setColour(juce::Colours::lightblue.withAlpha(0.2f));
+    for (auto y = std::fmod(offset.y, gridSize) - gridSize; y < component->getHeight() + gridSize; y += gridSize) {
+        g.drawHorizontalLine(y, 0, component->getWidth());
+    }
+    for (auto x = std::fmod(offset.x, gridSize) - gridSize; x < component->getWidth() + gridSize; x += gridSize) {
+        g.drawVerticalLine(x, 0, component->getHeight());
+    }
+}

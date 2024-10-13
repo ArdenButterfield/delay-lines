@@ -5,8 +5,14 @@
 #include "LineEditor.h"
 #include "../../parameters.h"
 
-LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, const int& _line)
-    : lengthEditor(_delayGraph, _line), delayGraph(_delayGraph), graphLine(_line), dragging(false), modVisualizer(&_delayGraph, _line), mappingEngine(me)
+LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, const int& _line, bool _canBeDragged)
+    : lengthEditor(_delayGraph, _line),
+      delayGraph(_delayGraph),
+      graphLine(_line),
+      dragging(false),
+      canBeDragged(_canBeDragged),
+      modVisualizer(&_delayGraph, _line),
+      mappingEngine(me)
 {
     setLookAndFeel(&delayLinesLookAndFeel);
     timeEnvelopeFollowSlider.setRange(-1, 1);
@@ -103,6 +109,9 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     filterLoLabel.setText("lo", juce::dontSendNotification);
     filterHiLabel.setText("hi", juce::dontSendNotification);
 
+    filterLoLabel.setJustificationType(juce::Justification::centredBottom);
+    filterLabel.setJustificationType(juce::Justification::centredBottom);
+    filterHiLabel.setJustificationType(juce::Justification::centredBottom);
     for (auto label : {
              &gainLabel,
              &feedbackLabel,
@@ -114,6 +123,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
              &filterHiLabel
          }) {
         addAndMakeVisible(label);
+        label->setColour(juce::Label::ColourIds::textColourId, juce::Colours::black);
     }
 
     addAndMakeVisible(distortionTypeSelector);
@@ -121,8 +131,6 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     distortionTypeSelector.addListener(this);
     startTimerHz(60);
 
-    gainLabel.setColour(juce::Label::textColourId, juce::Colours::black);
-    feedbackLabel.setColour(juce::Label::textColourId, juce::Colours::black);
     gainSlider.setColour(juce::Slider::ColourIds::textBoxTextColourId, juce::Colours::black);
     feedbackSlider.setColour(juce::Slider::ColourIds::textBoxTextColourId, juce::Colours::black);
 }
@@ -164,37 +172,46 @@ void LineEditor::resized()
     gainSlider.setBounds(gainArea.withTop(gainLabel.getBottom()));
     feedbackSlider.setBounds(feedbackArea.withTop(feedbackLabel.getBottom()));
 
+    auto secondColumnInner = secondColumn.withTrimmedTop(5).withTrimmedLeft(5).withTrimmedRight(5).withTrimmedBottom(5);
+    auto gutter = 5;
+    auto availableHeight = secondColumnInner.getHeight() - 2 * gutter;
+    modArea = secondColumnInner.withHeight(availableHeight / 3);
+    filterArea = secondColumnInner.withHeight(availableHeight / 3).withY(modArea.getBottom() + gutter);
+    distortionArea = secondColumnInner.withHeight(availableHeight / 3).withY(filterArea.getBottom() + gutter);
     // Modding length
-    modArea = secondColumn.withHeight(secondColumn.getHeight() / 3);
-    modVisualizer.setBounds(modArea);
+    {
+        modVisualizer.setBounds(modArea);
 
-    auto thirdWidth = modArea.getWidth() / 3;
-    modDepthLabel.setBounds(modArea.withWidth(thirdWidth).withHeight(10));
-    modDepthSlider.setBounds(modArea.withWidth(thirdWidth).withTrimmedTop(modDepthLabel.getHeight()));
+        auto thirdWidth = modArea.getWidth() / 3;
+        modDepthLabel.setBounds(modArea.withWidth(thirdWidth).withHeight(10));
+        modDepthSlider.setBounds(modArea.withWidth(thirdWidth).withTrimmedTop(modDepthLabel.getHeight()));
 
-    modRateLabel.setBounds(modArea.withWidth(thirdWidth).withRightX(modArea.getRight()).withHeight(10));
-    modRateSlider.setBounds(modArea.withWidth(thirdWidth).withRightX(modArea.getRight()).withTrimmedTop(modRateLabel.getHeight()));
+        modRateLabel.setBounds(modArea.withWidth(thirdWidth).withRightX(modArea.getRight()).withHeight(10));
+        modRateSlider.setBounds(modArea.withWidth(thirdWidth).withRightX(modArea.getRight()).withTrimmedTop(modRateLabel.getHeight()));
 
-    modLabel.setBounds(modArea.withX(modDepthSlider.getRight()).withRight(modRateSlider.getX()));
+        modLabel.setBounds(modArea.withX(modDepthSlider.getRight()).withRight(modRateSlider.getX()));
+    }
 
     // Filter
-    filterArea = secondColumn.withTop(modArea.getBottom()).withHeight(secondColumn.getHeight() / 3);
+    {
 
-    filterVisualizer.setBounds(filterArea);
-    thirdWidth = modArea.getWidth() / 3;
-    filterLoLabel.setBounds(filterArea.withWidth(thirdWidth).withHeight(10));
-    loCutSlider.setBounds(filterArea.withWidth(thirdWidth).withTrimmedTop(filterLoLabel.getHeight()));
+        filterVisualizer.setBounds(filterArea);
+        auto thirdWidth = modArea.getWidth() / 3;
+        auto labelHeights = 20;
+        filterLoLabel.setBounds(filterArea.withWidth(thirdWidth).withHeight(labelHeights));
+        filterHiLabel.setBounds(filterLoLabel.getBounds().withRightX(filterArea.getRight()));
+        filterLabel.setBounds(filterLoLabel.getBounds().withX(filterLoLabel.getRight()).withRight(filterHiLabel.getX()));
 
-    filterHiLabel.setBounds(filterArea.withWidth(thirdWidth).withRightX(filterArea.getRight()).withHeight(10));
-    hiCutSlider.setBounds(filterArea.withWidth(thirdWidth).withRightX(filterArea.getRight()).withTrimmedTop(filterHiLabel.getHeight()));
-
-    filterLabel.setBounds(filterArea.withX(loCutSlider.getRight()).withRight(hiCutSlider.getX()));
+        loCutSlider.setBounds(filterArea.withWidth(filterArea.getWidth() / 2).withTrimmedTop(labelHeights));
+        hiCutSlider.setBounds(loCutSlider.getBounds().withRightX(filterArea.getRight()));
+    }
 
     // Distortion
-    distortionArea = secondColumn.withTop(filterArea.getBottom());
-    distortionTypeSelector.setBounds(distortionArea.withHeight(40).withBottomY(distortionArea.getBottom()));
-    distortionSlider.setBounds(distortionArea.withBottom(distortionTypeSelector.getY()));
-    distortionVisualizer.setBounds(distortionSlider.getBounds());
+    {
+        distortionTypeSelector.setBounds(distortionArea.withHeight(40).withBottomY(distortionArea.getBottom()));
+        distortionSlider.setBounds(distortionArea.withBottom(distortionTypeSelector.getY()));
+        distortionVisualizer.setBounds(distortionSlider.getBounds());
+    }
 }
 
 void LineEditor::textureArea (juce::Graphics& g, juce::Rectangle<int> area)
@@ -230,6 +247,8 @@ void LineEditor::paint (juce::Graphics& g)
 
     g.fillRect(topBarUnderline);
     g.fillRect(columnGutter);
+    g.setColour(juce::Colours::black.withAlpha(0.2f));
+    g.drawRect(filterArea);
 }
 
 void LineEditor::sliderValueChanged (juce::Slider* slider)
@@ -286,7 +305,7 @@ void LineEditor::timerCallback()
 
 void LineEditor::mouseDown (const juce::MouseEvent& event)
 {
-    if (topBar.contains(event.getPosition())) {
+    if (topBar.contains(event.getPosition()) && canBeDragged) {
         dragger.startDraggingComponent(this, event);
         dragging = true;
     }
@@ -294,7 +313,7 @@ void LineEditor::mouseDown (const juce::MouseEvent& event)
 
 void LineEditor::mouseDrag (const juce::MouseEvent& event)
 {
-    if (dragging) {
+    if (dragging && canBeDragged) {
         dragger.dragComponent (this, event, nullptr);
     }
 }

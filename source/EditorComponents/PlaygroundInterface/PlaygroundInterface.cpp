@@ -4,6 +4,7 @@
 
 #include "PlaygroundInterface.h"
 #include "../../DelayGraph.h"
+#include "../DelayLinesLookAndFeel.h"
 
 PlaygroundInterface::PlaygroundInterface (ModulationMappingEngine& me, DelayGraph& _delayGraph) :  globalOffset(0,0), delayGraph(_delayGraph), mappingEngine(me)
 {
@@ -35,7 +36,7 @@ void PlaygroundInterface::resized()
 
 void PlaygroundInterface::paint (juce::Graphics& g)
 {
-    paintBackground(g);
+    DelayLinesLookAndFeel::drawGraphPaperBackround(g, gridOffset + globalOffset, this);
     g.setColour(juce::Colours::black);
     g.drawRect(getLocalBounds());
 }
@@ -73,9 +74,9 @@ void PlaygroundInterface::mouseUp (const juce::MouseEvent& event)
         delayGraph.addPoint(event.position, false);
     } else {
         delayGraph.applyGlobalOffset(globalOffset);
-        auto gx = std::fmod(globalOffset.x, gridSize);
-        auto gy = std::fmod(globalOffset.y, gridSize);
-        gridOffset = {gx < 0 ? gx + gridSize : gx, gy < 0 ? gy + gridSize : gy};
+        auto gx = std::fmod(globalOffset.x, DelayLinesLookAndFeel::getGraphPaperGridSize());
+        auto gy = std::fmod(globalOffset.y, DelayLinesLookAndFeel::getGraphPaperGridSize());
+        gridOffset = {gx < 0 ? gx + DelayLinesLookAndFeel::getGraphPaperGridSize() : gx, gy < 0 ? gy + DelayLinesLookAndFeel::getGraphPaperGridSize() : gy};
         globalOffset = {0,0};
     }
 }
@@ -86,17 +87,4 @@ void PlaygroundInterface::mouseDrag (const juce::MouseEvent& event)
         static_cast<float>(event.getOffsetFromDragStart().x),
         static_cast<float>(event.getOffsetFromDragStart().y)
     };
-}
-
-void PlaygroundInterface::paintBackground (juce::Graphics& g)
-{
-    g.setColour(juce::Colours::white);
-    g.fillAll();
-    g.setColour(juce::Colours::lightblue.withAlpha(0.2f));
-    for (auto y = gridOffset.y + std::fmod(globalOffset.y, gridSize) - gridSize; y < getHeight() + gridSize; y += gridSize) {
-        g.drawHorizontalLine(y, 0, getWidth());
-    }
-    for (auto x = gridOffset.x + std::fmod(globalOffset.x, gridSize) - gridSize; x < getWidth() + gridSize; x += gridSize) {
-        g.drawVerticalLine(x, 0, getHeight());
-    }
 }

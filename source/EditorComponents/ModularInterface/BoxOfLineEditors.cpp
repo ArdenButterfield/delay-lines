@@ -44,7 +44,7 @@ void BoxOfLineEditors::removeLine (int identifier)
 
 void BoxOfLineEditors::paint (juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::red);
+    DelayLinesLookAndFeel::drawGraphPaperBackround(g, {0,0}, this);
 }
 
 void BoxOfLineEditors::resized()
