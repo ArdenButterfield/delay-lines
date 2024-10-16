@@ -36,9 +36,7 @@ void BoxOfLineEditors::addLine (int identifier)
 }
 void BoxOfLineEditors::removeLine (int identifier)
 {
-    std::cout << "len before " << lineModules.size() << "\n";
     std::erase_if(lineModules, [&identifier](auto& l) { return identifier == l->getIdentifier();});
-    std::cout << "len after " << lineModules.size() << "\n";
     setSize(getWidth(), minimumHeight);
 }
 
