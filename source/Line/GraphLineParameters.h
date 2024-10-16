@@ -37,11 +37,26 @@ struct DelayLength {
             case note:
                 return samplerate / static_cast<float>(juce::MidiMessage::getMidiNoteInHertz(static_cast<int>(std::round(midiNote))));
             case beat:
-                return (std::round(beatLength[0]) / std::round(beatLength[1])) * 60 * samplerate / bpm;
+                return (std::round(beatLength[0]) / std::round(beatLength[1])) // fraction of bar
+                       * 4 // beats / bar
+                       * (1 / bpm) // minutes / beat
+                       * 60 // seconds / minute
+                       * samplerate; // samples / second
             case midiTrack:
                 return samplerate / static_cast<float>(juce::MidiMessage::getMidiNoteInHertz(static_cast<int>(std::round(midiTrackNote))));
             default: return 0;
         }
+    }
+
+    float getLengthOfDenominator(float samplerate, float bpm) {
+        if (juce::approximatelyEqual(beatLength[1], 0.f) || juce::approximatelyEqual(bpm, 0.f)) {
+            return 0;
+        }
+        return (1 / std::round(beatLength[1])) // fraction of bar
+               * 4 // beats / bar
+               * (1 / bpm) // minutes / beat
+               * 60 // seconds / minute
+               * samplerate; // samples / second
     }
 
     void rescale(float proportion) {

@@ -20,6 +20,8 @@ public:
 
     void setTargetLength(float length);
 
+    void setTick(float tickLength);
+
     void pushSample(std::vector<float>& sample);
     void popSample(std::vector<float>& sample);
 
@@ -35,6 +37,8 @@ private:
 
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> length;
     ModOscillator* modOscillator;
+    float tickLength;
+
 };
 
 #endif //DELAYLINES_DELAYLINE_H

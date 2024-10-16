@@ -87,7 +87,13 @@ void GraphLine::calculateInternalLength()
         return;
     }
     auto realLineVector = (*end + end->offset).getDistanceFrom(*start + start->offset);
-    auto currentLength = parameters.length.getLengthInSamples(sampleRate, bpm) * realLineVector / lineVector; // TODO: BPM
+    auto currentLength = parameters.length.getLengthInSamples(sampleRate, bpm) * realLineVector / lineVector;
+
+    if (parameters.length.getMode() == parameters.length.beat) {
+        delayLineInternal->setTick(parameters.length.getLengthOfDenominator(sampleRate, bpm));
+    } else {
+        delayLineInternal->setTick(0);
+    }
 
     delayLineInternal->setTargetLength(currentLength);
 }

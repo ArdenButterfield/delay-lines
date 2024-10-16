@@ -5,7 +5,7 @@
 #include "DelayLineInternal.h"
 
 DelayLineInternal::DelayLineInternal (juce::dsp::ProcessSpec _spec, float initialLength, int maxLength, ModOscillator* _modOscillator)
-    : spec(_spec), delayLine(maxLength), envelopeDelayLine(maxLength), modOscillator(_modOscillator)
+    : spec(_spec), delayLine(maxLength), envelopeDelayLine(maxLength), modOscillator(_modOscillator), tickLength(0.f)
 {
     delayLine.prepare(spec);
     envelopeDelayLine.prepare(spec);
@@ -24,10 +24,11 @@ DelayLineInternal::~DelayLineInternal()
 
 void DelayLineInternal::setTargetLength (float l)
 {
-    l = std::min(l, (float)delayLine.getMaximumDelayInSamples() - 1);
-    l = std::max(l, 0.f);
+    if (!juce::approximatelyEqual(tickLength, 0.f)) {
+        l = std::round(l / tickLength) * tickLength;
+    }
 
-    length.setTargetValue(l);
+    length.setTargetValue(std::min(std::max(0.f, l), static_cast<float>(delayLine.getMaximumDelayInSamples() - 1)));
 }
 
 void DelayLineInternal::pushSample (std::vector<float>& sample)
@@ -66,4 +67,8 @@ void DelayLineInternal::clearLines()
 {
     envelopeDelayLine.reset();
     delayLine.reset();
+}
+void DelayLineInternal::setTick (float _tickLength)
+{
+    tickLength = _tickLength;
 }
