@@ -35,6 +35,7 @@ private:
     PlaygroundInterface* playgroundInterface;
 
     const int lineHoverDistance = 30;
+    const float preTransformInnerLineWidth = 0.2;
     ModulationMappingEngine& mappingEngine;
 
     bool getLoopbackStatus(int& index, float& radius);

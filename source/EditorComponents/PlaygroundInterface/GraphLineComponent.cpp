@@ -43,6 +43,7 @@ void GraphLineComponent::paint (juce::Graphics& g)
     auto startPoint = *(line->start) + playgroundInterface->getGlobalOffset();
     auto endPoint = *(line->end) + playgroundInterface->getGlobalOffset();
 
+
     if (delayGraph.interactionState == DelayGraph::lineHover && delayGraph.activeLine == line) {
         isHovered = true;
         g.setColour(juce::Colours::yellow);
@@ -80,13 +81,9 @@ void GraphLineComponent::paint (juce::Graphics& g)
         return;
     }
 
-    g.setColour(line->getColor());
+    auto lineColourWithHover = isHovered ? line->getColor().withMultipliedLightness(2.0) : line->getColor();
+    g.setColour(lineColourWithHover);
 
-    if (isHovered) {
-        g.setColour(line->getColor().withMultipliedLightness(1.4));
-    }
-
-    g.setColour(line->getColor());
 
     if (lineLoopsBack) {
         g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
@@ -143,24 +140,49 @@ void GraphLineComponent::paint (juce::Graphics& g)
         innerRightPath.closeSubPath();
 
         if (linesSharingSpace.size() == 1) {
-            g.setColour(line->getColor());
+            g.setColour(lineColourWithHover);
             g.fillPath(leftLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
             g.fillPath(rightLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
-            g.setColour(line->getColor().withMultipliedBrightness(0.5f));
+            g.setColour(lineColourWithHover.withMultipliedBrightness(0.5f));
             g.fillPath(innerLeftPath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
             g.fillPath(innerRightPath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
 
-        } else if (linesSharingSpace.size() == 2) {
-            if ((id == linesSharingSpace[0]) == line->isGoingBackwards()) {
-                g.setColour(line->getColor());
-                g.fillPath(leftLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
-                g.setColour(line->getColor().withMultipliedBrightness(0.5f));
-                g.fillPath(innerLeftPath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
+        } else if (linesSharingSpace.size() > 1) {
+            const float numMiddleLines = linesSharingSpace.size() - 2;
+            auto idPosition = std::find(linesSharingSpace.begin(), linesSharingSpace.end(), id);
+            jassert(idPosition != linesSharingSpace.end());
+            if (idPosition - linesSharingSpace.begin() >= 2) {
+                // Inner line
+                auto path = juce::Path();
+                auto innerIndex = (idPosition - linesSharingSpace.begin() - 2);
+                auto lowY = -preTransformInnerLineWidth * numMiddleLines * 0.5f + innerIndex * preTransformInnerLineWidth;
+                auto highY = lowY + preTransformInnerLineWidth;
+                path.startNewSubPath(0, lowY);
+                path.lineTo(0, highY);
+                path.lineTo(1, highY);
+                path.lineTo(1, lowY);
+                path.closeSubPath();
+                auto transform = makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, line->isGoingBackwards());
+                g.setColour(lineColourWithHover);
+                g.fillPath(path, transform);
+            } else if ((id == linesSharingSpace[0]) == line->isGoingBackwards()) {
+                auto transform = juce::AffineTransform()
+                                     .translated(0, numMiddleLines * preTransformInnerLineWidth * 0.5f)
+                                     .followedBy(makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
+
+                g.setColour(lineColourWithHover);
+                g.fillPath(leftLinePath, transform);
+                g.setColour(lineColourWithHover.withMultipliedBrightness(0.5f));
+                g.fillPath(innerLeftPath, transform);
             } else {
-                g.setColour(line->getColor());
-                g.fillPath(rightLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
-                g.setColour(line->getColor().withMultipliedBrightness(0.5f));
-                g.fillPath(innerRightPath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
+                auto transform = juce::AffineTransform()
+                                     .translated(0, numMiddleLines * preTransformInnerLineWidth * 0.5f)
+                                     .followedBy(makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
+
+                g.setColour(lineColourWithHover);
+                g.fillPath(rightLinePath, transform);
+                g.setColour(lineColourWithHover.withMultipliedBrightness(0.5f));
+                g.fillPath(innerRightPath, transform);
             }
         }
     }
@@ -213,8 +235,25 @@ bool GraphLineComponent::hitTest (int x, int y)
         if (linesSharingSpace.size() < 2) {
             return above || below;
         } else if (linesSharingSpace.size() == 2) {
-            auto shouldBeAbove = (id == linesSharingSpace[0]) == line->isGoingBackwards();
+            auto shouldBeAbove = (id == linesSharingSpace[1]);
             return (above && shouldBeAbove) || (below && !shouldBeAbove);
+        } else {
+            auto idPosition = std::find(linesSharingSpace.begin(), linesSharingSpace.end(), id);
+            jassert(idPosition != linesSharingSpace.end());
+            const auto innersRadius = preTransformInnerLineWidth * 0.5f * (linesSharingSpace.size() - 2);
+            if (idPosition - linesSharingSpace.begin() == 0) {
+                auto isIn = (-innersRadius > transy) &&
+                            (transy > -innersRadius - juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * transx));
+                return isIn;
+            } else if (idPosition - linesSharingSpace.begin() == 1) {
+                auto isIn = (innersRadius < transy) &&
+                            (transy < innersRadius + juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * transx));
+                return isIn;
+            } else {
+                auto below = -innersRadius + preTransformInnerLineWidth * (idPosition - linesSharingSpace.begin() - 2);
+                auto isIn = below < transy && transy < below + preTransformInnerLineWidth;
+                return isIn;
+            }
         }
     }
     return false;

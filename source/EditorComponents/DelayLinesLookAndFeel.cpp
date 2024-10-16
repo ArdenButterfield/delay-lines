@@ -5,6 +5,7 @@
 
 #include "DelayLinesLookAndFeel.h"
 #include "BinaryData.h"
+#include "juce_gui_basics/juce_gui_basics.h"
 
 DelayLinesLookAndFeel::DelayLinesLookAndFeel()
 {
@@ -12,6 +13,8 @@ DelayLinesLookAndFeel::DelayLinesLookAndFeel()
     setColour(juce::ToggleButton::ColourIds::textColourId, juce::Colours::black);
     setColour(juce::ToggleButton::ColourIds::tickColourId, juce::Colours::black);
     setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, juce::Colours::grey);
+    setColour(juce::ComboBox::ColourIds::backgroundColourId, juce::Colours::grey.withAlpha(0.2f));
+    setColour(juce::ComboBox::ColourIds::textColourId, juce::Colours::black);
 }
 void DelayLinesLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
                                             float sliderPos,

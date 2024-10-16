@@ -181,22 +181,22 @@ void LineEditor::resized()
     // Modding length
     {
         modVisualizer.setBounds(modArea);
-
         auto thirdWidth = modArea.getWidth() / 3;
-        modDepthLabel.setBounds(modArea.withWidth(thirdWidth).withHeight(10));
-        modDepthSlider.setBounds(modArea.withWidth(thirdWidth).withTrimmedTop(modDepthLabel.getHeight()));
+        auto labelHeights = 20;
+        modDepthLabel.setBounds(modArea.withWidth(thirdWidth).withHeight(labelHeights));
+        modRateLabel.setBounds(modDepthLabel.getBounds().withRightX(modArea.getRight()));
+        modLabel.setBounds(modRateLabel.getBounds().withX(modDepthLabel.getRight()).withRight(modRateLabel.getX()));
 
-        modRateLabel.setBounds(modArea.withWidth(thirdWidth).withRightX(modArea.getRight()).withHeight(10));
-        modRateSlider.setBounds(modArea.withWidth(thirdWidth).withRightX(modArea.getRight()).withTrimmedTop(modRateLabel.getHeight()));
+        modDepthSlider.setBounds(modArea.withWidth(modArea.getWidth() / 2).withTrimmedTop(labelHeights));
+        modRateSlider.setBounds(modDepthSlider.getBounds().withRightX(modArea.getRight()));
 
-        modLabel.setBounds(modArea.withX(modDepthSlider.getRight()).withRight(modRateSlider.getX()));
     }
 
     // Filter
     {
 
         filterVisualizer.setBounds(filterArea);
-        auto thirdWidth = modArea.getWidth() / 3;
+        auto thirdWidth = filterArea.getWidth() / 3;
         auto labelHeights = 20;
         filterLoLabel.setBounds(filterArea.withWidth(thirdWidth).withHeight(labelHeights));
         filterHiLabel.setBounds(filterLoLabel.getBounds().withRightX(filterArea.getRight()));
