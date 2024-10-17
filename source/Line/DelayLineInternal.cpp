@@ -15,8 +15,9 @@ DelayLineInternal::DelayLineInternal (juce::dsp::ProcessSpec _spec, float initia
     envelopeFilter.setAttackTime(5);
     envelopeFilter.setReleaseTime(100);
 
-    length.setCurrentAndTargetValue(initialLength);
-    length.reset(spec.sampleRate, 0.2);
+    length.setRampLength(spec.sampleRate * stretchTime);
+    length.resetToTarget(initialLength);
+    stretchTime = 0;
 }
 
 DelayLineInternal::~DelayLineInternal()
@@ -28,7 +29,7 @@ void DelayLineInternal::setTargetLength (float l)
         l = std::round(l / tickLength) * tickLength;
     }
 
-    length.setTargetValue(std::min(std::max(0.f, l), static_cast<float>(delayLine.getMaximumDelayInSamples() - 1)));
+    length.setTarget(std::min(std::max(0.f, l), static_cast<float>(delayLine.getMaximumDelayInSamples() - 1)));
 }
 
 void DelayLineInternal::pushSample (std::vector<float>& sample)
@@ -43,7 +44,6 @@ void DelayLineInternal::pushSample (std::vector<float>& sample)
 void DelayLineInternal::popSample (std::vector<float>& sample)
 {
     auto l = length.getNextValue();
-
 
     if (modOscillator) {
         l *= modOscillator->tick();
@@ -63,12 +63,22 @@ void DelayLineInternal::getEnvelope (float proportion, float& left, float& right
         right = left;
     }
 }
+
 void DelayLineInternal::clearLines()
 {
     envelopeDelayLine.reset();
     delayLine.reset();
 }
+
 void DelayLineInternal::setTick (float _tickLength)
 {
     tickLength = _tickLength;
+}
+
+void DelayLineInternal::setStretchTime(float _stretchTime)
+{
+    if (!juce::approximatelyEqual(stretchTime, _stretchTime)) {
+        stretchTime = _stretchTime;
+        length.setRampLength(stretchTime);
+    }
 }

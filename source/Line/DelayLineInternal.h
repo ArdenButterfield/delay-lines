@@ -10,6 +10,7 @@
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "juce_core/juce_core.h"
 
+#include "SmoothedValue.h"
 #include "ModOscillator.h"
 
 class DelayLineInternal
@@ -28,6 +29,8 @@ public:
     void getEnvelope(float proportion, float& left, float& right);
 
     void clearLines();
+
+    void setStretchTime(float stretchTime);
 private:
     const juce::dsp::ProcessSpec spec;
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Lagrange3rd> delayLine;
@@ -35,10 +38,10 @@ private:
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::None> envelopeDelayLine;
     juce::dsp::BallisticsFilter<float> envelopeFilter;
 
-    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> length;
+    SmoothedValue length;
     ModOscillator* modOscillator;
     float tickLength;
-
+    float stretchTime;
 };
 
 #endif //DELAYLINES_DELAYLINE_H

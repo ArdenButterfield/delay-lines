@@ -356,3 +356,7 @@ void GraphLine::recalculateParameters()
         model->setParameters(0.1, parameters.distortion);
     }
 }
+void GraphLine::setStretchTime(float newStretchTime)
+{
+    delayLineInternal->setStretchTime(newStretchTime);
+}

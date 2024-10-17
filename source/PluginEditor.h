@@ -50,6 +50,10 @@ private:
 
     juce::Slider mixSlider;
     juce::AudioProcessorValueTreeState::SliderAttachment mixAttachment;
+
+    juce::Slider stretchTimeSlider;
+    juce::AudioProcessorValueTreeState::SliderAttachment stretchTimeAttachment;
+
     ModKnobs modKnobs;
 
 };

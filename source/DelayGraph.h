@@ -96,6 +96,8 @@ public:
             line->setBpm(bpm);
         }
     }
+    void setStretchTime (float newStretchTime);
+
 private:
     float bpm;
     std::set<Listener*> listeners;

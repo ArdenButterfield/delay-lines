@@ -10,7 +10,8 @@ PluginEditor::PluginEditor (PluginProcessor& p)
       switchInterface("Switch interface"),
       processorRef (p),
       modulatorOverlayButton("Modulator Overlay"),
-      mixAttachment(p.getValueTreeState(), MIX_PARAM_ID, mixSlider)
+      mixAttachment(p.getValueTreeState(), MIX_PARAM_ID, mixSlider),
+      stretchTimeAttachment(p.getValueTreeState(), STRETCH_TIME_ID, stretchTimeSlider)
 {
     modulationMappingEngine.setModulationEngine(&processorRef.modulationEngine);
 
@@ -24,6 +25,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     switchInterface.addListener(this);
 
     addAndMakeVisible(mixSlider);
+    addAndMakeVisible(stretchTimeSlider);
     addAndMakeVisible(presetBrowser);
     addAndMakeVisible(printXmlButton);
     addAndMakeVisible(switchInterface);
@@ -62,6 +64,7 @@ void PluginEditor::resized()
 //    modulatorOverlayButton.setBounds(360, 10, 100, 30);
     clearLinesButton.setBounds(360, 10, 100, 30);
     mixSlider.setBounds(470, 10, 100, 30);
+    stretchTimeSlider.setBounds(mixSlider.getBounds().withX(mixSlider.getRight() + 10));
 
     modularInterface.setBounds(playgroundInterface.getBounds());
 }

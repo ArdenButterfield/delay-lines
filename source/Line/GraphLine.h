@@ -118,6 +118,8 @@ public:
     void setBpm(float _bpm) {
         bpm = _bpm;
     }
+
+    void setStretchTime(float newStretchTime);
 private:
     float bpm;
     void parameterValueChanged(int parameterIndex, float newValue) override;

@@ -12,6 +12,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
         "mix",
         0.f, 100.f, 50.f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {STRETCH_TIME_ID, 1},
+        "stretch time",
+        0.f, 2.f, 0.1f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID {CLEAR_PARAM_ID, 1},
         "clear lines",
         0.f, 1.f, 0.f));
@@ -47,6 +51,7 @@ PluginProcessor::PluginProcessor()
         modulationEngine(parameters, makeModulationIds(), delayGraph)
 {
     parameters.addParameterListener(MIX_PARAM_ID, this);
+    parameters.addParameterListener(STRETCH_TIME_ID, this);
     parameters.addParameterListener(CLEAR_PARAM_ID, this);
     parametersNeedUpdating = true;
 
@@ -160,7 +165,9 @@ bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void PluginProcessor::updateParameters()
 {
     parametersNeedUpdating = false;
-    mix.setCurrentAndTargetValue(((juce::AudioParameterFloat*)parameters.getParameter(MIX_PARAM_ID))->get() * 0.01);}
+    mix.setCurrentAndTargetValue(((juce::AudioParameterFloat*)parameters.getParameter(MIX_PARAM_ID))->get() * 0.01);
+    delayGraph.setStretchTime(((juce::AudioParameterFloat*)parameters.getParameter(STRETCH_TIME_ID))->get() * getSampleRate());
+}
 
 void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                               juce::MidiBuffer& midiMessages)
@@ -268,7 +275,7 @@ juce::AudioProcessorValueTreeState& PluginProcessor::getValueTreeState()
 
 void PluginProcessor::parameterChanged (const juce::String& parameterID, float newValue)
 {
-    if (parameterID == MIX_PARAM_ID) {
+    if (parameterID == MIX_PARAM_ID || parameterID == STRETCH_TIME_ID) {
         parametersNeedUpdating = true;
     } else if (parameterID == CLEAR_PARAM_ID && newValue > 0.5) {
         delayGraph.clear();
