@@ -41,7 +41,7 @@ void DelayLineInternal::pushSample (std::vector<float>& sample)
     }
 }
 
-void DelayLineInternal::popSample (std::vector<float>& sample)
+void DelayLineInternal::popSample (std::vector<float>& sample, bool updateReadPointer)
 {
     auto l = length.getNextValue();
 
@@ -49,8 +49,8 @@ void DelayLineInternal::popSample (std::vector<float>& sample)
         l *= modOscillator->tick();
     }
     for (unsigned i = 0; i < spec.numChannels; ++i) {
-        sample[i] = delayLine.popSample(static_cast<int>(i), l, true);
-        envelopeDelayLine.popSample(static_cast<int>(i), l, true);
+        sample[i] = delayLine.popSample(static_cast<int>(i), l, updateReadPointer);
+        envelopeDelayLine.popSample(static_cast<int>(i), l, updateReadPointer);
     }
 }
 

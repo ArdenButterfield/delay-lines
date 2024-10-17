@@ -38,7 +38,7 @@ bool DelayLength::importFromXml (juce::XmlElement* parent)
     return false;
 }
 
-Parameters::Parameters() : muteBypass(MUTE_BYPASS_ID, "mute bypass", {"none", "mute", "bypass"}, 0),
+Parameters::Parameters() : muteBypass(MUTE_BYPASS_ID, "mute bypass", {"none", "mute", "bypass", "stagnate"}, 0),
                            lengthEnvelopeFollow(LENGTH_ENVELOPE_FOLLOW_ID, "length envelope follow", -1.f, 1.f, 0.f),
                            modDepth(MOD_DEPTH_ID, "mod depth", 0.f, 1.f, 0.f),
                            modRate(MOD_RATE_ID, "mod rate", 0.1f, 30.f, 1.f),

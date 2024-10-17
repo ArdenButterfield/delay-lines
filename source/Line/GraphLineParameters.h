@@ -164,7 +164,8 @@ struct Parameters {
     enum MuteBypassOptions {
         none = 0,
         mute = 1,
-        bypass = 2
+        bypass = 2,
+        stagnate = 3
     };
 
     bool isMuted() const {
@@ -173,6 +174,10 @@ struct Parameters {
 
     bool isBypassed() const {
         return muteBypass.getIndex() == bypass;
+    }
+
+    bool isStagnated() const {
+        return muteBypass.getIndex() == stagnate;
     }
 
     juce::AudioParameterChoice muteBypass;

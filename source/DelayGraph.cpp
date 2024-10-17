@@ -545,7 +545,6 @@ std::vector<int> DelayGraph::getAllLinesStartingAndEndingAtSamePoint (GraphPoint
 }
 void DelayGraph::setStretchTime (float newStretchTime)
 {
-    std::cout << newStretchTime << "\n";
     for (auto& line : lines) {
         line->setStretchTime(newStretchTime);
     }

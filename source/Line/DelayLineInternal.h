@@ -24,7 +24,7 @@ public:
     void setTick(float tickLength);
 
     void pushSample(std::vector<float>& sample);
-    void popSample(std::vector<float>& sample);
+    void popSample(std::vector<float>& sample, bool updateReadPointer=true);
 
     void getEnvelope(float proportion, float& left, float& right);
 

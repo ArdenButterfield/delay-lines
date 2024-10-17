@@ -31,6 +31,7 @@ public:
 
     juce::ToggleButton bypassButton;
     juce::ToggleButton muteButton;
+    juce::ToggleButton stagnateButton;
 
     LengthEditor lengthEditor;
 

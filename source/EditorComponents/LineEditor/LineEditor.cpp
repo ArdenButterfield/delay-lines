@@ -39,6 +39,8 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
 
     muteButton.setButtonText("Mute");
 
+    stagnateButton.setButtonText("Stagnate");
+
     invertButton.setButtonText("Invert");
 
     copyButton.setButtonText("Copy");
@@ -86,6 +88,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     for (auto button : {
              &bypassButton,
              &muteButton,
+             &stagnateButton,
              &invertButton
          }) {
         addAndMakeVisible(button);
@@ -159,10 +162,13 @@ void LineEditor::resized()
 
     auto firstColumnInner = firstColumn.withSize(firstColumn.getWidth() - 4, firstColumn.getHeight() - 4);
 
-    bypassButton.setBounds(firstColumnInner.withHeight(25));
-    muteButton.setBounds(firstColumnInner.withTrimmedTop(bypassButton.getHeight() + 2).withHeight(25));
+    const auto buttonHeight = 20;
+    bypassButton.setBounds(firstColumnInner.withHeight(buttonHeight));
+    muteButton.setBounds(firstColumnInner.withTop(bypassButton.getBottom() + 2).withHeight(buttonHeight));
+    stagnateButton.setBounds(firstColumnInner.withTop(muteButton.getBottom() + 2).withHeight(buttonHeight));
+    invertButton.setBounds(firstColumnInner.withTop(stagnateButton.getBottom() + 2).withHeight(buttonHeight));
 
-    lengthEditor.setBounds(firstColumnInner.withTop(muteButton.getBottom() + 2).withHeight(80));
+    lengthEditor.setBounds(firstColumnInner.withTop(invertButton.getBottom() + 2).withHeight(80));
 
     auto gainAndFeedbackArea = firstColumnInner.withTop(lengthEditor.getBottom()).withHeight(50);
     auto gainArea = gainAndFeedbackArea.withWidth(gainAndFeedbackArea.getWidth() / 2);
@@ -189,7 +195,6 @@ void LineEditor::resized()
 
         modDepthSlider.setBounds(modArea.withWidth(modArea.getWidth() / 2).withTrimmedTop(labelHeights));
         modRateSlider.setBounds(modDepthSlider.getBounds().withRightX(modArea.getRight()));
-
     }
 
     // Filter
@@ -243,6 +248,8 @@ void LineEditor::paint (juce::Graphics& g)
         g.setColour (line->getColor());
         bypassButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, line->getColor());
         muteButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, line->getColor());
+        invertButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, line->getColor());
+        stagnateButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, line->getColor());
     }
 
     g.fillRect(topBarUnderline);
@@ -294,6 +301,7 @@ void LineEditor::timerCallback()
     feedbackSlider.setValue(line->parameters.feedback, juce::dontSendNotification);
     invertButton.setToggleState(line->parameters.invert, juce::dontSendNotification);
     muteButton.setToggleState(line->parameters.isMuted(), juce::dontSendNotification);
+    stagnateButton.setToggleState(line->parameters.isStagnated(), juce::dontSendNotification);
     bypassButton.setToggleState(line->parameters.isBypassed(), juce::dontSendNotification);
 
     filterVisualizer.setFilters(
@@ -342,6 +350,8 @@ void LineEditor::buttonClicked (juce::Button* button)
         delayGraph.setRealOutputs();
     } else if (button == &invertButton) {
         line->setInvert(invertButton.getToggleState());
+    } else if (button == &stagnateButton) {
+        line->setStagnate(stagnateButton.getToggleState());
     } else if (button == &copyButton) {
         auto xml = juce::XmlElement("line");
         auto line = delayGraph.getLine(graphLine);

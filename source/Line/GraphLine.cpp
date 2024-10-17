@@ -100,7 +100,7 @@ void GraphLine::calculateInternalLength()
 
 void GraphLine::pushSample (std::vector<float>& sample)
 {
-    if ((!prepared) || (parameters.isMuted())) {
+    if ((!prepared) || (parameters.isMuted()) || (parameters.isStagnated())) {
         return;
     }
 
@@ -158,7 +158,7 @@ void GraphLine::popSample ()
 
     auto val = std::vector<float>(numChannels);
 
-    delayLineInternal->popSample(val);
+    delayLineInternal->popSample(val, !parameters.isStagnated());
 
     auto gainVal = gain.getNextValue();
     if (parameters.distortionType.getIndex() == 4) {
@@ -241,6 +241,14 @@ void GraphLine::setMute (bool mute)
     if (mute) {
         parameters.muteBypass = Parameters::mute;
     } else if (parameters.muteBypass == Parameters::mute) {
+        parameters.muteBypass = Parameters::none;
+    }
+}
+
+void GraphLine::setStagnate (bool stagnate) {
+    if (stagnate) {
+        parameters.muteBypass = Parameters::stagnate;
+    } else if (parameters.muteBypass == Parameters::stagnate) {
         parameters.muteBypass = Parameters::none;
     }
 }

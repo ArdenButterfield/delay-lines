@@ -111,6 +111,7 @@ public:
 
     void setBypass (bool bypass);
     void setMute (bool mute);
+    void setStagnate (bool stagnate);
 
     bool isGoingBackwards() const {
         return start != nullptr && end != nullptr && (start->identifier > end->identifier);
