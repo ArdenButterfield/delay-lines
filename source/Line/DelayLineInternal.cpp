@@ -17,6 +17,8 @@ DelayLineInternal::DelayLineInternal (juce::dsp::ProcessSpec _spec, float initia
 
     length.setRampLength(spec.sampleRate * stretchTime);
     length.resetToTarget(initialLength);
+    lengthFader.setFadeTime(200);
+    lengthFader.resetToTarget(initialLength);
     stretchTime = 0;
 }
 
@@ -29,7 +31,9 @@ void DelayLineInternal::setTargetLength (float l)
         l = std::round(l / tickLength) * tickLength;
     }
 
-    length.setTarget(std::min(std::max(0.f, l), static_cast<float>(delayLine.getMaximumDelayInSamples() - 1)));
+    auto target = std::min(std::max(0.f, l), static_cast<float>(delayLine.getMaximumDelayInSamples() - 1));
+    length.setTarget(target);
+    lengthFader.setTarget(target);
 }
 
 void DelayLineInternal::pushSample (std::vector<float>& sample)
@@ -43,14 +47,31 @@ void DelayLineInternal::pushSample (std::vector<float>& sample)
 
 void DelayLineInternal::popSample (std::vector<float>& sample, bool updateReadPointer)
 {
-    auto l = length.getNextValue();
+    if (juce::approximatelyEqual(stretchTime, 0.f)) {
+        float firstLength, firstLevel, secondLength, secondLevel;
+        lengthFader.getNextValue(firstLength, firstLevel, secondLength, secondLevel);
+        if (modOscillator) {
+            auto mod = modOscillator->tick();
+            firstLength *= mod;
+            secondLength *= mod;
+        }
+        for (unsigned i = 0; i < spec.numChannels; ++i) {
+            sample[i] = delayLine.popSample(static_cast<int>(i), firstLength, false) * firstLevel
+                        + delayLine.popSample(static_cast<int>(i), secondLength, updateReadPointer) * secondLevel;
+            envelopeDelayLine.popSample(static_cast<int>(i), firstLength, updateReadPointer);
+        }
+        length.getNextValue();
+    } else {
+        auto l = length.getNextValue();
 
-    if (modOscillator) {
-        l *= modOscillator->tick();
-    }
-    for (unsigned i = 0; i < spec.numChannels; ++i) {
-        sample[i] = delayLine.popSample(static_cast<int>(i), l, updateReadPointer);
-        envelopeDelayLine.popSample(static_cast<int>(i), l, updateReadPointer);
+        if (modOscillator) {
+            l *= modOscillator->tick();
+        }
+        for (unsigned i = 0; i < spec.numChannels; ++i) {
+            sample[i] = delayLine.popSample(static_cast<int>(i), l, updateReadPointer);
+            envelopeDelayLine.popSample(static_cast<int>(i), l, updateReadPointer);
+        }
+        lengthFader.tick();
     }
 }
 

@@ -11,6 +11,7 @@
 #include "juce_core/juce_core.h"
 
 #include "SmoothedValue.h"
+#include "LengthFader.h"
 #include "ModOscillator.h"
 
 class DelayLineInternal
@@ -39,9 +40,12 @@ private:
     juce::dsp::BallisticsFilter<float> envelopeFilter;
 
     SmoothedValue length;
+    LengthFader lengthFader;
     ModOscillator* modOscillator;
     float tickLength;
     float stretchTime;
+
+    bool stretchTimeIsZero;
 };
 
 #endif //DELAYLINES_DELAYLINE_H

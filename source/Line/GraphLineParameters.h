@@ -194,7 +194,6 @@ struct Parameters {
     juce::AudioParameterFloat gainEnvelopeFollow;
     juce::AudioParameterFloat feedback;
 
-
     std::vector<juce::RangedAudioParameter*> params {
         &muteBypass,
         &lengthEnvelopeFollow,
