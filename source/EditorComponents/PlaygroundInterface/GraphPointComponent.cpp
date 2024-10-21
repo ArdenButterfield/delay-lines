@@ -149,6 +149,11 @@ void GraphPointComponent::mouseDrag (const juce::MouseEvent& event)
 
 void GraphPointComponent::mouseUp (const juce::MouseEvent& event)
 {
+    if (event.mouseWasClicked() && event.mods.isRightButtonDown()) {
+        auto point = delayGraph.getPoint(identifier);
+        delayGraph.deletePoint(point);
+        return;
+    }
     if (delayGraph.interactionState == DelayGraph::movingPoint) {
         delayGraph.interactionState = DelayGraph::none;
         delayGraph.bakeOffsets();
@@ -163,9 +168,6 @@ void GraphPointComponent::mouseUp (const juce::MouseEvent& event)
         } else {
             delayGraph.addPoint(event.position, true);
         }
-    } else if (event.mouseWasClicked() && event.mods.isRightButtonDown()) {
-        auto point = delayGraph.getPoint(identifier);
-        delayGraph.deletePoint(point);
     }
 }
 
