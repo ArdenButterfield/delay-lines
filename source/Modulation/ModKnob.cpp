@@ -24,31 +24,41 @@ ModKnob::ModKnob (ModulationMappingEngine* me, juce::String paramId, const int _
     addAndMakeVisible(mapButton.get());
     addAndMakeVisible(slider.get());
 
+    addAndMakeVisible(mappingLabel);
+
+    mappingLabel.setJustificationType(juce::Justification::centred);
+
     slider->setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     slider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
 
     startTimerHz(30);
 }
+
 ModKnob::~ModKnob()
 {
     mappingEngine->removeListener(this);
 }
+
 void ModKnob::paint (juce::Graphics& g)
 {
     if (mappingEngine->modulationEngine->isMapped(paramIndex)) {
         g.fillAll(juce::Colours::darkgoldenrod);
     }
 }
+
 void ModKnob::resized()
 {
     slider->setBounds(getLocalBounds().withHeight(getHeight() - 30));
     mapButton->setBounds(getLocalBounds().withTrimmedTop(getHeight() - 30));
     unmapButton->setBounds(mapButton->getBounds());
+    mappingLabel.setBounds(unmapButton->getBounds());
 }
+
 void ModKnob::buttonStateChanged (juce::Button*)
 {
 
 }
+
 void ModKnob::buttonClicked (juce::Button* b)
 {
     if (b == mapButton.get()) {
@@ -62,21 +72,29 @@ void ModKnob::buttonClicked (juce::Button* b)
     }
     repaint();
 }
+
 void ModKnob::mappingModeEntered (int parameterIndex)
 {
     if (parameterIndex != paramIndex) {
         mapButton->setToggleState(false, juce::dontSendNotification);
     }
 }
+
 void ModKnob::mappingModeExited()
 {
     mapButton->setToggleState(false, juce::dontSendNotification);
 }
+
 void ModKnob::timerCallback()
 {
     auto mapped = mappingEngine->modulationEngine->isMapped(paramIndex);
 
+    if (mapped) {
+        mappingLabel.setText(mappingEngine->modulationEngine->getNameOfMapping(paramIndex), juce::dontSendNotification);
+    }
+
     mapButton->setVisible(!mapped);
-    unmapButton->setVisible(mapped);
+    unmapButton->setVisible(mapped && isMouseOverOrDragging(true));
+    mappingLabel.setVisible(mapped && !isMouseOverOrDragging(true));
     repaint();
 }

@@ -32,6 +32,8 @@ private:
     std::unique_ptr<juce::TextButton> unmapButton;
 
     const int paramIndex;
+
+    juce::Label mappingLabel;
 };
 
 #endif //DELAYLINES_MODKNOB_H

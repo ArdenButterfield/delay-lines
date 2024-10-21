@@ -85,3 +85,10 @@ void ModulationEngine::setParametersToInternalState()
         }
     }
 }
+
+juce::String ModulationEngine::getNameOfMapping(unsigned int index)
+{
+    if (index < mappings.size() && mappings[index]) {
+        return mappings[index]->getName();
+    }
+}

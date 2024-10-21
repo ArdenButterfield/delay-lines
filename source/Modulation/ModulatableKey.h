@@ -25,6 +25,16 @@ struct ModulatableKey
     float get(float modPosition) {
         return range.convertFrom0to1(modPosition);
     }
+
+    juce::String getName() {
+        auto name = juce::String();
+        name += (type == point) ? "point" : "line";
+        name += " ";
+        name += juce::String(pointOrLineId);
+        name += ":g ";
+        name += parameterId;
+        return name;
+    }
 };
 
 #endif //DELAYLINES_MODULATABLEKEY_H
