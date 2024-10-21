@@ -76,7 +76,8 @@ void PlaygroundInterface::mouseUp (const juce::MouseEvent& event)
         delayGraph.applyGlobalOffset(globalOffset);
         auto gx = std::fmod(globalOffset.x, DelayLinesLookAndFeel::getGraphPaperGridSize());
         auto gy = std::fmod(globalOffset.y, DelayLinesLookAndFeel::getGraphPaperGridSize());
-        gridOffset = {gx < 0 ? gx + DelayLinesLookAndFeel::getGraphPaperGridSize() : gx, gy < 0 ? gy + DelayLinesLookAndFeel::getGraphPaperGridSize() : gy};
+        gridOffset.x += gx < 0 ? gx + DelayLinesLookAndFeel::getGraphPaperGridSize() : gx;
+        gridOffset.y += gy < 0 ? gy + DelayLinesLookAndFeel::getGraphPaperGridSize() : gy;
         globalOffset = {0,0};
     }
 }
