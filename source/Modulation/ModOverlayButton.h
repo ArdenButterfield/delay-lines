@@ -19,7 +19,7 @@ public:
 
     ~ModOverlayButton() override;
 
-    void mappingModeEntered() override;
+    void mappingModeEntered(int parameterId) override;
 
     void mappingModeExited() override;
 

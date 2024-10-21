@@ -9,23 +9,19 @@
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "ModulationMappingEngine.h"
 
-class ModKnobs : public juce::Component, public juce::Button::Listener, ModulationMappingEngine::Listener
+#include "ModKnob.h"
+
+class ModKnobs : public juce::Component
 {
 public:
     ModKnobs();
     ~ModKnobs() override;
     void setMappingEngine(ModulationMappingEngine* me);
 private:
+    std::vector<std::unique_ptr<ModKnob>> modKnobs;
     void paint(juce::Graphics &g) override;
     void resized() override;
     ModulationMappingEngine* mappingEngine;
-    std::vector<std::unique_ptr<juce::Slider>> sliders;
-    std::vector<std::unique_ptr<juce::ToggleButton>> mapButtons;
-    std::vector<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>> attachments;
-    void buttonStateChanged(juce::Button *) override;
-    void buttonClicked(juce::Button *) override;
-    void mappingModeEntered() override;
-    void mappingModeExited() override;
 };
 
 #endif //DELAYLINES_MODKNOBS_H

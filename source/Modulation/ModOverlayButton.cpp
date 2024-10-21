@@ -11,7 +11,7 @@ ModOverlayButton::~ModOverlayButton()
 {
     mappingEngine.removeListener(this);
 }
-void ModOverlayButton::mappingModeEntered()
+void ModOverlayButton::mappingModeEntered(int parameterId)
 {
     setVisible(true);
 }

@@ -15,7 +15,7 @@ void ModulationMappingEngine::enterModMappingMode (int _parameterIndex)
     parameterIndex = static_cast<unsigned int> (_parameterIndex);
     inModMappingMode = true;
     for (auto& listener : listeners) {
-        listener->mappingModeEntered();
+        listener->mappingModeEntered(parameterIndex);
     }
 }
 void ModulationMappingEngine::exitModMappingMode()

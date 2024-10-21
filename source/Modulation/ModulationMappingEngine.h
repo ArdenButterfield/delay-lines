@@ -17,7 +17,7 @@ public:
     public:
         Listener() = default;
         ~Listener() = default;
-        virtual void mappingModeEntered() = 0;
+        virtual void mappingModeEntered(int parameterIndex) = 0;
         virtual void mappingModeExited() = 0;
     };
     ModulationMappingEngine();
