@@ -9,7 +9,7 @@
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "ModulationMappingEngine.h"
 
-class ModKnob : public juce::Component, public juce::Button::Listener, ModulationMappingEngine::Listener
+class ModKnob : public juce::Component, public juce::Button::Listener, ModulationMappingEngine::Listener, juce::Timer
 {
 public:
     ModKnob(ModulationMappingEngine* me, juce::String paramId, const int _paramIndex);
@@ -26,6 +26,10 @@ private:
     void buttonClicked(juce::Button *) override;
     void mappingModeEntered(int parameterIndex) override;
     void mappingModeExited() override;
+
+    void timerCallback() override;
+
+    std::unique_ptr<juce::TextButton> unmapButton;
 
     const int paramIndex;
 };

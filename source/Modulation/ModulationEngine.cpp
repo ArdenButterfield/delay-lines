@@ -40,9 +40,9 @@ void ModulationEngine::setParameterValue (unsigned int index, float value)
 {
     auto p = treeState.getParameter(paramIds[index]);
     const juce::ScopedLock scopedLock(parameterChangeLock);
-    p->beginChangeGesture();
+//    p->beginChangeGesture();
     p->setValueNotifyingHost(value);
-    p->endChangeGesture();
+//    p->endChangeGesture();
 }
 
 float ModulationEngine::getParameterValue (unsigned int index)
@@ -63,6 +63,9 @@ void ModulationEngine::clearMapping (unsigned int index)
 
 bool ModulationEngine::isMapped (unsigned int index)
 {
+    if (index >= mappings.size()) {
+        return false;
+    }
     return mappings[index].operator bool();
 }
 
