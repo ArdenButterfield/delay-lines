@@ -46,23 +46,12 @@ void GraphLineComponent::paint (juce::Graphics& g)
 
     if (delayGraph.interactionState == DelayGraph::lineHover && delayGraph.activeLine == line) {
         isHovered = true;
-        g.setColour(juce::Colours::yellow);
-        if (lineLoopsBack) {
-            g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 10);
-        } else {
-            g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 10);
-        }
-    } else if (delayGraph.interactionState == DelayGraph::editingLine && delayGraph.activeLine == line) {
-        g.setColour(juce::Colours::pink);
-        if (lineLoopsBack) {
-            g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 10);
-        } else {
-            g.drawLine(line->start->x, startPoint.y, endPoint.x, endPoint.y, 10);
-        }
     }
 
+    auto lineColourWithHover = (isHovered || (lineEditor && lineEditor->isVisible())) ? line->getColor().withMultipliedLightness(2.0) : line->getColor();
+
     if (line->parameters.isMuted()) {
-        g.setColour(juce::Colours::brown.withAlpha(0.1f));
+        g.setColour(lineColourWithHover.withAlpha(0.1f));
         if (lineLoopsBack) {
             g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
         } else {
@@ -72,7 +61,7 @@ void GraphLineComponent::paint (juce::Graphics& g)
     }
 
     if (line->parameters.isBypassed()) {
-        g.setColour(juce::Colours::brown.withAlpha(0.5f));
+        g.setColour(lineColourWithHover.withAlpha(0.5f));
         if (lineLoopsBack) {
             g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
         } else {
@@ -81,15 +70,7 @@ void GraphLineComponent::paint (juce::Graphics& g)
         return;
     }
 
-    auto lineColourWithHover = isHovered ? line->getColor().withMultipliedLightness(2.0) : line->getColor();
     g.setColour(lineColourWithHover);
-
-
-    if (lineLoopsBack) {
-        g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
-    } else {
-        g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 3);
-    }
 
     if (lineLoopsBack) {
         auto linePath = juce::Path();
@@ -124,6 +105,8 @@ void GraphLineComponent::paint (juce::Graphics& g)
         for (auto step = 0; step < numSteps; step += 1) {
             auto proportion = static_cast<float>(step) / static_cast<float>(numSteps);
             line->getEnvelope(proportion, l, r);
+            l = std::max(l, 0.01f);
+            r = std::max(r, 0.01f);
             auto window = juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * proportion);
             leftLinePath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(l * window));
             rightLinePath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(r * window));

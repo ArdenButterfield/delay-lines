@@ -25,6 +25,8 @@ public:
     void parameterChanged(const juce::String &parameterID, float newValue) override;
     const std::vector<juce::String> paramIds;
     juce::AudioProcessorValueTreeState& treeState;
+    void exportToXml(juce::XmlElement* parent);
+    void importFromXml(juce::XmlElement* parent);
 private:
     std::vector<std::unique_ptr<ModulatableKey>> mappings;
     DelayGraph& delayGraph;

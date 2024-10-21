@@ -2,7 +2,8 @@
 #include "parameters.h"
 PluginEditor::PluginEditor (PluginProcessor& p)
     : AudioProcessorEditor (&p),
-      printXmlButton("Print XML"),
+      copyXmlButton("Copy network"),
+      pasteXmlButton("Paste network"),
       clearLinesButton("Clear lines"),
       presetBrowser(p.delayGraph),
       playgroundInterface(modulationMappingEngine, p.delayGraph),
@@ -19,7 +20,8 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 
     setLookAndFeel(&delayLinesLookAndFeel);
 
-    printXmlButton.addListener(this);
+    copyXmlButton.addListener(this);
+    pasteXmlButton.addListener(this);
     modulatorOverlayButton.addListener(this);
     clearLinesButton.addListener(this);
     switchInterface.addListener(this);
@@ -27,7 +29,8 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(mixSlider);
     addAndMakeVisible(stretchTimeSlider);
     addAndMakeVisible(presetBrowser);
-    addAndMakeVisible(printXmlButton);
+    addAndMakeVisible(copyXmlButton);
+    addAndMakeVisible(pasteXmlButton);
     addAndMakeVisible(switchInterface);
     addAndMakeVisible(clearLinesButton);
     addAndMakeVisible(modulatorOverlayButton);
@@ -65,14 +68,17 @@ void PluginEditor::resized()
     clearLinesButton.setBounds(360, 10, 100, 30);
     mixSlider.setBounds(470, 10, 100, 30);
     stretchTimeSlider.setBounds(mixSlider.getBounds().withX(mixSlider.getRight() + 10));
-
+    copyXmlButton.setBounds(stretchTimeSlider.getBounds().withX(stretchTimeSlider.getRight() + 10));
+    pasteXmlButton.setBounds(copyXmlButton.getBounds().withX(copyXmlButton.getRight() + 10));
     modularInterface.setBounds(playgroundInterface.getBounds());
 }
 
 void PluginEditor::buttonClicked (juce::Button* button)
 {
-    if (button == &printXmlButton) {
-        processorRef.printXml();
+    if (button == &copyXmlButton) {
+        auto data = juce::MemoryBlock();
+        processorRef.getStateInformation(data);
+        juce::SystemClipboard::copyTextToClipboard(data.toString());
     } else if (button == &switchInterface) {
         auto modWasVisible = modularInterface.isVisible();
         playgroundInterface.setVisible(modWasVisible);

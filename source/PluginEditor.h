@@ -27,7 +27,8 @@ public:
     void resized() override;
     DelayLinesLookAndFeel delayLinesLookAndFeel;
 
-    juce::TextButton printXmlButton;
+    juce::TextButton copyXmlButton;
+    juce::TextButton pasteXmlButton;
 private:
     juce::TextButton clearLinesButton;
 

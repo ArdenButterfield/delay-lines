@@ -82,3 +82,13 @@ void ModulationEngine::setParametersToInternalState()
         }
     }
 }
+void ModulationEngine::exportToXml (juce::XmlElement* parent)
+{
+    auto element = parent->createNewChildElement("mod-mapping");
+    for (auto i = 0; i < mappings.size(); ++i) {
+        auto mappingElement = element->createNewChildElement(juce::String(i));
+    }
+}
+void ModulationEngine::importFromXml (juce::XmlElement* parent)
+{
+}

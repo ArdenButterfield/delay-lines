@@ -47,7 +47,7 @@ PluginProcessor::PluginProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
-      parameters(*this, nullptr, juce::Identifier("DELAY LINE PARAMETERS"), makeParameters()),
+      parameters(*this, nullptr, juce::Identifier("DELAY-LINE-PARAMETERS"), makeParameters()),
         modulationEngine(parameters, makeModulationIds(), delayGraph)
 {
     parameters.addParameterListener(MIX_PARAM_ID, this);
@@ -239,19 +239,28 @@ juce::AudioProcessorEditor* PluginProcessor::createEditor()
 }
 
 //==============================================================================
+
 void PluginProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
-    juce::ignoreUnused (destData);
+    auto xml = juce::XmlElement("plugin-state");
+    auto parametersState = parameters.copyState().createXml();
+    auto apvts = xml.createTextElement("apvts");
+    xml.setAttribute("apvts", parametersState->toString());
+    // delayGraph.exportToXml(&xml);
+    copyXmlToBinary(xml, destData);
 }
 
 void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
-    juce::ignoreUnused (data, sizeInBytes);
+    auto xml = getXmlFromBinary(data, sizeInBytes);
+    parameters.replaceState(juce::ValueTree::fromXml(xml->getStringAttribute("apvts")));
+
+    delayGraph.importFromXml(xml.get());
 }
 
 //==============================================================================
@@ -259,13 +268,6 @@ void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new PluginProcessor();
-}
-
-void PluginProcessor::printXml()
-{
-    auto xml = juce::XmlElement("plugin-state");
-    delayGraph.exportToXml(&xml);
-    std::cout << xml.toString();
 }
 
 juce::AudioProcessorValueTreeState& PluginProcessor::getValueTreeState()

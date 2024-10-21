@@ -50,9 +50,10 @@ public:
 
     ModulationEngine modulationEngine;
 
-    void printXml();
     juce::AudioProcessorValueTreeState& getValueTreeState();
 private:
+
+
     bool parametersNeedUpdating;
     void updateParameters();
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> mix;
