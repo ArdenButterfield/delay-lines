@@ -31,7 +31,7 @@ struct ModulatableKey
         name += (type == point) ? "point" : "line";
         name += " ";
         name += juce::String(pointOrLineId);
-        name += ":g ";
+        name += ": ";
         name += parameterId;
         return name;
     }

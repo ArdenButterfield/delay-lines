@@ -28,7 +28,8 @@ void BpmTapper::paint (juce::Graphics& g)
     g.fillEllipse(0, 0, getWidth(), getHeight());
     g.setColour(juce::Colours::black);
     g.drawText("TAP", getLocalBounds(), juce::Justification::centred);
-    g.drawEllipse(0, 0, getWidth(), getHeight(), rawElapsed < timeoutInterval ? 2.f : 1.f);
+    auto tapBounds = getLocalBounds().reduced(2, 2);
+    g.drawEllipse(tapBounds.toFloat(), rawElapsed < timeoutInterval ? 2.f : 1.f);
 }
 
 void BpmTapper::resized()

@@ -17,6 +17,8 @@ public:
         return juce::Typeface::createSystemTypefaceFor(BinaryData::SonoRegular_ttf, BinaryData::SonoRegular_ttfSize);
     }
     void drawToggleButton(juce::Graphics &, juce::ToggleButton &, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
+    void drawButtonBackground(juce::Graphics &, juce::Button &, const juce::Colour &backgroundColour, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
+    juce::Font getTextButtonFont(juce::TextButton &, int buttonHeight) override;
     juce::Font getPopupMenuFont() override;
     juce::Font getComboBoxFont(juce::ComboBox &) override;
 

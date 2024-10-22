@@ -16,6 +16,8 @@ CompactSlider::CompactSlider()
     valueLabel.setEditable(true);
     valueLabel.setFont(
         juce::Font(DelayLinesLookAndFeel::getMonoFont()).withPointHeight(15));
+    valueLabel.setColour(juce::Label::textColourId, juce::Colours::black);
+    numDecimalPlacesToDisplay = 0;
 }
 
 void CompactSlider::setSuffix (const juce::String& _suffix)
@@ -62,5 +64,5 @@ void CompactSlider::editorHidden (juce::Label* label, juce::TextEditor& textEdit
 }
 juce::String CompactSlider::getDisplayText (double rawValue)
 {
-    return juce::String(rawValue) + suffix;
+    return juce::String(rawValue, numDecimalPlacesToDisplay) + suffix;
 }

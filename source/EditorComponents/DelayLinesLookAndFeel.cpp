@@ -15,6 +15,8 @@ DelayLinesLookAndFeel::DelayLinesLookAndFeel()
     setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, juce::Colours::grey);
     setColour(juce::ComboBox::ColourIds::backgroundColourId, juce::Colours::grey.withAlpha(0.2f));
     setColour(juce::ComboBox::ColourIds::textColourId, juce::Colours::black);
+    setColour(juce::Slider::ColourIds::textBoxTextColourId, juce::Colours::black);
+
 }
 void DelayLinesLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
                                             float sliderPos,
@@ -60,4 +62,22 @@ void DelayLinesLookAndFeel::drawGraphPaperBackround (juce::Graphics& g, juce::Po
     for (auto x = std::fmod(offset.x, gridSize) - gridSize; x < component->getWidth() + gridSize; x += gridSize) {
         g.drawVerticalLine(x, 0, component->getHeight());
     }
+}
+void DelayLinesLookAndFeel::drawButtonBackground (juce::Graphics& g, juce::Button& b, const juce::Colour& backgroundColour, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
+{
+    if (shouldDrawButtonAsDown) {
+        g.setColour(juce::Colours::black);
+        g.fillRect(b.getLocalBounds());
+    } else if (shouldDrawButtonAsHighlighted) {
+        g.setColour(juce::Colours::black.withAlpha(0.2f));
+        g.fillRect(b.getLocalBounds());
+    }
+
+    g.setColour(shouldDrawButtonAsHighlighted ? juce::Colours::black : juce::Colours::black.withAlpha(0.5f));
+    g.drawRect(b.getLocalBounds(), 2);
+
+}
+juce::Font DelayLinesLookAndFeel::getTextButtonFont (juce::TextButton&, int buttonHeight)
+{
+    return getMonoFont();
 }

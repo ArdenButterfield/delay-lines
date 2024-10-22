@@ -30,6 +30,8 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     loCutSlider.setNormalisableRange(filterRange);
     hiCutSlider.setNormalisableRange(filterRange);
 
+    loCutSlider.numDecimalPlacesToDisplay = 1;
+    hiCutSlider.numDecimalPlacesToDisplay = 1;
     gainSlider.setRange(0,2);
     gainSlider.setSuffix(" dB");
 
@@ -99,6 +101,8 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
              &copyButton,
              &pasteButton
          }) {
+        button->setColour(juce::TextButton::ColourIds::textColourOnId, juce::Colours::lightgrey);
+        button->setColour(juce::TextButton::ColourIds::textColourOffId, juce::Colours::black);
         addAndMakeVisible(button);
         button->addListener(this);
     }
@@ -135,7 +139,10 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     startTimerHz(60);
 
     gainSlider.setColour(juce::Slider::ColourIds::textBoxTextColourId, juce::Colours::black);
+    gainSlider.numDecimalPlacesToDisplay = 2;
     feedbackSlider.setColour(juce::Slider::ColourIds::textBoxTextColourId, juce::Colours::black);
+
+    setBroughtToFrontOnMouseClick(true);
 }
 
 LineEditor::~LineEditor() {
@@ -159,6 +166,9 @@ void LineEditor::resized()
     copyButton.changeWidthToFitText();
     pasteButton.setBounds(copyButton.getBounds().withX(copyButton.getRight() + 2));
     pasteButton.changeWidthToFitText();
+
+    pasteButton.setBounds(pasteButton.getBounds().withRightX(topBar.getRight() - 2));
+    copyButton.setBounds(copyButton.getBounds().withRightX(pasteButton.getX() - 2));
 
     auto firstColumnInner = firstColumn.withSize(firstColumn.getWidth() - 4, firstColumn.getHeight() - 4);
 

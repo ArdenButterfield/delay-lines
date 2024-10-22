@@ -24,6 +24,7 @@ GraphLineComponent::GraphLineComponent (ModulationMappingEngine& me, DelayGraph&
 
 GraphLineComponent::~GraphLineComponent()
 {
+
 }
 
 void GraphLineComponent::paint (juce::Graphics& g)
@@ -273,17 +274,20 @@ void GraphLineComponent::mouseExit (const juce::MouseEvent& event)
 void GraphLineComponent::mouseUp (const juce::MouseEvent& event)
 {
     if (event.mouseWasClicked() && lineEditor && lineEditor->isVisible()) {
+        lineEditor->setVisible(false);
         playgroundInterface->removeChildComponent(lineEditor.get());
-        lineEditor.reset();
+        // lineEditor.reset();
     } else if (event.mouseWasClicked() && event.mods.isShiftDown()) {
         delayGraph.activeLine->toggleEnabled();
     } else if (event.mouseWasClicked() && event.mods.isRightButtonDown()) {
         delayGraph.interactionState = DelayGraph::none;
         delayGraph.deleteLine(delayGraph.activeLine);
     } else if (event.mouseWasClicked()) {
-        lineEditor = std::make_unique<LineEditor>(mappingEngine, delayGraph, id);
+        if (!lineEditor) {
+            lineEditor = std::make_unique<LineEditor>(mappingEngine, delayGraph, id);
+            lineEditor->setBounds(LineEditor::getDesiredBounds());
+        }
         playgroundInterface->addAndMakeVisible(*lineEditor);
-        lineEditor->setBounds(LineEditor::getDesiredBounds());
     }
 }
 
