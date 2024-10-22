@@ -24,11 +24,12 @@ public:
     void clearMapping(unsigned int index);
     bool isMapped(unsigned int index);
     void parameterChanged(const juce::String &parameterID, float newValue) override;
+    juce::Colour getColourForMapping(unsigned int index);
     const std::vector<juce::String> paramIds;
     juce::AudioProcessorValueTreeState& treeState;
+    DelayGraph& delayGraph;
 private:
     std::vector<std::unique_ptr<ModulatableKey>> mappings;
-    DelayGraph& delayGraph;
     void timerCallback() override;
     void setParametersToInternalState();
 

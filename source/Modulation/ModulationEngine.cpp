@@ -92,3 +92,17 @@ juce::String ModulationEngine::getNameOfMapping(unsigned int index)
         return mappings[index]->getName();
     }
 }
+juce::Colour ModulationEngine::getColourForMapping(unsigned int index)
+{
+    if (mappings[index]) {
+        if (mappings[index]->type == ModulatableKey::Type::line) {
+            auto line = delayGraph.getLine(mappings[index]->pointOrLineId);
+            if (line) {
+                return line->getColor();
+            }
+        } else {
+            return juce::Colours::lightblue; // TODO: do something with points
+        }
+    }
+    return juce::Colours::black.withAlpha(0.f);
+}

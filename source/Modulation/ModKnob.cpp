@@ -41,9 +41,8 @@ ModKnob::~ModKnob()
 
 void ModKnob::paint (juce::Graphics& g)
 {
-    if (mappingEngine->modulationEngine->isMapped(paramIndex)) {
-        g.fillAll(juce::Colours::darkgoldenrod);
-    }
+    g.setColour(mappingEngine->modulationEngine->getColourForMapping(paramIndex));
+    g.fillAll();
 }
 
 void ModKnob::resized()
