@@ -29,7 +29,7 @@ GraphLineComponent::~GraphLineComponent()
 
 void GraphLineComponent::paint (juce::Graphics& g)
 {
-    auto line = delayGraph.getLine(id);
+    line = delayGraph.getLine(id);
     if (!line) {
         return;
     }
@@ -40,106 +40,50 @@ void GraphLineComponent::paint (juce::Graphics& g)
 
 
     auto linesSharingSpace = delayGraph.getAllLinesBetweenPoints(line->start, line->end);
-    bool isHovered = false;
-    auto startPoint = *(line->start) + playgroundInterface->getGlobalOffset();
-    auto endPoint = *(line->end) + playgroundInterface->getGlobalOffset();
-
-
-    if (delayGraph.interactionState == DelayGraph::lineHover && delayGraph.activeLine == line) {
-        isHovered = true;
-        g.setColour(juce::Colours::yellow);
-        if (lineLoopsBack) {
-            g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 10);
-        } else {
-            g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 10);
-        }
-    } else if (delayGraph.interactionState == DelayGraph::editingLine && delayGraph.activeLine == line) {
-        g.setColour(juce::Colours::pink);
-        if (lineLoopsBack) {
-            g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 10);
-        } else {
-            g.drawLine(line->start->x, startPoint.y, endPoint.x, endPoint.y, 10);
-        }
-    }
+    bool isHovered = delayGraph.interactionState == DelayGraph::lineHover && delayGraph.activeLine == line;
+    startPoint = *(line->start) + playgroundInterface->getGlobalOffset();
+    endPoint = *(line->end) + playgroundInterface->getGlobalOffset();
 
     if (line->parameters.isMuted()) {
-        g.setColour(juce::Colours::brown.withAlpha(0.1f));
+        g.setColour(isHovered ? juce::Colours::black.withAlpha(0.3f) : juce::Colours::black.withAlpha(0.1f));
         if (lineLoopsBack) {
             g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
         } else {
-            g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 3);
+            if (linesSharingSpace.size() == 1) {
+            }
         }
         return;
     }
 
-    if (line->parameters.isBypassed()) {
-        g.setColour(juce::Colours::brown.withAlpha(0.5f));
-        if (lineLoopsBack) {
-            g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
-        } else {
-            g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 3);
-        }
-        return;
-    }
-
-    auto lineColourWithHover = isHovered ? line->getColor().withMultipliedLightness(2.0) : line->getColor();
+    auto color = line->parameters.isBypassed() ? juce::Colours::black : line->getColor();
+    auto lineColourWithHover = isHovered ? color.withMultipliedLightness(2.0) : color;
     g.setColour(lineColourWithHover);
 
-
     if (lineLoopsBack) {
-        g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
+        if (line->parameters.isBypassed()) {
+            g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
+        } else {
+            auto linePath = juce::Path();
+            linePath.startNewSubPath(startPoint.translated(0, radius));
+            auto numSteps = 100;
+            for (auto step = 0; step < numSteps; ++step) {
+                float l, r;
+                auto proportion = static_cast<float> (step) / static_cast<float> (numSteps);
+                line->getEnvelope (proportion, l, r);
+                linePath.lineTo (juce::Point<float> (0, juce::dsp::FastMathApproximations::tanh ((l + r) / 2) * loopingBackStep + radius)
+                                     .rotatedAboutOrigin (juce::MathConstants<float>::twoPi * proportion)
+                                 + startPoint);
+            }
+            for (auto step = 0; step < numSteps; ++step) {
+                auto proportion = static_cast<float> (step) / static_cast<float> (numSteps);
+                linePath.lineTo(juce::Point<float>(0, radius)
+                                     .rotatedAboutOrigin(-juce::MathConstants<float>::twoPi * proportion) + startPoint);
+            }
+            linePath.closeSubPath();
+            g.fillPath(linePath);
+        }
     } else {
-        g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 3);
-    }
-
-    if (lineLoopsBack) {
-        auto linePath = juce::Path();
-        linePath.startNewSubPath(startPoint.translated(0, radius));
-        auto numSteps = 100;
-        for (auto step = 0; step < numSteps; ++step) {
-            float l, r;
-            auto proportion = static_cast<float> (step) / static_cast<float> (numSteps);
-            line->getEnvelope (proportion, l, r);
-            linePath.lineTo (juce::Point<float> (0, juce::dsp::FastMathApproximations::tanh ((l + r) / 2) * loopingBackStep + radius)
-                                 .rotatedAboutOrigin (juce::MathConstants<float>::twoPi * proportion)
-                             + startPoint);
-        }
-        for (auto step = 0; step < numSteps; ++step) {
-            auto proportion = static_cast<float> (step) / static_cast<float> (numSteps);
-            linePath.lineTo(juce::Point<float>(0, radius)
-                .rotatedAboutOrigin(-juce::MathConstants<float>::twoPi * proportion) + startPoint);
-        }
-        linePath.closeSubPath();
-        g.fillPath(linePath);
-    } else {
-        auto leftLinePath = juce::Path();
-        auto rightLinePath = juce::Path();
-        auto innerLeftPath = juce::Path();
-        auto innerRightPath = juce::Path();
-        leftLinePath.startNewSubPath(0,-0.005);
-        rightLinePath.startNewSubPath(0,-0.005);
-        innerLeftPath.startNewSubPath(0,-0.005);
-        innerRightPath.startNewSubPath(0,-0.005);
-        float l,r;
-        auto numSteps = static_cast<int>(startPoint.getDistanceFrom({endPoint.x, endPoint.y}));
-        for (auto step = 0; step < numSteps; step += 1) {
-            auto proportion = static_cast<float>(step) / static_cast<float>(numSteps);
-            line->getEnvelope(proportion, l, r);
-            auto window = juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * proportion);
-            leftLinePath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(l * window));
-            rightLinePath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(r * window));
-            innerLeftPath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(l * 0.5f * window));
-            innerRightPath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(r * 0.5f * window));
-        }
-        leftLinePath.lineTo(1,-0.005);
-        rightLinePath.lineTo(1,-0.005);
-        innerLeftPath.lineTo(1,-0.005);
-        innerRightPath.lineTo(1,-0.005);
-        leftLinePath.closeSubPath();
-        rightLinePath.closeSubPath();
-        innerLeftPath.closeSubPath();
-        innerRightPath.closeSubPath();
-
+        makeEnvelopePaths(line->parameters.isBypassed());
         if (linesSharingSpace.size() == 1) {
             g.setColour(lineColourWithHover);
             g.fillPath(leftLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
@@ -163,9 +107,23 @@ void GraphLineComponent::paint (juce::Graphics& g)
                 path.lineTo(1, highY);
                 path.lineTo(1, lowY);
                 path.closeSubPath();
-                auto transform = makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, line->isGoingBackwards());
+                auto transform = makeTransform(startPoint + line->start->offset,
+                    endPoint + line->end->offset, line->isGoingBackwards());
                 g.setColour(lineColourWithHover);
                 g.fillPath(path, transform);
+                g.setColour(line->parameters.isBypassed() ? juce::Colours::white : color.withMultipliedBrightness(0.5f));
+                auto ms = static_cast<float>(juce::Time::currentTimeMillis() % (12 * 100));
+                ms /= 100;
+                std::array<float, 4> dashLengths = {
+                    (ms < 12 / 2) ? ms : 0,
+                    (ms < 12 / 2) ? 12 / 2 : ms - 12 / 2,
+                    (ms < 12 / 2) ? 12 / 2 - ms : 12 / 2,
+                    (ms < 12 / 2) ? 0 : 12 - ms
+                };
+                juce::Point<float> p0 = {0, (lowY + highY) / 2};
+                juce::Point<float> p1 = {1, (lowY + highY) / 2};
+                g.drawDashedLine({p0.transformedBy(transform), p1.transformedBy(transform)},
+                    &(dashLengths[0]), 4, 6);
             } else if ((id == linesSharingSpace[0]) == line->isGoingBackwards()) {
                 auto transform = juce::AffineTransform()
                                      .translated(0, numMiddleLines * preTransformInnerLineWidth * 0.5f)
@@ -191,7 +149,6 @@ void GraphLineComponent::paint (juce::Graphics& g)
 
 void GraphLineComponent::resized()
 {
-    Component::resized();
 }
 
 bool GraphLineComponent::hitTest (int x, int y)
@@ -199,7 +156,7 @@ bool GraphLineComponent::hitTest (int x, int y)
     if (lineEditor && lineEditor->isVisible()) {
         return true;
     }
-    auto line = delayGraph.getLine(id);
+    line = delayGraph.getLine(id);
     if (line == nullptr) {
         return false;
     }
@@ -293,7 +250,7 @@ void GraphLineComponent::mouseUp (const juce::MouseEvent& event)
 
 bool GraphLineComponent::getLoopbackStatus (int& index, float& radius)
 {
-    auto line = delayGraph.getLine(id);
+    line = delayGraph.getLine(id);
     if (!line) {
         return false;
     }
@@ -316,4 +273,43 @@ bool GraphLineComponent::getLoopbackStatus (int& index, float& radius)
         }
     }
     return lineLoopsBack;
+}
+
+void GraphLineComponent::makeEnvelopePaths (bool bypassed)
+{
+    leftLinePath = juce::Path();
+    rightLinePath = juce::Path();
+    innerLeftPath = juce::Path();
+    innerRightPath = juce::Path();
+    leftLinePath.startNewSubPath(0,0);
+    rightLinePath.startNewSubPath(0,0);
+    innerLeftPath.startNewSubPath(0,0);
+    innerRightPath.startNewSubPath(0,0);
+    if (bypassed) {
+        for (auto& path : {&innerLeftPath, &innerRightPath}) {
+            path->lineTo(0, 0.05);
+            path->lineTo(0.8, 0.05);
+            path->lineTo(0.75, 0.3); // Draw one side of an arrow
+        }
+    } else {
+        float l,r;
+        auto numSteps = static_cast<int>(startPoint.getDistanceFrom({endPoint.x, endPoint.y}));
+        for (auto step = 0; step < numSteps; step += 1) {
+            auto proportion = static_cast<float>(step) / static_cast<float>(numSteps);
+            line->getEnvelope(proportion, l, r);
+            auto window = juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * proportion);
+            leftLinePath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(l * window));
+            rightLinePath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(r * window));
+            innerLeftPath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(l * 0.5f * window));
+            innerRightPath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(r * 0.5f * window));
+        }
+    }
+    leftLinePath.lineTo(1,-0.005);
+    rightLinePath.lineTo(1,-0.005);
+    innerLeftPath.lineTo(1,-0.005);
+    innerRightPath.lineTo(1,-0.005);
+    leftLinePath.closeSubPath();
+    rightLinePath.closeSubPath();
+    innerLeftPath.closeSubPath();
+    innerRightPath.closeSubPath();
 }

@@ -8,6 +8,7 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 
 class LineEditor;
+class GraphLine;
 class DelayGraph;
 class PlaygroundInterface;
 class ModulationMappingEngine;
@@ -39,6 +40,16 @@ private:
     ModulationMappingEngine& mappingEngine;
 
     bool getLoopbackStatus(int& index, float& radius);
+
+    void makeEnvelopePaths(bool bypassed);
+
+    GraphLine* line;
+    juce::Point<float> startPoint, endPoint;
+    juce::Path leftLinePath;
+    juce::Path rightLinePath;
+    juce::Path innerLeftPath;
+    juce::Path innerRightPath;
+    juce::Path bypassArrow;
 };
 
 #endif //DELAYLINES_GRAPHLINECOMPONENT_H

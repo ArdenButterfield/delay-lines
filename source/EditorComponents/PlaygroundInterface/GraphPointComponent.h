@@ -48,8 +48,8 @@ private:
     void mouseDoubleClick(const juce::MouseEvent &event) override;
     void updateFocus(const juce::Point<float>& mousePoint);
     std::unique_ptr<LineGhostComponent> ghostComponent;
-    const int innerHoverDistance = 5;
-    const int outerHoverDistance = 10;
+    const int innerHoverDistance = 12;
+    const int outerHoverDistance = 19;
     ModulationMappingEngine& mappingEngine;
 
     ModOverlayButton xMod, yMod;

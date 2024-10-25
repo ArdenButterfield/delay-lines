@@ -23,17 +23,25 @@ void GraphPointComponent::paint (juce::Graphics& g) {
         return;
     }
 
-    auto pointWithOffset = *point + playgroundInterface->getGlobalOffset();
+    auto pointWithOffset = *point + playgroundInterface->getGlobalOffset() + point->offset;
 
-    if (point == delayGraph.lineInProgressEndPoint) {
+    if (delayGraph.interactionState == DelayGraph::creatingLine && point == delayGraph.lineInProgressEndPoint) {
         g.setColour(juce::Colours::green);
-        g.fillEllipse(pointWithOffset.x - 10, pointWithOffset.y - 10, 20, 20);
+        g.fillEllipse(
+            pointWithOffset.x - outerHoverDistance,
+            pointWithOffset.y - outerHoverDistance,
+            outerHoverDistance * 2,
+            outerHoverDistance * 2);
     }
 
     if (point == delayGraph.activePoint) {
         if (delayGraph.interactionState == DelayGraph::outerSelected) {
             g.setColour(juce::Colours::blue);
-            g.fillEllipse(pointWithOffset.x - 10, pointWithOffset.y - 10, 20, 20);
+            g.fillEllipse(
+                pointWithOffset.x - outerHoverDistance,
+                pointWithOffset.y - outerHoverDistance,
+                outerHoverDistance * 2,
+                outerHoverDistance * 2);
             g.setColour(juce::Colours::brown);
 
         } else if (delayGraph.interactionState == DelayGraph::movingPoint) {
@@ -42,16 +50,22 @@ void GraphPointComponent::paint (juce::Graphics& g) {
             g.setColour(juce::Colours::orangered);
         }
     } else if (point->pointType == GraphPoint::start) {
-        g.setColour(juce::Colours::green);
+        g.setColour(juce::Colours::green.withAlpha(0.5f));
     } else if (point->pointType == GraphPoint::end) {
         g.setColour (juce::Colours::red);
     } else {
-        g.setColour(juce::Colours::brown);
+        g.setColour(juce::Colours::black);
     }
-    g.drawEllipse(pointWithOffset.x - 5, pointWithOffset.y - 5, 10, 10, 3);
-    if (point->offset.getDistanceSquaredFromOrigin() > 0) {
-        g.setColour(juce::Colours::magenta);
-        g.drawEllipse(pointWithOffset.x + point->offset.x - 5, pointWithOffset.y + point->offset.y - 5, 10, 10, 3);
+    g.drawEllipse(pointWithOffset.x - innerHoverDistance,
+        pointWithOffset.y - innerHoverDistance,
+        innerHoverDistance * 2,
+        innerHoverDistance * 2, 3);
+    if (point == delayGraph.activePoint && delayGraph.interactionState == DelayGraph::innerSelected) {
+        g.setColour(juce::Colours::black.withAlpha(0.2f));
+        g.fillEllipse(pointWithOffset.x - innerHoverDistance,
+            pointWithOffset.y - innerHoverDistance,
+            innerHoverDistance * 2,
+            innerHoverDistance * 2);
     }
     xMod.setBounds(pointWithOffset.x - 20, pointWithOffset.y - 5, 40, 10);
     yMod.setBounds(pointWithOffset.x - 5, pointWithOffset.y - 20, 10, 40);
@@ -70,7 +84,7 @@ bool GraphPointComponent::hitTest (int x, int y) {
     auto point = delayGraph.getPoint(identifier);
     if (point != nullptr) {
         auto distance = point->getDistanceSquaredFrom({static_cast<float>(x), static_cast<float>(y)});
-        return distance < 10 * 10;
+        return distance < outerHoverDistance * outerHoverDistance;
     }
     return false;
 }
