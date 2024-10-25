@@ -33,7 +33,6 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     loCutSlider.numDecimalPlacesToDisplay = 1;
     hiCutSlider.numDecimalPlacesToDisplay = 1;
     gainSlider.setRange(0,2);
-    gainSlider.setSuffix(" dB");
 
     gainEnvelopeFollowSlider.setRange(-1,1);
 
@@ -48,8 +47,8 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     copyButton.setButtonText("Copy");
     pasteButton.setButtonText("Paste");
 
-    feedbackSlider.setRange(0,1);
-    feedbackSlider.setSuffix(" %");
+    feedbackSlider.setRange(0,120);
+    feedbackSlider.setSuffix("%");
 
     for (auto slider : {
              &timeEnvelopeFollowSlider,

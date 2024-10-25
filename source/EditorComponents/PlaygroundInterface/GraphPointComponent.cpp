@@ -26,46 +26,54 @@ void GraphPointComponent::paint (juce::Graphics& g) {
     auto pointWithOffset = *point + playgroundInterface->getGlobalOffset() + point->offset;
 
     if (delayGraph.interactionState == DelayGraph::creatingLine && point == delayGraph.lineInProgressEndPoint) {
-        g.setColour(juce::Colours::green);
-        g.fillEllipse(
-            pointWithOffset.x - outerHoverDistance,
-            pointWithOffset.y - outerHoverDistance,
-            outerHoverDistance * 2,
-            outerHoverDistance * 2);
+        auto rad = static_cast<float>(juce::Time::currentTimeMillis() % 700) / 700;
+        rad = 1 - rad;
+        g.setColour(juce::Colours::grey.withAlpha(1.f - rad));
+        auto coronaWidth = outerHoverDistance - innerHoverDistance;
+        g.drawEllipse(pointWithOffset.x - innerHoverDistance - coronaWidth * rad,
+            pointWithOffset.y - innerHoverDistance - coronaWidth * rad,
+            (innerHoverDistance + coronaWidth * rad) * 2,
+            (innerHoverDistance + coronaWidth * rad) * 2,
+            rad * coronaWidth + 1);
     }
 
     if (point == delayGraph.activePoint) {
         if (delayGraph.interactionState == DelayGraph::outerSelected) {
-            g.setColour(juce::Colours::blue);
-            g.fillEllipse(
-                pointWithOffset.x - outerHoverDistance,
-                pointWithOffset.y - outerHoverDistance,
-                outerHoverDistance * 2,
-                outerHoverDistance * 2);
-            g.setColour(juce::Colours::brown);
-
-        } else if (delayGraph.interactionState == DelayGraph::movingPoint) {
-            g.setColour(juce::Colours::black);
-        } else {
-            g.setColour(juce::Colours::orangered);
+            auto rad = static_cast<float>(juce::Time::currentTimeMillis() % 700) / 700;
+            g.setColour(juce::Colours::grey.withAlpha(1.f - rad));
+            auto coronaWidth = outerHoverDistance - innerHoverDistance;
+            g.drawEllipse(pointWithOffset.x - innerHoverDistance - coronaWidth * rad,
+                 pointWithOffset.y - innerHoverDistance - coronaWidth * rad,
+                 (innerHoverDistance + coronaWidth * rad) * 2,
+                 (innerHoverDistance + coronaWidth * rad) * 2,
+                rad * coronaWidth + 1);
         }
-    } else if (point->pointType == GraphPoint::start) {
-        g.setColour(juce::Colours::green.withAlpha(0.5f));
-    } else if (point->pointType == GraphPoint::end) {
-        g.setColour (juce::Colours::red);
-    } else {
-        g.setColour(juce::Colours::black);
     }
+    g.setColour(juce::Colours::black);
     g.drawEllipse(pointWithOffset.x - innerHoverDistance,
         pointWithOffset.y - innerHoverDistance,
         innerHoverDistance * 2,
         innerHoverDistance * 2, 3);
-    if (point == delayGraph.activePoint && delayGraph.interactionState == DelayGraph::innerSelected) {
+    if (point == delayGraph.activePoint &&
+        (delayGraph.interactionState == DelayGraph::innerSelected
+        || delayGraph.interactionState == DelayGraph::movingPoint
+        || delayGraph.interactionState == DelayGraph::stretchingPoint)) {
         g.setColour(juce::Colours::black.withAlpha(0.2f));
         g.fillEllipse(pointWithOffset.x - innerHoverDistance,
             pointWithOffset.y - innerHoverDistance,
             innerHoverDistance * 2,
             innerHoverDistance * 2);
+    }
+
+    if (point->pointType == GraphPoint::start || point->pointType == GraphPoint::end) {
+        auto color = point->pointType == GraphPoint::start ? juce::Colours::green : juce::Colours::orangered;
+        auto rad = static_cast<float>(juce::Time::currentTimeMillis() % 2000) / 2000;
+        rad = point->pointType == GraphPoint::start ? rad : 1 - rad;
+        g.setColour(color.withAlpha(1 - rad));
+        g.fillEllipse(pointWithOffset.x - innerHoverDistance * rad,
+            pointWithOffset.y - innerHoverDistance * rad,
+            innerHoverDistance * 2 * rad,
+            innerHoverDistance * 2 * rad);
     }
     xMod.setBounds(pointWithOffset.x - 20, pointWithOffset.y - 5, 40, 10);
     yMod.setBounds(pointWithOffset.x - 5, pointWithOffset.y - 20, 10, 40);

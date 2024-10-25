@@ -107,7 +107,7 @@ void GraphLine::pushSample (std::vector<float>& sample)
     auto val = std::vector<float>(numChannels);
 
     for (unsigned channel = 0; channel < numChannels; ++channel) {
-        val[channel] = sample[channel] + parameters.feedback * lastSample[channel];
+        val[channel] = sample[channel] + parameters.feedback / 100 * lastSample[channel];
     }
 
     delayLineInternal->pushSample(val);

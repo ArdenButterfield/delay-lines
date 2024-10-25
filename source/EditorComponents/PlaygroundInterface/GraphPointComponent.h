@@ -17,7 +17,7 @@ class LineGhostComponent : public juce::Component
 public:
     LineGhostComponent(juce::Point<float> _start, juce::Point<float> _end) : start(_start), end(_end) {}
     void paint(juce::Graphics &g) override {
-        g.setColour(juce::Colours::green);
+        g.setColour(juce::Colours::grey);
         if (start == end) {
             g.drawEllipse(start.x - 20, start.y - 20, 40, 40, 2);
         }
