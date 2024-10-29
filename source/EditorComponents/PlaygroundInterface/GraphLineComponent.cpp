@@ -112,18 +112,9 @@ void GraphLineComponent::paint (juce::Graphics& g)
                 g.setColour(lineColourWithHover);
                 g.fillPath(path, transform);
                 g.setColour(line->parameters.isBypassed() ? juce::Colours::white : color.withMultipliedBrightness(0.5f));
-                auto ms = static_cast<float>(juce::Time::currentTimeMillis() % (12 * 100));
-                ms /= 100;
-                std::array<float, 4> dashLengths = {
-                    (ms < 12 / 2) ? ms : 0,
-                    (ms < 12 / 2) ? 12 / 2 : ms - 12 / 2,
-                    (ms < 12 / 2) ? 12 / 2 - ms : 12 / 2,
-                    (ms < 12 / 2) ? 0 : 12 - ms
-                };
                 juce::Point<float> p0 = {0, (lowY + highY) / 2};
                 juce::Point<float> p1 = {1, (lowY + highY) / 2};
-                g.drawDashedLine({p0.transformedBy(transform), p1.transformedBy(transform)},
-                    &(dashLengths[0]), 4, 6);
+                DelayLinesLookAndFeel::drawAdvancingDashedLine(g, {p0.transformedBy(transform), p1.transformedBy(transform)}, line->parameters.isStagnated() ? 0 : 0.5, 6);
             } else if ((id == linesSharingSpace[0]) == line->isGoingBackwards()) {
                 auto transform = juce::AffineTransform()
                                      .translated(0, numMiddleLines * preTransformInnerLineWidth * 0.5f)

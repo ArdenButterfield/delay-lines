@@ -81,3 +81,33 @@ juce::Font DelayLinesLookAndFeel::getTextButtonFont (juce::TextButton&, int butt
 {
     return getMonoFont();
 }
+
+void DelayLinesLookAndFeel::drawAdvancingDashedLine (juce::Graphics& g, juce::Line<float> line, float speed, float thickness)
+{
+    // based on juce drawDashedLine
+
+    auto advancement = juce::approximatelyEqual(speed, 0.f) ? 0 : 1 - fmod(static_cast<double>(juce::Time::currentTimeMillis()) / (1000.0 / speed), 1.);
+
+    const auto delta ((line.getEnd() - line.getStart()).toDouble());
+    const auto totalLen = delta.getDistanceFromOrigin();
+
+    const auto segmentLength = 20.0;
+    const auto amountOfSegmentToHighlight = 0.5;
+
+    auto segmentAdvance = segmentLength / totalLen;
+    if (totalLen >= 0.1) {
+        for (double alpha = 0; alpha < 1;) {
+            jassert(0 <= advancement && advancement <= 1);
+            if (advancement >= amountOfSegmentToHighlight) {
+                alpha += segmentAdvance * (1 - advancement);
+                advancement = 0;
+            } else {
+                auto newalpha = std::min(alpha + segmentAdvance * (amountOfSegmentToHighlight - advancement), 1.0);
+                g.drawLine({line.getStart() + (delta * alpha).toFloat(), line.getStart() + (delta * (newalpha)).toFloat()},
+                    thickness);
+                alpha = newalpha;
+                advancement = amountOfSegmentToHighlight;
+            }
+        }
+    }
+}

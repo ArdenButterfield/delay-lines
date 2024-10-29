@@ -24,6 +24,7 @@ public:
 
     static void drawGraphPaperBackround(juce::Graphics& g, juce::Point<float> offset, juce::Component* component);
     static const float getGraphPaperGridSize() { return 20.f; }
+    static void drawAdvancingDashedLine(juce::Graphics& g, juce::Line<float> line, float speed /* pixels per second */, float thickness);
 };
 
 #endif //DELAYLINES_DELAYLINESLOOKANDFEEL_H

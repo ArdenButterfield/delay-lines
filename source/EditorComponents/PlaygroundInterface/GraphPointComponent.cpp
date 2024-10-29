@@ -25,35 +25,54 @@ void GraphPointComponent::paint (juce::Graphics& g) {
 
     auto pointWithOffset = *point + playgroundInterface->getGlobalOffset() + point->offset;
 
+    bool shouldDrawPointBig = false;
+
     if (delayGraph.interactionState == DelayGraph::creatingLine && point == delayGraph.lineInProgressEndPoint) {
         auto rad = static_cast<float>(juce::Time::currentTimeMillis() % 700) / 700;
         rad = 1 - rad;
-        g.setColour(juce::Colours::grey.withAlpha(1.f - rad));
+        g.setColour(juce::Colours::yellow.withAlpha(0.5f));
         auto coronaWidth = outerHoverDistance - innerHoverDistance;
+        g.drawEllipse(pointWithOffset.x - outerHoverDistance,
+            pointWithOffset.y - outerHoverDistance,
+            outerHoverDistance * 2,
+            outerHoverDistance * 2,
+            coronaWidth + 1);
+        g.setColour(juce::Colours::grey.withAlpha(1.f - rad));
         g.drawEllipse(pointWithOffset.x - innerHoverDistance - coronaWidth * rad,
             pointWithOffset.y - innerHoverDistance - coronaWidth * rad,
             (innerHoverDistance + coronaWidth * rad) * 2,
             (innerHoverDistance + coronaWidth * rad) * 2,
             rad * coronaWidth + 1);
+
+        shouldDrawPointBig = true;
     }
 
-    if (point == delayGraph.activePoint) {
-        if (delayGraph.interactionState == DelayGraph::outerSelected) {
-            auto rad = static_cast<float>(juce::Time::currentTimeMillis() % 700) / 700;
-            g.setColour(juce::Colours::grey.withAlpha(1.f - rad));
-            auto coronaWidth = outerHoverDistance - innerHoverDistance;
-            g.drawEllipse(pointWithOffset.x - innerHoverDistance - coronaWidth * rad,
-                 pointWithOffset.y - innerHoverDistance - coronaWidth * rad,
-                 (innerHoverDistance + coronaWidth * rad) * 2,
-                 (innerHoverDistance + coronaWidth * rad) * 2,
-                rad * coronaWidth + 1);
-        }
+    if ((point == delayGraph.activePoint) && (delayGraph.interactionState == DelayGraph::outerSelected)) {
+        auto rad = static_cast<float>(juce::Time::currentTimeMillis() % 700) / 700;
+        g.setColour(juce::Colours::grey.withAlpha(1.f - rad));
+        g.setColour(juce::Colours::yellow.withAlpha(0.5f));
+        auto coronaWidth = outerHoverDistance - innerHoverDistance;
+        g.drawEllipse(pointWithOffset.x - outerHoverDistance,
+            pointWithOffset.y - outerHoverDistance,
+            outerHoverDistance * 2,
+            outerHoverDistance * 2,
+            coronaWidth + 1);
+        g.drawEllipse(pointWithOffset.x - innerHoverDistance - coronaWidth * rad,
+             pointWithOffset.y - innerHoverDistance - coronaWidth * rad,
+             (innerHoverDistance + coronaWidth * rad) * 2,
+             (innerHoverDistance + coronaWidth * rad) * 2,
+            rad * coronaWidth + 1);
+
+        shouldDrawPointBig = true;
     }
     g.setColour(juce::Colours::black);
+    if (point == delayGraph.activePoint && delayGraph.interactionState == DelayGraph::innerSelected) {
+        shouldDrawPointBig = true;
+    }
     g.drawEllipse(pointWithOffset.x - innerHoverDistance,
         pointWithOffset.y - innerHoverDistance,
         innerHoverDistance * 2,
-        innerHoverDistance * 2, 3);
+        innerHoverDistance * 2, shouldDrawPointBig ? 4 : 2);
     if (point == delayGraph.activePoint &&
         (delayGraph.interactionState == DelayGraph::innerSelected
         || delayGraph.interactionState == DelayGraph::movingPoint
