@@ -20,6 +20,9 @@ static juce::AffineTransform makeTransform(juce::Point<float> start, juce::Point
 
 GraphLineComponent::GraphLineComponent (ModulationMappingEngine& me, DelayGraph& _delayGraph, PlaygroundInterface* _playgroundInterface, int _id)
     : playgroundInterface(_playgroundInterface), delayGraph(_delayGraph), id(_id), mappingEngine(me) {
+    lineWidth.prepare({60, 128, 1});
+    lineWidth.setAttackTime(50);
+    lineWidth.setReleaseTime(300);
 }
 
 GraphLineComponent::~GraphLineComponent()
@@ -83,7 +86,7 @@ void GraphLineComponent::paint (juce::Graphics& g)
             g.fillPath(linePath);
         }
     } else {
-        makeEnvelopePaths(line->parameters.isBypassed());
+        makeEnvelopePaths(line->parameters.isBypassed(), lineWidth.processSample(0, isHovered ? 1.5 : 1));
         if (linesSharingSpace.size() == 1) {
             g.setColour(lineColourWithHover);
             g.fillPath(leftLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
@@ -266,7 +269,7 @@ bool GraphLineComponent::getLoopbackStatus (int& index, float& radius)
     return lineLoopsBack;
 }
 
-void GraphLineComponent::makeEnvelopePaths (bool bypassed)
+void GraphLineComponent::makeEnvelopePaths (bool bypassed, float scale)
 {
     leftLinePath = juce::Path();
     rightLinePath = juce::Path();
@@ -289,10 +292,10 @@ void GraphLineComponent::makeEnvelopePaths (bool bypassed)
             auto proportion = static_cast<float>(step) / static_cast<float>(numSteps);
             line->getEnvelope(proportion, l, r);
             auto window = juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * proportion);
-            leftLinePath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(l * window));
-            rightLinePath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(r * window));
-            innerLeftPath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(l * 0.5f * window));
-            innerRightPath.lineTo(proportion, juce::dsp::FastMathApproximations::tanh(r * 0.5f * window));
+            leftLinePath.lineTo(proportion, juce::jmax(juce::dsp::FastMathApproximations::tanh(l * window) * scale, 0.01f));
+            rightLinePath.lineTo(proportion, juce::jmax(juce::dsp::FastMathApproximations::tanh(r * window) * scale, 0.01f));
+            innerLeftPath.lineTo(proportion, juce::jmax(juce::dsp::FastMathApproximations::tanh(l * 0.5f * window) * scale, 0.01f));
+            innerRightPath.lineTo(proportion, juce::jmax(juce::dsp::FastMathApproximations::tanh(r * 0.5f * window) * scale, 0.01f));
         }
     }
     leftLinePath.lineTo(1,-0.005);

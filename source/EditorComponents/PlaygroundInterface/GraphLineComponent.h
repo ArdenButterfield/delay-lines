@@ -6,7 +6,7 @@
 #define DELAYLINES_GRAPHLINECOMPONENT_H
 
 #include "juce_gui_basics/juce_gui_basics.h"
-
+#include "juce_dsp/juce_dsp.h"
 class LineEditor;
 class GraphLine;
 class DelayGraph;
@@ -41,7 +41,7 @@ private:
 
     bool getLoopbackStatus(int& index, float& radius);
 
-    void makeEnvelopePaths(bool bypassed);
+    void makeEnvelopePaths(bool bypassed, float scale=1);
 
     GraphLine* line;
     juce::Point<float> startPoint, endPoint;
@@ -50,6 +50,8 @@ private:
     juce::Path innerLeftPath;
     juce::Path innerRightPath;
     juce::Path bypassArrow;
+
+    juce::dsp::BallisticsFilter<double> lineWidth;
 };
 
 #endif //DELAYLINES_GRAPHLINECOMPONENT_H
