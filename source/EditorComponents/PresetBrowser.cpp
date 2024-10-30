@@ -3,7 +3,7 @@
 //
 
 #include "PresetBrowser.h"
-
+#include "DelayLinesLookAndFeel.h"
 
 PresetBrowser::PresetBrowser(DelayGraph& dg) : delayGraph(dg), presets(juce::parseXML(
 #include "../presets/defaults.xml"
@@ -17,6 +17,12 @@ PresetBrowser::PresetBrowser(DelayGraph& dg) : delayGraph(dg), presets(juce::par
         auto& name = child->getStringAttribute("name");
         presetMenu.addItem(name.isNotEmpty() ? name : "[untitled]", i + 1);
     }
+
+    titleLabel.setText("Presets", juce::dontSendNotification);
+    titleLabel.setFont(juce::Font(DelayLinesLookAndFeel::getMonoFont()).withHeight(16.0f));
+    titleLabel.setColour(juce::Label::textColourId, juce::Colours::black);
+    titleLabel.setJustificationType(juce::Justification::centredLeft);
+    addAndMakeVisible(titleLabel);
 }
 
 PresetBrowser::~PresetBrowser()
@@ -24,12 +30,13 @@ PresetBrowser::~PresetBrowser()
 
 void PresetBrowser::paint(juce::Graphics &g)
 {
-    g.fillAll(juce::Colours::magenta);
+    g.fillAll(juce::Colours::lightgrey);
 }
 
 void PresetBrowser::resized()
 {
-    presetMenu.setBounds(5, 5, getWidth() - 10, 30);
+    titleLabel.setBounds(getLocalBounds().withWidth(90));
+    presetMenu.setBounds(getLocalBounds().reduced(3).withLeft(titleLabel.getRight()));
 }
 
 void PresetBrowser::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)

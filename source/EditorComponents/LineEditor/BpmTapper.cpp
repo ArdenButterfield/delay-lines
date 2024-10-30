@@ -18,8 +18,8 @@ void BpmTapper::paint (juce::Graphics& g)
     auto rawElapsed = juce::Time::currentTimeMillis() - lastTap;
     if (rawElapsed < timeoutInterval) {
         auto amountElapsed = 1 - static_cast<float>(rawElapsed) / timeoutInterval;
-        g.setColour(juce::Colours::grey.withAlpha(0.3f));
-        auto radius = getWidth() * amountElapsed * 0.5f;
+        g.setColour(juce::Colours::darkgrey.withAlpha(0.3f));
+        auto radius = getWidth() * std::pow(amountElapsed, 4.f) * 0.5f;
         g.fillEllipse(getWidth() / 2.f - radius, getHeight() / 2.f - radius, radius * 2, radius * 2);
     }
     auto backgroundAlpha = 1 - static_cast<float>(rawElapsed) / 300;

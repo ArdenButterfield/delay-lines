@@ -35,6 +35,16 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(modKnobs);
     addAndMakeVisible(playgroundInterface);
     addChildComponent(modularInterface);
+
+    addAndMakeVisible(titleGraphic);
+
+    mixLabel.setText("Mix", juce::dontSendNotification);
+    stretchLabel.setText("Stretch speed", juce::dontSendNotification);
+    mixLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::black);
+    stretchLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::black);
+    addAndMakeVisible(mixLabel);
+    addAndMakeVisible(stretchLabel);
+
     setResizable(true, false);
     setResizeLimits(500,500,10000,10000);
     // Make sure that before the constructor has finished, you've set the
@@ -49,23 +59,35 @@ PluginEditor::~PluginEditor() {
 void PluginEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colours::lightgrey.withMultipliedBrightness(0.8f));
+    g.setColour(juce::Colours::lightgrey);
+    g.fillRect(mixArea);
+    g.fillRect(stretchArea);
 }
 
 void PluginEditor::resized()
 {
     // layout the positions of your child components here
-    playgroundInterface.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 150).withTrimmedBottom(20));
+    topStrip = getLocalBounds().withHeight(100).reduced(10);
+    titleGraphic.setBounds(topStrip.withWidth(150));
+    switchInterface.setBounds(topStrip.withX(titleGraphic.getRight() + 10).withWidth(topStrip.getHeight() / 2));
+    mixArea = topStrip.withWidth(60).withRightX(topStrip.getRight());
+    mixSlider.setBounds(mixArea.withHeight(stretchArea.getHeight() / 2));
+    mixLabel.setBounds(mixArea.withTrimmedTop(mixSlider.getBottom()));
+    stretchArea = mixArea.withRightX(mixSlider.getX() - 10);
+    stretchTimeSlider.setBounds(stretchArea.withHeight(stretchArea.getHeight() / 2));
+    stretchLabel.setBounds(stretchArea.withTrimmedTop(stretchTimeSlider.getBottom()));
 
+    presetBrowser.setBounds(topStrip.withX(switchInterface.getRight() + 10).withHeight(topStrip.getHeight() / 2).withRight(stretchTimeSlider.getX() - 10));
+    clearLinesButton.setBounds(presetBrowser.getBounds().withBottomY(topStrip.getBottom()));
+
+    playgroundInterface.setBounds(getLocalBounds()
+                                       .withTrimmedTop(topStrip.getBottom() + 10)
+                                       .withTrimmedBottom(80)
+                                       .withTrimmedRight(10)
+                                       .withTrimmedLeft(10));
+    modularInterface.setBounds(playgroundInterface.getBounds());
 
     modKnobs.setBounds(getLocalBounds().withTop(playgroundInterface.getBottom()).reduced(10));
-    switchInterface.setBounds(10,10, 100, 30);
-    presetBrowser.setBounds(150, 10, 200, 60);
-//    modulatorOverlayButton.setBounds(360, 10, 100, 30);
-    clearLinesButton.setBounds(360, 10, 100, 30);
-    mixSlider.setBounds(470, 10, 100, 30);
-    stretchTimeSlider.setBounds(mixSlider.getBounds().withX(mixSlider.getRight() + 10));
-
-    modularInterface.setBounds(playgroundInterface.getBounds());
 }
 
 void PluginEditor::buttonClicked (juce::Button* button)

@@ -22,6 +22,7 @@ private:
     void comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) override;
     DelayGraph& delayGraph;
     std::unique_ptr<juce::XmlElement> presets;
+    juce::Label titleLabel;
 };
 
 #endif //DELAYLINES_PRESETBROWSER_H

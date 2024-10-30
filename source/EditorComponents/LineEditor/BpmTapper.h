@@ -29,7 +29,7 @@ private:
 
     std::vector<juce::int64> millisecondIntervals;
     juce::int64 lastTap;
-    juce::int64 timeoutInterval = 4 * 1000;
+    juce::int64 timeoutInterval = 3 * 1000;
     std::set<Listener*> listeners;
 };
 

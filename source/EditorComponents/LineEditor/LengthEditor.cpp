@@ -77,7 +77,7 @@ void LengthEditor::resized()
 
 void LengthEditor::paint (juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::mediumaquamarine);
+    g.fillAll(juce::Colours::grey.withAlpha(0.3f));
 }
 
 void LengthEditor::timerCallback()
