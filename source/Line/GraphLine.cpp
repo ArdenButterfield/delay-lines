@@ -36,11 +36,8 @@ GraphLine::GraphLine (GraphPoint* _start, GraphPoint* _end, juce::XmlElement* el
 juce::Colour GraphLine::getRandomColour()
 {
     auto random = juce::Random();
-    return {
-        random.nextFloat(),
-        1.0f,
-        random.nextFloat() * 0.3f + 0.7f,
-        1.0f};
+    auto saturation = 1 - std::pow(random.nextFloat(), 2.f);
+    return juce::Colour::fromHSL(random.nextFloat(), saturation, 0.5f, 1.f);
 }
 
 

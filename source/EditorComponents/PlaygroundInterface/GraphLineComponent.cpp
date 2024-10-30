@@ -59,7 +59,7 @@ void GraphLineComponent::paint (juce::Graphics& g)
     }
 
     auto color = line->parameters.isBypassed() ? juce::Colours::black : line->getColor();
-    auto lineColourWithHover = isHovered ? color.withMultipliedLightness(2.0) : color;
+    auto lineColourWithHover = isHovered ? color.withMultipliedLightness(1.5) : color;
     g.setColour(lineColourWithHover);
 
     if (lineLoopsBack) {

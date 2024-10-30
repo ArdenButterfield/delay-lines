@@ -31,6 +31,8 @@ ModKnob::ModKnob (ModulationMappingEngine* me, juce::String paramId, const int _
     slider->setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     slider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
 
+    slider->setColour(slider->thumbColourId, juce::Colours::red.withRotatedHue(paramIndex / 10.f));
+
     startTimerHz(30);
 }
 
@@ -47,7 +49,7 @@ void ModKnob::paint (juce::Graphics& g)
 
 void ModKnob::resized()
 {
-    slider->setBounds(getLocalBounds().withHeight(getHeight() - 30));
+    slider->setBounds(getLocalBounds().withHeight(getHeight() - 20));
     mapButton->setBounds(getLocalBounds().withTrimmedTop(getHeight() - 30));
     unmapButton->setBounds(mapButton->getBounds());
     mappingLabel.setBounds(unmapButton->getBounds());

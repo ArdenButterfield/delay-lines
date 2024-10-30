@@ -30,7 +30,7 @@ void GraphPointComponent::paint (juce::Graphics& g) {
     if (delayGraph.interactionState == DelayGraph::creatingLine && point == delayGraph.lineInProgressEndPoint) {
         auto rad = static_cast<float>(juce::Time::currentTimeMillis() % 700) / 700;
         rad = 1 - rad;
-        g.setColour(juce::Colours::yellow.withAlpha(0.5f));
+        g.setColour(juce::Colours::orangered.withAlpha(0.5f));
         auto coronaWidth = outerHoverDistance - innerHoverDistance;
         g.drawEllipse(pointWithOffset.x - outerHoverDistance,
             pointWithOffset.y - outerHoverDistance,
@@ -42,14 +42,14 @@ void GraphPointComponent::paint (juce::Graphics& g) {
             pointWithOffset.y - innerHoverDistance - coronaWidth * rad,
             (innerHoverDistance + coronaWidth * rad) * 2,
             (innerHoverDistance + coronaWidth * rad) * 2,
-            rad * coronaWidth + 1);
+            rad * coronaWidth + 4);
 
         shouldDrawPointBig = true;
     }
 
     if ((point == delayGraph.activePoint) && (delayGraph.interactionState == DelayGraph::outerSelected)) {
         auto rad = static_cast<float>(juce::Time::currentTimeMillis() % 700) / 700;
-        g.setColour(juce::Colours::yellow.withAlpha(0.5f));
+        g.setColour(juce::Colours::green.withAlpha(0.5f));
         auto coronaWidth = outerHoverDistance - innerHoverDistance;
         g.drawEllipse(pointWithOffset.x - outerHoverDistance,
             pointWithOffset.y - outerHoverDistance,
@@ -61,7 +61,7 @@ void GraphPointComponent::paint (juce::Graphics& g) {
              pointWithOffset.y - innerHoverDistance - coronaWidth * rad,
              (innerHoverDistance + coronaWidth * rad) * 2,
              (innerHoverDistance + coronaWidth * rad) * 2,
-            rad * coronaWidth + 1);
+            rad * coronaWidth + 4);
 
         shouldDrawPointBig = true;
     }
@@ -88,7 +88,7 @@ void GraphPointComponent::paint (juce::Graphics& g) {
         auto color = point->pointType == GraphPoint::start ? juce::Colours::green : juce::Colours::orangered;
         auto rad = static_cast<float>(juce::Time::currentTimeMillis() % 2000) / 2000;
         rad = point->pointType == GraphPoint::start ? rad : 1 - rad;
-        g.setColour(color.withAlpha(1 - rad));
+        g.setColour(color.withAlpha(std::sqrt(1 - rad)));
         g.fillEllipse(pointWithOffset.x - innerHoverDistance * rad,
             pointWithOffset.y - innerHoverDistance * rad,
             innerHoverDistance * 2 * rad,

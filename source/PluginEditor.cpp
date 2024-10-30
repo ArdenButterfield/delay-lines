@@ -48,17 +48,16 @@ PluginEditor::~PluginEditor() {
 
 void PluginEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll (juce::Colours::lightgrey.withMultipliedBrightness(0.8f));
 }
 
 void PluginEditor::resized()
 {
     // layout the positions of your child components here
-    playgroundInterface.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 150));
+    playgroundInterface.setBounds(getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 150).withTrimmedBottom(20));
 
 
-    modKnobs.setBounds(getLocalBounds().withTop(playgroundInterface.getBottom() + 10));
+    modKnobs.setBounds(getLocalBounds().withTop(playgroundInterface.getBottom()).reduced(10));
     switchInterface.setBounds(10,10, 100, 30);
     presetBrowser.setBounds(150, 10, 200, 60);
 //    modulatorOverlayButton.setBounds(360, 10, 100, 30);
