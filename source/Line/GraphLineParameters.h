@@ -143,6 +143,8 @@ struct DelayLength {
     void exportToXml(juce::XmlElement* parent);
     bool importFromXml(juce::XmlElement* parent);
 
+    bool modulateIfPossible(ModulatableKey& key, float newValue);
+    bool getModulationValue (ModulatableKey& key, float& val);
 private:
     Mode mode;
 

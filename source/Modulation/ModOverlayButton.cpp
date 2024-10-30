@@ -21,8 +21,25 @@ void ModOverlayButton::mappingModeExited()
 }
 void ModOverlayButton::paint (juce::Graphics& g)
 {
-    g.setColour(isMouseOver() ? overColor : bgColor);
-    g.fillAll();
+    auto brackets = juce::Path();
+    brackets.startNewSubPath(10, 0);
+    brackets.lineTo(0,0);
+    brackets.lineTo(0, getHeight());
+    brackets.lineTo(10, getHeight());
+
+    brackets.startNewSubPath(getWidth() - 10, 0);
+    brackets.lineTo(getWidth(), 0);
+    brackets.lineTo(getWidth(), getHeight());
+    brackets.lineTo(getWidth() - 10, getHeight());
+    if (isMouseOver()) {
+        g.setColour(juce::Colours::white.withAlpha(0.4f));
+        g.fillRect(getLocalBounds());
+        g.setColour(overColor);
+        g.strokePath(brackets, juce::PathStrokeType(12));
+    } else {
+        g.setColour(bgColor);
+        g.strokePath(brackets, juce::PathStrokeType(6));
+    }
 }
 void ModOverlayButton::resized()
 {

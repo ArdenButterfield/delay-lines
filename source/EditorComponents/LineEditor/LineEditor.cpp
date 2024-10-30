@@ -6,7 +6,7 @@
 #include "../../parameters.h"
 
 LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, const int& _line, bool _canBeDragged)
-    : lengthEditor(_delayGraph, _line),
+    : lengthEditor(me, _delayGraph, _line),
       delayGraph(_delayGraph),
       graphLine(_line),
       dragging(false),

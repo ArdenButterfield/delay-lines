@@ -5,7 +5,7 @@
 #include "LengthEditor.h"
 
 
-LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGraph(_delayGraph), graphLine(_line)
+LengthEditor::LengthEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, const int& _line) : delayGraph(_delayGraph), graphLine(_line)
 {
     startTimerHz(60);
     unitSelector.addItemList({"ms", "Samples", "Hz", "Pitch", "Beat", "MIDI track"}, 1); // offset must start at 1: 0 is reserved for undefined
@@ -35,7 +35,17 @@ LengthEditor::LengthEditor (DelayGraph& _delayGraph, const int& _line) : delayGr
              &beatDenominator}) {
         addAndMakeVisible(slider);
         slider->addListener(this);
+        slider->setMappingEngine(&me);
     }
+    pitchSlider.setMappingEngine(&me);
+
+    samplesSlider.setModKey({ModulatableKey::line, graphLine, "samples", samplesSlider.getNormalisableRange()});
+    millisecondsSlider.setModKey({ModulatableKey::line, graphLine, "milliseconds", millisecondsSlider.getNormalisableRange()});
+    hertzSlider.setModKey({ModulatableKey::line, graphLine, "hertz", hertzSlider.getNormalisableRange()});
+    pitchSlider.setModKey({ModulatableKey::line, graphLine, "pitch", pitchSlider.getNormalisableRange()});
+    beatNumerator.setModKey({ModulatableKey::line, graphLine, "numerator", beatNumerator.getNormalisableRange()});
+    beatDenominator.setModKey({ModulatableKey::line, graphLine, "denominator", beatDenominator.getNormalisableRange()});
+
 
     addAndMakeVisible(pitchSlider);
     pitchSlider.addListener(this);

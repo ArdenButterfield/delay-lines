@@ -18,7 +18,7 @@
 class LengthEditor : public juce::Component, public juce::Timer, public juce::ComboBox::Listener, public juce::Slider::Listener, public BpmTapper::Listener
 {
 public:
-    LengthEditor(DelayGraph& delayGraph, const int& line);
+    LengthEditor(ModulationMappingEngine& me, DelayGraph& delayGraph, const int& line);
 
     void resized() override;
     void paint(juce::Graphics &g) override;

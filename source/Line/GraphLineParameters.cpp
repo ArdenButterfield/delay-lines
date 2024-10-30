@@ -37,6 +37,45 @@ bool DelayLength::importFromXml (juce::XmlElement* parent)
     }
     return false;
 }
+bool DelayLength::modulateIfPossible (ModulatableKey& key, float newValue)
+{
+    if (key.parameterId == juce::Identifier("samples")) {
+        setSamplesLength( key.range.convertFrom0to1(newValue));
+    } else if (key.parameterId == juce::Identifier("milliseconds")) {
+        setMillisecondsLength(key.range.convertFrom0to1(newValue));
+    } else if (key.parameterId == juce::Identifier("hertz")) {
+        setHertz(key.range.convertFrom0to1(newValue));
+    } else if (key.parameterId == juce::Identifier("pitch")) {
+        setMidiNote(key.range.convertFrom0to1(newValue));
+    } else if (key.parameterId == juce::Identifier("numerator")) {
+        setBeat(key.range.convertFrom0to1(newValue), getDenominator());
+    } else if (key.parameterId == juce::Identifier("denominator")) {
+        setBeat(getNumerator(), key.range.convertFrom0to1(newValue));
+    } else {
+        return false;
+    }
+    return true;
+}
+
+bool DelayLength::getModulationValue (ModulatableKey& key, float& val)
+{
+    if (key.parameterId == juce::Identifier("samples")) {
+        val = key.range.convertTo0to1(getSamplesLength());
+    } else if (key.parameterId == juce::Identifier("milliseconds")) {
+        val = key.range.convertTo0to1(getMillisecondsLength());
+    } else if (key.parameterId == juce::Identifier("hertz")) {
+        val = key.range.convertTo0to1(getHertz());
+    } else if (key.parameterId == juce::Identifier("pitch")) {
+        val = key.range.convertTo0to1(getMidiNote());
+    } else if (key.parameterId == juce::Identifier("numerator")) {
+        val = key.range.convertTo0to1(getNumerator());
+    } else if (key.parameterId == juce::Identifier("denominator")) {
+        val = key.range.convertTo0to1(getDenominator());
+    } else {
+        return false;
+    }
+    return true;
+}
 
 Parameters::Parameters() : muteBypass(MUTE_BYPASS_ID, "mute bypass", {"none", "mute", "bypass", "stagnate"}, 0),
                            lengthEnvelopeFollow(LENGTH_ENVELOPE_FOLLOW_ID, "length envelope follow", -1.f, 1.f, 0.f),
@@ -93,7 +132,8 @@ bool Parameters::modulateIfPossible (ModulatableKey& key, float newValue)
             return true;
         }
     }
-    return false;
+
+    return length.modulateIfPossible(key, newValue);
 }
 
 bool Parameters::getModulationValue (ModulatableKey& key, float& val)
@@ -104,6 +144,6 @@ bool Parameters::getModulationValue (ModulatableKey& key, float& val)
             return true;
         }
     }
-    return false;
+    return length.getModulationValue(key, val);
 }
 

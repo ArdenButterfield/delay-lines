@@ -33,8 +33,8 @@ public:
     void mouseUp(const juce::MouseEvent &event) override;
 
 private:
-    const juce::Colour bgColor = juce::Colours::magenta;
-    const juce::Colour overColor = juce::Colours::yellow;
+    const juce::Colour bgColor = juce::Colours::orangered;
+    const juce::Colour overColor = juce::Colours::black;
 };
 
 #endif //DELAYLINES_MODOVERLAYBUTTON_H
