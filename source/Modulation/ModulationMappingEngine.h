@@ -7,6 +7,7 @@
 
 #include "ModulatableKey.h"
 #include "juce_events/juce_events.h"
+#include "juce_gui_basics/juce_gui_basics.h"
 
 class ModulationEngine;
 
@@ -40,6 +41,7 @@ public:
 
     ModulationEngine* modulationEngine;
 
+    juce::Colour colour;
 private:
     std::set<Listener*> listeners;
     bool inModMappingMode;

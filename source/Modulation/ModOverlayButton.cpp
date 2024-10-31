@@ -34,7 +34,7 @@ void ModOverlayButton::paint (juce::Graphics& g)
     if (isMouseOver()) {
         g.setColour(juce::Colours::white.withAlpha(0.4f));
         g.fillRect(getLocalBounds());
-        g.setColour(overColor);
+        g.setColour(mappingEngine.colour);
         g.strokePath(brackets, juce::PathStrokeType(12));
     } else {
         g.setColour(bgColor);

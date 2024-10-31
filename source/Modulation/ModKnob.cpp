@@ -14,7 +14,7 @@ ModKnob::ModKnob (ModulationMappingEngine* me, juce::String paramId, const int _
         paramId,
         *slider);
 
-    auto splashColour = juce::Colours::red.withRotatedHue(paramIndex / 10.f);
+    splashColour = juce::Colours::red.withRotatedHue(paramIndex / 10.f);
 
     mapButton = std::make_unique<ModMapButton>(splashColour, "map " + paramId);
     unmapButton = std::make_unique<juce::TextButton>("unmap");
@@ -66,6 +66,7 @@ void ModKnob::buttonClicked (juce::Button* b)
 {
     if (b == mapButton.get()) {
         if (mapButton->getToggleState()) {
+            mappingEngine->colour = splashColour;
             mappingEngine->enterModMappingMode(paramIndex);
         } else {
             mappingEngine->exitModMappingMode();

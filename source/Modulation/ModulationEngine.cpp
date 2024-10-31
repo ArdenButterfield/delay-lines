@@ -21,7 +21,6 @@ ModulationEngine::ModulationEngine(juce::AudioProcessorValueTreeState& _treeStat
 
 ModulationEngine::~ModulationEngine()
 {
-
     for (auto& paramId : paramIds) {
         treeState.removeParameterListener(paramId, this);
     }

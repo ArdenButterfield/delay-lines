@@ -35,6 +35,7 @@ private:
     const int paramIndex;
 
     juce::Label mappingLabel;
+    juce::Colour splashColour;
 };
 
 #endif //DELAYLINES_MODKNOB_H
