@@ -28,6 +28,8 @@ public:
     const std::vector<juce::String> paramIds;
     juce::AudioProcessorValueTreeState& treeState;
     DelayGraph& delayGraph;
+    void exportToXml(juce::XmlElement* parent);
+    void importFromXml(juce::XmlElement* parent);
 private:
     std::vector<std::unique_ptr<ModulatableKey>> mappings;
     void timerCallback() override;

@@ -131,6 +131,20 @@ void DelayGraph::addPoint(const juce::Point<float>& point, bool connectToSelecte
     }
 
     criticalSection.exit();
+}
+
+void DelayGraph::addPoint (juce::XmlElement* xml)
+{
+    criticalSection.enter();
+
+    points.push_back(std::make_unique<GraphPoint>(xml));
+    points.back()->prepareToPlay(processSpec.get());
+
+    for (auto& listener : listeners) {
+        listener->pointAdded(points.back()->identifier);
+    }
+
+    criticalSection.exit();
 
 }
 
@@ -151,6 +165,24 @@ void DelayGraph::addLine (GraphPoint* start, GraphPoint* end)
     }
     criticalSection.exit();
 }
+
+void DelayGraph::addLine (juce::XmlElement* xml)
+{
+    criticalSection.enter();
+
+    auto start = getPoint(xml->getIntAttribute("start"));
+    auto end = getPoint(xml->getIntAttribute("end"));
+    lines.push_back(std::make_unique<GraphLine>(start, end, xml));
+    auto newLine = lines.back().get();
+    if (processSpec) {
+        newLine->prepareToPlay(*processSpec);
+    }
+    for (auto& listener : listeners) {
+        listener->lineAdded(lines.back()->identifier);
+    }
+    criticalSection.exit();
+}
+
 
 std::vector<std::unique_ptr<GraphLine>>& DelayGraph::getLines()
 {
@@ -398,13 +430,7 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
     for (int i = 0; i < pointsElement->getNumChildElements(); ++i) {
         auto p = pointsElement->getChildElement(i);
         if (!getPoint(p->getIntAttribute("id"))) {
-            criticalSection.enter();
-            points.push_back(std::make_unique<GraphPoint>(p));
-            auto newPoint = points.back().get();
-            if (processSpec) {
-                newPoint->prepareToPlay(processSpec.get());
-            }
-            criticalSection.exit();
+            addPoint(p);
         }
     }
 
@@ -423,15 +449,7 @@ bool DelayGraph::importFromXml (juce::XmlElement* parent)
     for (int i = 0; i < linesElement->getNumChildElements(); ++i) {
         auto l = linesElement->getChildElement(i);
         if (!getLine(l->getIntAttribute("id"))) {
-            auto start = getPoint(l->getIntAttribute("start"));
-            auto end = getPoint(l->getIntAttribute("end"));
-            criticalSection.enter();
-            lines.push_back(std::make_unique<GraphLine>(start, end, l));
-            auto newLine = lines.back().get();
-            if (processSpec) {
-                newLine->prepareToPlay(*processSpec);
-            }
-            criticalSection.exit();
+            addLine(l);
         }
     }
     setRealOutputs();

@@ -17,7 +17,7 @@ DelayLineInternal::DelayLineInternal (juce::dsp::ProcessSpec _spec, float initia
 
     length.setRampLength(spec.sampleRate * stretchTime);
     length.resetToTarget(initialLength);
-    lengthFader.setFadeTime(200);
+    lengthFader.setFadeTime(spec.sampleRate * 0.05f);
     lengthFader.resetToTarget(initialLength);
     stretchTime = 0;
 }

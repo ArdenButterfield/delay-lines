@@ -105,3 +105,26 @@ juce::Colour ModulationEngine::getColourForMapping(unsigned int index)
     }
     return juce::Colours::black.withAlpha(0.f);
 }
+
+void ModulationEngine::exportToXml (juce::XmlElement* parent)
+{
+    auto element = parent->createNewChildElement("mod-mapping");
+    for (unsigned i = 0; i < mappings.size(); ++i) {
+        auto mappingElement = element->createNewChildElement(juce::String(i));
+        mappings[i]->exportToXml(mappingElement);
+    }
+}
+void ModulationEngine::importFromXml (juce::XmlElement* parent)
+{
+    auto element = parent->getChildByName("mod-mapping");
+    if (element == nullptr) {
+        return;
+    }
+
+    for (unsigned i = 0; i < mappings.size(); ++i) {
+        auto mappingElement = element->getChildByName(juce::String(i));
+        if (mappingElement != nullptr) {
+            mappings[i]->importFromXml(mappingElement);
+        }
+    }
+}

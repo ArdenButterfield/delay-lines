@@ -37,6 +37,8 @@ public:
     void deleteLine(const GraphLine* line);
     const std::vector<std::unique_ptr<GraphPoint>>& getPoints();
     void addLine(GraphPoint* start, GraphPoint* end);
+    void addPoint(juce::XmlElement* xml);
+    void addLine(juce::XmlElement* xml);
     std::vector<std::unique_ptr<GraphLine>>& getLines();
 
     bool modulateIfPossible(ModulatableKey& key, float newValue);

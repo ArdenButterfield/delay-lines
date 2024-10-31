@@ -50,7 +50,6 @@ public:
 
     ModulationEngine modulationEngine;
 
-    void printXml();
     juce::AudioProcessorValueTreeState& getValueTreeState();
 private:
     bool parametersNeedUpdating;

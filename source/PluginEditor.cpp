@@ -2,7 +2,8 @@
 #include "parameters.h"
 PluginEditor::PluginEditor (PluginProcessor& p)
     : AudioProcessorEditor (&p),
-      printXmlButton("Print XML"),
+      copyXmlButton("Copy state"),
+      pasteXmlButton("Paste state"),
       clearLinesButton("Clear lines"),
       presetBrowser(p.delayGraph),
       playgroundInterface(modulationMappingEngine, p.delayGraph),
@@ -18,7 +19,8 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 
     setLookAndFeel(&delayLinesLookAndFeel);
 
-    printXmlButton.addListener(this);
+    copyXmlButton.addListener(this);
+    pasteXmlButton.addListener(this);
     modulatorOverlayButton.addListener(this);
     clearLinesButton.addListener(this);
     switchInterface.addListener(this);
@@ -26,7 +28,8 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(mixSlider);
     addAndMakeVisible(stretchTimeSlider);
     addAndMakeVisible(presetBrowser);
-    addAndMakeVisible(printXmlButton);
+    addAndMakeVisible(copyXmlButton);
+    addAndMakeVisible(pasteXmlButton);
     addAndMakeVisible(switchInterface);
     addAndMakeVisible(clearLinesButton);
     addAndMakeVisible(modulatorOverlayButton);
@@ -81,7 +84,10 @@ void PluginEditor::resized()
     stretchLabel.setBounds(stretchArea.withTrimmedTop(stretchTimeSlider.getBottom()));
 
     presetBrowser.setBounds(topStrip.withX(switchInterface.getRight() + 10).withHeight(topStrip.getHeight() / 2).withRight(stretchTimeSlider.getX() - 10));
-    clearLinesButton.setBounds(presetBrowser.getBounds().withBottomY(topStrip.getBottom()));
+    auto belowPresetBrowser = presetBrowser.getBounds().withBottomY(topStrip.getBottom());
+    copyXmlButton.setBounds(belowPresetBrowser.withWidth(belowPresetBrowser.getWidth() / 4));
+    pasteXmlButton.setBounds(copyXmlButton.getBounds().withX(copyXmlButton.getRight()));
+    clearLinesButton.setBounds(belowPresetBrowser.withLeft(pasteXmlButton.getRight()));
 
     playgroundInterface.setBounds(getLocalBounds()
                                        .withTrimmedTop(topStrip.getBottom() + 10)
@@ -95,8 +101,18 @@ void PluginEditor::resized()
 
 void PluginEditor::buttonClicked (juce::Button* button)
 {
-    if (button == &printXmlButton) {
-        processorRef.printXml();
+    if (button == &copyXmlButton) {
+        auto data = juce::MemoryBlock();
+        processorRef.getStateInformation(data);
+        auto xml = processorRef.getXmlFromBinary(data.begin(), data.getSize());
+        juce::SystemClipboard::copyTextToClipboard(xml->toString());
+    } else if (button == &pasteXmlButton) {
+        auto xml = juce::parseXML(juce::SystemClipboard::getTextFromClipboard());
+        if (xml) {
+            auto data = juce::MemoryBlock();
+            processorRef.copyXmlToBinary(*xml, data);
+            processorRef.setStateInformation(data.begin(), data.getSize());
+        }
     } else if (button == &switchInterface) {
         playgroundInterface.setVisible(!switchInterface.getToggleState());
         modularInterface.setVisible(switchInterface.getToggleState());
