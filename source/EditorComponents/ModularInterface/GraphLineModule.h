@@ -19,8 +19,8 @@ public:
     void paint(juce::Graphics &g) override;
     static const juce::Rectangle<int> getDesiredBounds();
     int getIdentifier() const { return lineID; }
-private:
     static const int padding = 10;
+private:
     void timerCallback() override;
     void rebuildPointSelectors();
     void comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) override;

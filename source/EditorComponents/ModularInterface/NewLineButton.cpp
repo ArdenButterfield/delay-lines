@@ -3,6 +3,8 @@
 //
 
 #include "NewLineButton.h"
+#include "GraphLineModule.h"
+
 NewLineButton::NewLineButton (DelayGraph& dg) : delayGraph(dg)
 {
 }
@@ -11,17 +13,20 @@ NewLineButton::~NewLineButton()
 }
 void NewLineButton::paint (juce::Graphics& g)
 {
+    auto realBounds = getLocalBounds().withTrimmedLeft(GraphLineModule::padding * 2).withTrimmedTop(GraphLineModule::padding * 2);
     if (isMouseOverOrDragging()) {
-        g.setColour(juce::Colours::brown);
+        g.setColour(juce::Colours::darkgrey);
     } else if (isMouseButtonDown()) {
         g.setColour(juce::Colours::black);
     } else {
-        g.setColour(juce::Colours::brown.withAlpha(0.5f));
+        g.setColour(juce::Colours::darkgrey.withAlpha(0.5f));
     }
-    g.drawRect(getLocalBounds(), 10.f);
+    g.drawRect(realBounds, 10.f);
     // plus symbol in center
-    g.fillRect(juce::Rectangle<int>(0,0,75,10).withCentre({getWidth() / 2, getHeight() / 2}));
-    g.fillRect(juce::Rectangle<int>(0,0,10,75).withCentre({getWidth() / 2, getHeight() / 2}));
+    g.fillRect(juce::Rectangle<int>(0,0,75,10)
+        .withCentre(realBounds.getCentre()));
+    g.fillRect(juce::Rectangle<int>(0,0,10,75)
+        .withCentre(realBounds.getCentre()));
 }
 void NewLineButton::resized()
 {

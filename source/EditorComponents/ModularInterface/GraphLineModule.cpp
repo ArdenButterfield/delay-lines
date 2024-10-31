@@ -23,16 +23,15 @@ GraphLineModule::~GraphLineModule()
 
 void GraphLineModule::resized()
 {
-    lineEditor->setBounds(LineEditor::getDesiredBounds().withPosition(padding, padding));
-    inputSelector.setBounds({padding, lineEditor->getBottom() + 2, getWidth() - 2 * padding, 20});
-    outputSelector.setBounds({padding, inputSelector.getBottom() + 2, getWidth() - 2 * padding, 20});
+    lineEditor->setBounds(LineEditor::getDesiredBounds().withPosition(padding * 2, padding * 2));
+    inputSelector.setBounds({padding * 2, lineEditor->getBottom() + 2, getWidth() - 2 * padding, 20});
+    outputSelector.setBounds({padding * 2, inputSelector.getBottom() + 2, getWidth() - 2 * padding, 20});
 }
 
 void GraphLineModule::paint (juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::tan);
-    g.setColour(juce::Colours::brown);
-    g.drawRect(getLocalBounds(), 2);
+    g.setColour(juce::Colours::white);
+    g.fillRect(getLocalBounds().withTrimmedTop(padding * 2).withTrimmedLeft(padding * 2));
 }
 
 const juce::Rectangle<int> GraphLineModule::getDesiredBounds()

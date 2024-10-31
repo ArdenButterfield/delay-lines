@@ -6,6 +6,7 @@
 #include "EditorComponents/PlaygroundInterface/PlaygroundInterface.h"
 #include "EditorComponents/ModularInterface/ModularInterface.h"
 #include "EditorComponents/TitleGraphic.h"
+#include "EditorComponents/SwitchInterfaceButton.h"
 
 #include "PlaygroundControllerOld.h"
 #include "PluginProcessor.h"
@@ -37,7 +38,7 @@ private:
 
     PlaygroundInterface playgroundInterface;
     ModularInterface modularInterface;
-    juce::TextButton switchInterface;
+    SwitchInterfaceButton switchInterface;
 
     void buttonClicked(juce::Button *) override;
 

@@ -7,7 +7,6 @@ PluginEditor::PluginEditor (PluginProcessor& p)
       presetBrowser(p.delayGraph),
       playgroundInterface(modulationMappingEngine, p.delayGraph),
       modularInterface(modulationMappingEngine, p.delayGraph),
-      switchInterface("Switch interface"),
       processorRef (p),
       modulatorOverlayButton("Modulator Overlay"),
       mixAttachment(p.getValueTreeState(), MIX_PARAM_ID, mixSlider),
@@ -35,6 +34,10 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(modKnobs);
     addAndMakeVisible(playgroundInterface);
     addChildComponent(modularInterface);
+
+
+    switchInterface.setToggleState(false, juce::sendNotification);
+
 
     addAndMakeVisible(titleGraphic);
 
@@ -95,9 +98,8 @@ void PluginEditor::buttonClicked (juce::Button* button)
     if (button == &printXmlButton) {
         processorRef.printXml();
     } else if (button == &switchInterface) {
-        auto modWasVisible = modularInterface.isVisible();
-        playgroundInterface.setVisible(modWasVisible);
-        modularInterface.setVisible(!modWasVisible);
+        playgroundInterface.setVisible(!switchInterface.getToggleState());
+        modularInterface.setVisible(switchInterface.getToggleState());
     }
 }
 

@@ -76,6 +76,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
         slider->addListener(this);
         slider->setMappingEngine(&mappingEngine);
     }
+
     loCutSlider.setModKey({ModulatableKey::line, graphLine, LOCUT_ID, loCutSlider.getNormalisableRange()});
     hiCutSlider.setModKey({ModulatableKey::line, graphLine, HICUT_ID, hiCutSlider.getNormalisableRange()});
     gainSlider.setModKey({ModulatableKey::line, graphLine, GAIN_ID, gainSlider.getNormalisableRange()});
@@ -151,11 +152,13 @@ LineEditor::~LineEditor() {
 
 void LineEditor::resized()
 {
-    topBar = getLocalBounds().withHeight(30);
-    topBarUnderline = getLocalBounds().withTrimmedTop(topBar.getBottom()).withHeight(4);
+    usableArea = getLocalBounds().reduced(3);
 
-    firstColumn = getLocalBounds().withTrimmedTop(topBarUnderline.getBottom()).withWidth(getWidth() / 2);
-    secondColumn = firstColumn.withRight(getRight()).withTrimmedLeft(firstColumn.getRight());
+    topBar = usableArea.withHeight(30);
+    topBarUnderline = usableArea.withTrimmedTop(topBar.getBottom()).withHeight(4);
+
+    firstColumn = usableArea.withTrimmedTop(topBarUnderline.getBottom()).withWidth(getWidth() / 2);
+    secondColumn = firstColumn.withRight(usableArea.getRight()).withTrimmedLeft(firstColumn.getRight());
 
     firstColumn = firstColumn.withTrimmedRight(1);
     secondColumn = secondColumn.withTrimmedLeft(1);
@@ -187,7 +190,7 @@ void LineEditor::resized()
     gainSlider.setBounds(gainArea.withTop(gainLabel.getBottom()));
     feedbackSlider.setBounds(feedbackArea.withTop(feedbackLabel.getBottom()));
 
-    auto secondColumnInner = secondColumn.withTrimmedTop(5).withTrimmedLeft(5).withTrimmedRight(5).withTrimmedBottom(5);
+    auto secondColumnInner = secondColumn.reduced(5);
     auto gutter = 5;
     auto availableHeight = secondColumnInner.getHeight() - 2 * gutter;
     modArea = secondColumnInner.withHeight(availableHeight / 3);
@@ -265,8 +268,10 @@ void LineEditor::paint (juce::Graphics& g)
         g.fillRect(topBarUnderline);
         g.fillRect(columnGutter);
         g.setColour(juce::Colours::black.withAlpha(0.2f));
-        g.drawRect(filterArea);
+
+        g.drawRect(getLocalBounds(), 3);
     }
+
 }
 
 void LineEditor::sliderValueChanged (juce::Slider* slider)

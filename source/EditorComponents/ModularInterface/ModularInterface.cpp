@@ -29,7 +29,11 @@ void ModularInterface::resized()
 
 void ModularInterface::paint (juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::pink);
+    g.fillAll(juce::Colours::lightgrey);
+    g.setColour(juce::Colours::lightgrey.withMultipliedBrightness(1.2f));
+    g.fillRect(lineEditorsViewport.getBounds()
+                                .withWidth(lineEditorsViewport.getScrollBarThickness())
+                                .withRightX(lineEditorsViewport.getRight()));
 }
 
 void ModularInterface::timerCallback()

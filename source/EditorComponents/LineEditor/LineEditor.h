@@ -77,6 +77,8 @@ private:
     juce::Rectangle<int> filterArea;
     juce::Rectangle<int> distortionArea;
 
+    juce::Rectangle<int> usableArea;
+
     juce::ComponentDragger dragger;
 
     void sliderValueChanged(juce::Slider* slider) override;
