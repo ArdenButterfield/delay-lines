@@ -33,7 +33,7 @@ void ModularInterface::paint (juce::Graphics& g)
     g.setColour(juce::Colours::lightgrey.withMultipliedBrightness(1.2f));
     g.fillRect(lineEditorsViewport.getBounds()
                                 .withWidth(lineEditorsViewport.getScrollBarThickness())
-                                .withRightX(lineEditorsViewport.getRight()));
+                                .withRightX(lineEditorsViewport.getRight());
 }
 
 void ModularInterface::timerCallback()
