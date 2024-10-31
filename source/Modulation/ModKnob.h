@@ -8,6 +8,7 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "ModulationMappingEngine.h"
+#include "ModMapButton.h"
 
 class ModKnob : public juce::Component, public juce::Button::Listener, ModulationMappingEngine::Listener, juce::Timer
 {
@@ -19,7 +20,7 @@ private:
     void resized() override;
     ModulationMappingEngine* mappingEngine;
     std::unique_ptr<juce::Slider> slider;
-    std::unique_ptr<juce::ToggleButton> mapButton;
+    std::unique_ptr<ModMapButton> mapButton;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attachment;
 
     void buttonStateChanged(juce::Button *) override;

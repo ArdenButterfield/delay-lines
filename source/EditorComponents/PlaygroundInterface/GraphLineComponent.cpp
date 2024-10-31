@@ -291,11 +291,13 @@ void GraphLineComponent::makeEnvelopePaths (bool bypassed, float scale)
         for (auto step = 0; step < numSteps; step += 1) {
             auto proportion = static_cast<float>(step) / static_cast<float>(numSteps);
             line->getEnvelope(proportion, l, r);
+            l = juce::jmax(l, 0.05f);
+            r = juce::jmax(r, 0.05f);
             auto window = juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * proportion);
-            leftLinePath.lineTo(proportion, juce::jmax(juce::dsp::FastMathApproximations::tanh(l * window) * scale, 0.05f));
-            rightLinePath.lineTo(proportion, juce::jmax(juce::dsp::FastMathApproximations::tanh(r * window) * scale, 0.05f));
-            innerLeftPath.lineTo(proportion, juce::jmax(juce::dsp::FastMathApproximations::tanh(l * 0.5f * window) * scale, 0.05f));
-            innerRightPath.lineTo(proportion, juce::jmax(juce::dsp::FastMathApproximations::tanh(r * 0.5f * window) * scale, 0.05f));
+            leftLinePath.lineTo(proportion, juce::jmax(juce::dsp::FastMathApproximations::tanh(l * window) * scale, 0.f));
+            rightLinePath.lineTo(proportion, juce::jmax(juce::dsp::FastMathApproximations::tanh(r * window) * scale, 0.f));
+            innerLeftPath.lineTo(proportion, juce::jmax(juce::dsp::FastMathApproximations::tanh(l * 0.5f * window) * scale, 0.f));
+            innerRightPath.lineTo(proportion, juce::jmax(juce::dsp::FastMathApproximations::tanh(r * 0.5f * window) * scale, 0.f));
         }
     }
     leftLinePath.lineTo(1,-0.005);
