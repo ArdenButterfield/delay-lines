@@ -3,7 +3,7 @@
 //
 
 #include "FilterVisualizer.h"
-FilterVisualizer::FilterVisualizer()
+FilterVisualizer::FilterVisualizer() : opacity(0.3f)
 {
     low = 0.25; high = 0.75;
 }
@@ -37,7 +37,8 @@ void FilterVisualizer::paint (juce::Graphics& g)
                     pixelScore += match[y * 100 + x] * matchScores[m];
                 }
             }
-            g.setColour(juce::Colours::black.withAlpha(std::min(std::max(0.f, pixelScore / 100), 1.f)));
+            g.setColour(juce::Colours::black
+                             .withAlpha(std::min(std::max(0.f, pixelScore / 100), 1.f)).withMultipliedAlpha(opacity));
             g.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
         }
     }

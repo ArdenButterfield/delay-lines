@@ -20,6 +20,7 @@ public:
     void resized() override;
     void timerCallback() override;
 private:
+    float opacity;
     DelayGraph* delayGraph;
     int lineIndex;
     std::vector<float> lows, highs;

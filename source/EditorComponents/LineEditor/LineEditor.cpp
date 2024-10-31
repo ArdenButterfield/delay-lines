@@ -232,7 +232,9 @@ void LineEditor::textureArea (juce::Graphics& g, juce::Rectangle<int> area)
 {
     const float step = 8;
     bool odd = false;
-    g.setColour(juce::Colour(0xfffff7ce));
+
+    g.setColour(juce::Colours::white);
+
     int ctr = 0;
     for (float y = area.getY(); y < area.getBottom(); y += step * std::sqrt(3.f/4.f)) {
         for (float x = area.getX() + (odd ? step / 2 : 0); x < area.getRight(); x += step) {
@@ -249,22 +251,22 @@ void LineEditor::textureArea (juce::Graphics& g, juce::Rectangle<int> area)
 
 void LineEditor::paint (juce::Graphics& g)
 {
-    g.setColour(juce::Colour(0xffffdb93));
-    g.fillAll();
-    textureArea (g, topBar);
     auto line = delayGraph.getLine(graphLine);
     if (line) {
+        g.setColour(line->getColor().withLightness(0.95f));
+        g.fillAll();
+        textureArea (g, topBar);
         g.setColour (line->getColor());
         bypassButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, line->getColor());
         muteButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, line->getColor());
         invertButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, line->getColor());
         stagnateButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, line->getColor());
-    }
 
-    g.fillRect(topBarUnderline);
-    g.fillRect(columnGutter);
-    g.setColour(juce::Colours::black.withAlpha(0.2f));
-    g.drawRect(filterArea);
+        g.fillRect(topBarUnderline);
+        g.fillRect(columnGutter);
+        g.setColour(juce::Colours::black.withAlpha(0.2f));
+        g.drawRect(filterArea);
+    }
 }
 
 void LineEditor::sliderValueChanged (juce::Slider* slider)

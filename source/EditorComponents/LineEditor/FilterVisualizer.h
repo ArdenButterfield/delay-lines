@@ -23,6 +23,8 @@ public:
     }
 
     void setFilters(float _low, float _high);
+    float opacity;
+
 private:
     float low;
     float high;

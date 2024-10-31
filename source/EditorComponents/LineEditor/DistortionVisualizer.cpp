@@ -4,7 +4,7 @@
 
 #include "DistortionVisualizer.h"
 #include "juce_dsp/juce_dsp.h"
-DistortionVisualizer::DistortionVisualizer() : distortionAmount(0), distortionType(0)
+DistortionVisualizer::DistortionVisualizer() : distortionAmount(0), distortionType(0), opacity(0.4f)
 {
 }
 
@@ -22,11 +22,10 @@ void DistortionVisualizer::setDistortion (int type, float amount)
 void DistortionVisualizer::paint (juce::Graphics& g)
 {
     for (auto i = 0; i < values[0].size(); ++i) {
-        g.setColour(juce::Colours::black.withAlpha(std::min(std::max(0.f, abs(values[0][i])), 1.f)));
+        g.setColour(juce::Colours::black.withAlpha(opacity * std::min(std::max(0.f, abs(values[0][i])), 1.f)));
         g.drawVerticalLine(i,0,getHeight() / 2);
-        g.setColour(juce::Colours::black.withAlpha(std::min(std::max(0.f, abs(values[1][i])), 1.f)));
+        g.setColour(juce::Colours::black.withAlpha(opacity * std::min(std::max(0.f, abs(values[1][i])), 1.f)));
         g.drawVerticalLine(i, getHeight() / 2, getBottom());
-
     }
 }
 
@@ -49,8 +48,7 @@ void DistortionVisualizer::fillValues()
 {
     for (auto& channel : values) {
         for (float i = 0; i < channel.size(); ++i) {
-            float halfway = (channel.size() / 2);
-            channel[i] = (i - halfway) / halfway;
+            channel[i] = i / channel.size();
         }
     }
 
@@ -80,7 +78,7 @@ void DistortionVisualizer::fillValues()
         case 3:
             // bitcrush
             for (auto& v : values[0]) {
-                auto multiplier = std::pow(2.f, 16 - 16 * distortionAmount);
+                auto multiplier = std::pow(2.f, 7 - 7 * distortionAmount);
                 v = std::round(v * multiplier) / multiplier;
             }
             values[1] = values[0];

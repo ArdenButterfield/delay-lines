@@ -30,6 +30,7 @@ void ModulatableSlider::setModKey (ModulatableKey key)
         makeNewOverlay();
     }
 }
+
 void ModulatableSlider::makeNewOverlay()
 {
     if (overlayButton) {
@@ -37,7 +38,9 @@ void ModulatableSlider::makeNewOverlay()
     }
     overlayButton = std::make_unique<ModOverlayButton>(*mappingEngine, *modKey);
     addChildComponent(overlayButton.get());
+    overlayButton->setVisible(mappingEngine->getInModMappingMode());
 }
+
 void ModulatableSlider::resized()
 {
     if (overlayButton) {

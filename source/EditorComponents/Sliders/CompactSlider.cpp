@@ -18,6 +18,9 @@ CompactSlider::CompactSlider()
         juce::Font(DelayLinesLookAndFeel::getMonoFont()).withPointHeight(15));
     valueLabel.setColour(juce::Label::textColourId, juce::Colours::black);
     numDecimalPlacesToDisplay = 0;
+    valueLabel.setColour(juce::Label::backgroundWhenEditingColourId, juce::Colours::white.withAlpha(0.5f));
+    valueLabel.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
+    valueLabel.setColour(juce::Label::outlineWhenEditingColourId, juce::Colours::black.withAlpha(0.2f));
 }
 
 void CompactSlider::setSuffix (const juce::String& _suffix)
@@ -62,6 +65,7 @@ void CompactSlider::editorHidden (juce::Label* label, juce::TextEditor& textEdit
 {
     setValue(textEditor.getText().getDoubleValue());
 }
+
 juce::String CompactSlider::getDisplayText (double rawValue)
 {
     return juce::String(rawValue, numDecimalPlacesToDisplay) + suffix;

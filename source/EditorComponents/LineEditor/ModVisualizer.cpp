@@ -5,7 +5,7 @@
 #include "ModVisualizer.h"
 #include "../../DelayGraph.h"
 
-ModVisualizer::ModVisualizer (DelayGraph* dg, int l) : delayGraph(dg), lineIndex(l)
+ModVisualizer::ModVisualizer (DelayGraph* dg, int l) : delayGraph(dg), lineIndex(l), opacity(0.2f)
 {
     startTimerHz(60);
 }
@@ -20,7 +20,7 @@ void ModVisualizer::paint (juce::Graphics& g)
         }
     }
 
-    g.setColour(juce::Colours::black);
+    g.setColour(juce::Colours::black.withAlpha(opacity));
     auto path = juce::Path();
     path.startNewSubPath(0,(1 + lows[0] * 0.8f) * getHeight() / 2.f);
     for (unsigned i = 0; i < lows.size(); ++i) {

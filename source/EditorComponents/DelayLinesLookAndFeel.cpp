@@ -67,14 +67,14 @@ void DelayLinesLookAndFeel::drawButtonBackground (juce::Graphics& g, juce::Butto
 {
     if (shouldDrawButtonAsDown) {
         g.setColour(juce::Colours::black);
-        g.fillRect(b.getLocalBounds());
+        g.fillRoundedRectangle(b.getLocalBounds().reduced(2).toFloat(), 6);
     } else if (shouldDrawButtonAsHighlighted) {
         g.setColour(juce::Colours::black.withAlpha(0.2f));
-        g.fillRect(b.getLocalBounds());
+        g.fillRoundedRectangle(b.getLocalBounds().reduced(2).toFloat(), 6);
     }
 
     g.setColour(shouldDrawButtonAsHighlighted ? juce::Colours::black : juce::Colours::black.withAlpha(0.5f));
-    g.drawRect(b.getLocalBounds(), 2);
+    g.drawRoundedRectangle(b.getLocalBounds().reduced(2).toFloat(), (shouldDrawButtonAsHighlighted || shouldDrawButtonAsDown) ? 6 : 3, 2);
 
 }
 juce::Font DelayLinesLookAndFeel::getTextButtonFont (juce::TextButton&, int buttonHeight)

@@ -14,6 +14,7 @@ public:
     DistortionVisualizer();
     ~DistortionVisualizer() override;
     void setDistortion(int type, float amount);
+    float opacity;
 private:
     void fillValues();
     void paint(juce::Graphics &g) override;
