@@ -249,6 +249,7 @@ void PluginProcessor::getStateInformation (juce::MemoryBlock& destData)
     auto apvts = xml.createTextElement("apvts");
     xml.setAttribute("apvts", parametersState->toString());
     delayGraph.exportToXml(&xml);
+    modulationEngine.exportToXml(&xml);
     copyXmlToBinary(xml, destData);
 }
 
@@ -258,6 +259,7 @@ void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
     // whose contents will have been created by the getStateInformation() call.
     auto xml = getXmlFromBinary(data, sizeInBytes);
     parameters.replaceState(juce::ValueTree::fromXml(xml->getStringAttribute("apvts")));
+    modulationEngine.importFromXml(xml.get());
     delayGraph.importFromXml(xml.get());
 }
 

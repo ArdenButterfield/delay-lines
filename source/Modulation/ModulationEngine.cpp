@@ -110,8 +110,10 @@ void ModulationEngine::exportToXml (juce::XmlElement* parent)
 {
     auto element = parent->createNewChildElement("mod-mapping");
     for (unsigned i = 0; i < mappings.size(); ++i) {
-        auto mappingElement = element->createNewChildElement(juce::String(i));
-        mappings[i]->exportToXml(mappingElement);
+        if (mappings[i]) {
+            auto mappingElement = element->createNewChildElement("mod-" + juce::String(i));
+            mappings[i]->exportToXml(mappingElement);
+        }
     }
 }
 void ModulationEngine::importFromXml (juce::XmlElement* parent)
@@ -122,9 +124,14 @@ void ModulationEngine::importFromXml (juce::XmlElement* parent)
     }
 
     for (unsigned i = 0; i < mappings.size(); ++i) {
-        auto mappingElement = element->getChildByName(juce::String(i));
+        auto mappingElement = element->getChildByName("mod-" + juce::String(i));
         if (mappingElement != nullptr) {
+            if (!isMapped(i)) {
+                setMapping(i, ModulatableKey());
+            }
             mappings[i]->importFromXml(mappingElement);
+        } else {
+            clearMapping(i);
         }
     }
 }

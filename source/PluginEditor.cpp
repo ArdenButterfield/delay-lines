@@ -105,7 +105,7 @@ void PluginEditor::buttonClicked (juce::Button* button)
         auto data = juce::MemoryBlock();
         processorRef.getStateInformation(data);
         auto xml = processorRef.getXmlFromBinary(data.begin(), data.getSize());
-        juce::SystemClipboard::copyTextToClipboard(xml->toString());
+        juce::SystemClipboard::copyTextToClipboard(xml->toString(juce::XmlElement::TextFormat().singleLine()));
     } else if (button == &pasteXmlButton) {
         auto xml = juce::parseXML(juce::SystemClipboard::getTextFromClipboard());
         if (xml) {

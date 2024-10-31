@@ -119,7 +119,9 @@ void DelayGraph::addPoint(const juce::Point<float>& point, bool connectToSelecte
     criticalSection.enter();
 
     points.push_back(std::make_unique<GraphPoint>(point, GraphPoint::inner, findUniquePointId()));
-    points.back()->prepareToPlay(processSpec.get());
+    if (processSpec) {
+        points.back()->prepareToPlay(processSpec.get());
+    }
     if (connectToSelected) {
         auto added = points[points.size() - 1].get();
         addLine(activePoint, added);
@@ -138,7 +140,9 @@ void DelayGraph::addPoint (juce::XmlElement* xml)
     criticalSection.enter();
 
     points.push_back(std::make_unique<GraphPoint>(xml));
-    points.back()->prepareToPlay(processSpec.get());
+    if (processSpec) {
+        points.back()->prepareToPlay(processSpec.get());
+    }
 
     for (auto& listener : listeners) {
         listener->pointAdded(points.back()->identifier);
@@ -182,7 +186,6 @@ void DelayGraph::addLine (juce::XmlElement* xml)
     }
     criticalSection.exit();
 }
-
 
 std::vector<std::unique_ptr<GraphLine>>& DelayGraph::getLines()
 {
