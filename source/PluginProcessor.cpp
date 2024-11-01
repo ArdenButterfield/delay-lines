@@ -54,7 +54,6 @@ PluginProcessor::PluginProcessor()
     parameters.addParameterListener(STRETCH_TIME_ID, this);
     parameters.addParameterListener(CLEAR_PARAM_ID, this);
     parametersNeedUpdating = true;
-
 }
 
 PluginProcessor::~PluginProcessor() = default;
@@ -132,12 +131,14 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
         static_cast<juce::uint32>(samplesPerBlock),
         static_cast<juce::uint32>(getTotalNumInputChannels())};
     delayGraph.prepareToPlay(spec);
+    midiReceiver.addListener(&delayGraph);
 }
 
 void PluginProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
+    midiReceiver.removeListener(&delayGraph);
 }
 
 bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const

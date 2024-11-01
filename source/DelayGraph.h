@@ -13,8 +13,9 @@
 #include "GraphPoint.h"
 #include "Line/GraphLine.h"
 #include "Modulation/ModulatableKey.h"
+#include "MidiReceiver.h"
 
-class DelayGraph : public juce::Timer
+class DelayGraph : public juce::Timer, public MidiReceiver::Listener
 {
 public:
     class Listener
@@ -112,6 +113,7 @@ private:
 
     int findUniqueLineId();
     int findUniquePointId();
+    void noteCallback(const juce::MidiMessage &message) override;
     bool needsClearing;
     const float clearingFadeoutLength = 100;
     float clearingFadeoutCounter;

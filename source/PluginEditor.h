@@ -7,6 +7,7 @@
 #include "EditorComponents/ModularInterface/ModularInterface.h"
 #include "EditorComponents/TitleGraphic.h"
 #include "EditorComponents/SwitchInterfaceButton.h"
+#include "EditorComponents/MidiInputSelectorComponent.h"
 
 #include "PlaygroundControllerOld.h"
 #include "PluginProcessor.h"
@@ -68,4 +69,6 @@ private:
 
     juce::Label stretchLabel;
     juce::Label mixLabel;
+
+    MidiInputSelectorComponent midiInputSelector;
 };

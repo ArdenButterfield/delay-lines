@@ -11,7 +11,8 @@ PluginEditor::PluginEditor (PluginProcessor& p)
       processorRef (p),
       modulatorOverlayButton("Modulator Overlay"),
       mixAttachment(p.getValueTreeState(), MIX_PARAM_ID, mixSlider),
-      stretchTimeAttachment(p.getValueTreeState(), STRETCH_TIME_ID, stretchTimeSlider)
+      stretchTimeAttachment(p.getValueTreeState(), STRETCH_TIME_ID, stretchTimeSlider),
+      midiInputSelector(processorRef.midiReceiver)
 {
     modulationMappingEngine.setModulationEngine(&processorRef.modulationEngine);
 
@@ -37,7 +38,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(modKnobs);
     addAndMakeVisible(playgroundInterface);
     addChildComponent(modularInterface);
-
+    addAndMakeVisible(midiInputSelector);
 
     switchInterface.setToggleState(false, juce::sendNotification);
 
@@ -74,7 +75,8 @@ void PluginEditor::resized()
 {
     // layout the positions of your child components here
     topStrip = getLocalBounds().withHeight(100).reduced(10);
-    titleGraphic.setBounds(topStrip.withWidth(150));
+    // titleGraphic.setBounds(topStrip.withWidth(150));
+    midiInputSelector.setBounds(topStrip.withWidth(150));
     switchInterface.setBounds(topStrip.withX(titleGraphic.getRight() + 10).withWidth(topStrip.getHeight() / 2));
     mixArea = topStrip.withWidth(60).withRightX(topStrip.getRight());
     mixSlider.setBounds(mixArea.withHeight(stretchArea.getHeight() / 2));
@@ -83,7 +85,9 @@ void PluginEditor::resized()
     stretchTimeSlider.setBounds(stretchArea.withHeight(stretchArea.getHeight() / 2));
     stretchLabel.setBounds(stretchArea.withTrimmedTop(stretchTimeSlider.getBottom()));
 
-    presetBrowser.setBounds(topStrip.withX(switchInterface.getRight() + 10).withHeight(topStrip.getHeight() / 2).withRight(stretchTimeSlider.getX() - 10));
+    presetBrowser.setBounds(topStrip.withX(switchInterface.getRight() + 10)
+                                 .withHeight(topStrip.getHeight() / 2)
+                                 .withRight(stretchTimeSlider.getX() - 10));
     auto belowPresetBrowser = presetBrowser.getBounds().withBottomY(topStrip.getBottom());
     copyXmlButton.setBounds(belowPresetBrowser.withWidth(belowPresetBrowser.getWidth() / 4));
     pasteXmlButton.setBounds(copyXmlButton.getBounds().withX(copyXmlButton.getRight()));

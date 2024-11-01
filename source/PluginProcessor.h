@@ -13,6 +13,8 @@
 juce::AudioProcessorValueTreeState::ParameterLayout makeParameters();
 std::vector<juce::String> makeModulationIds();
 
+#include "MidiReceiver.h"
+
 class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
 {
 public:
@@ -51,6 +53,8 @@ public:
     ModulationEngine modulationEngine;
 
     juce::AudioProcessorValueTreeState& getValueTreeState();
+
+    MidiReceiver midiReceiver;
 private:
     bool parametersNeedUpdating;
     void updateParameters();

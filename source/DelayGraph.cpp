@@ -570,3 +570,12 @@ void DelayGraph::setStretchTime (float newStretchTime)
         line->setStretchTime(newStretchTime);
     }
 }
+
+void DelayGraph::noteCallback (const juce::MidiMessage& message)
+{
+    if (message.isNoteOn()) {
+        for (auto& line : lines) {
+            line->setMidiTrackNote(message.getNoteNumber());
+        }
+    }
+}
