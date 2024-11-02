@@ -50,6 +50,7 @@ PluginProcessor::PluginProcessor()
       parameters(*this, nullptr, juce::Identifier("DELAY-LINE-PARAMETERS"), makeParameters()),
         modulationEngine(parameters, makeModulationIds(), delayGraph)
 {
+    std::cout << "plugin processor\n";
     parameters.addParameterListener(MIX_PARAM_ID, this);
     parameters.addParameterListener(STRETCH_TIME_ID, this);
     parameters.addParameterListener(CLEAR_PARAM_ID, this);
@@ -223,8 +224,12 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             buffer.setSample(channel, s, dry + wet);
         }
     }
-    if (auto bpmFromHost = *getPlayHead()->getPosition()->getBpm()) {
-        delayGraph.setBpm(bpmFromHost);
+    auto playhead = getPlayHead();
+    if (playhead) {
+        auto bpmFromHost = playhead->getPosition()->getBpm();
+        if (bpmFromHost) {
+            delayGraph.setBpm(*bpmFromHost);
+        }
     }
 }
 
