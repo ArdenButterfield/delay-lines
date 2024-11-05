@@ -149,6 +149,9 @@ private:
     std::vector<juce::dsp::BallisticsFilter<float>> lossFilters;
     std::vector<float> currentLossState;
     std::vector<float> sampleVal;
+
+    std::vector<float> panLevels;
+    float previousPanAmount;
 };
 
 #endif //DELAYLINES_GRAPHLINE_H

@@ -45,6 +45,12 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec& spec)
 {
     numChannels = spec.numChannels;
     sampleVal.resize(numChannels);
+    panLevels.resize(spec.numChannels);
+    for (auto& i : panLevels) {
+        i = 1;
+    }
+    previousPanAmount = 0;
+
     sampleRate = static_cast<float>(spec.sampleRate);
 
     auto targetLength = parameters.length.getLengthInSamples(sampleRate, 120);
@@ -173,6 +179,15 @@ void GraphLine::popSample ()
     }
 
     auto panAmount = pan.getNextValue();
+    if (!juce::approximatelyEqual(panAmount, previousPanAmount) && panLevels.size() > 1) {
+        panLevels[0] = juce::dsp::FastMathApproximations::cos((panAmount + 1) * juce::MathConstants<float>::pi * 0.25f) /
+                       juce::dsp::FastMathApproximations::cos(juce::MathConstants<float>::pi * 0.25f);
+        panLevels[1] = juce::dsp::FastMathApproximations::sin((panAmount + 1) * juce::MathConstants<float>::pi * 0.25f) /
+                       juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * 0.25f);
+        for (unsigned i = 2; i < panLevels.size(); ++i) {
+            panLevels[i] = 1;
+        }
+    }
 
     for (unsigned channel = 0; channel < numChannels; ++channel) {
         auto s = sampleVal[channel] * gainVal;
@@ -180,37 +195,15 @@ void GraphLine::popSample ()
             s = 0;
         }
 
-        if (numChannels > 1) {
-#if true
-            s *= (channel == 0) ? juce::dsp::FastMathApproximations::cos((panAmount + 1) * juce::MathConstants<float>::pi * 0.25f) /
-                                      juce::dsp::FastMathApproximations::cos(juce::MathConstants<float>::pi * 0.25f) :
-                                juce::dsp::FastMathApproximations::sin((panAmount + 1) * juce::MathConstants<float>::pi * 0.25f) /
-                                    juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * 0.25f);
-#else
-            s = parameters.distortion > 0 ? distortSample(channel, s) : s;
-            s *= (channel == 0) ? (
-                          panAmount > 0 ? (juce::dsp::FastMathApproximations::cos(panAmount * juce::MathConstants<float>::pi) + 1) * 0.5f : 1.f
-                          ) : (
-                          panAmount < 0 ? (juce::dsp::FastMathApproximations::cos(panAmount * juce::MathConstants<float>::pi) + 1) * 0.5f : 1.f
-                          );
-#endif
-        }
+        s = parameters.distortion > 0 ? distortSample(channel, s) : s;
+
+        s *= panLevels[channel];
         s *= parameters.invert ? -1 : 1;
 
         s = parameters.loCut > 5 ? loCutFilters[channel].processSingleSampleRaw(s) : s;
         s = parameters.hiCut < 19999 ? hiCutFilters[channel].processSingleSampleRaw(s) : s;
 
         s = std::min(std::max(s, -5.f), 5.f);
-#if false
-        float gain;
-
-        if (parameters.gainEnvelopeFollow > 0) {
-            gain = (1 - parameters.gainEnvelopeFollow) + parameters.gainEnvelopeFollow * inputEnvelope;
-        } else {
-            gain = 1 + inputEnvelope * parameters.gainEnvelopeFollow;
-        }
-        s *= gain;
-#endif
 
         if (!parameters.isBypassed()) {
             for (auto point : realOutputs) {
