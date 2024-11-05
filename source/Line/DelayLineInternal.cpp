@@ -5,21 +5,28 @@
 #include "DelayLineInternal.h"
 
 DelayLineInternal::DelayLineInternal (juce::dsp::ProcessSpec _spec, float initialLength, int maxLength, ModOscillator* _modOscillator)
-    : spec(_spec), delayLine(maxLength), envelopeDelayLine(maxLength), modOscillator(_modOscillator), tickLength(0.f)
+    : spec(_spec),
+      envelopeDelayLineDownsampleRatio(_spec.sampleRate * 5 / (1000 * 2)), // downsample to half of the attack time
+      delayLine(maxLength),
+      envelopeDelayLine((maxLength / envelopeDelayLineDownsampleRatio) + 1),
+      modOscillator(_modOscillator),
+      tickLength(0.f)
 {
     delayLine.prepare(spec);
     envelopeDelayLine.prepare(spec);
     delayLine.setDelay(initialLength);
-    envelopeDelayLine.setDelay(initialLength);
+    envelopeDelayLine.setDelay(initialLength / envelopeDelayLineDownsampleRatio);
     envelopeFilter.prepare(spec);
     envelopeFilter.setAttackTime(5);
     envelopeFilter.setReleaseTime(100);
+
 
     length.setRampLength(spec.sampleRate * stretchTime);
     length.resetToTarget(initialLength);
     lengthFader.setFadeTime(spec.sampleRate * 0.05f);
     lengthFader.resetToTarget(initialLength);
     stretchTime = 0;
+    envelopeCounter = 0;
 }
 
 DelayLineInternal::~DelayLineInternal()
@@ -41,8 +48,12 @@ void DelayLineInternal::pushSample (std::vector<float>& sample)
     for (unsigned i = 0; i < spec.numChannels; ++i) {
         delayLine.pushSample(static_cast<int>(i), sample[i]);
         auto envelope = envelopeFilter.processSample(static_cast<int>(i),sample[i]);
-        envelopeDelayLine.pushSample(static_cast<int>(i), envelope);
+        if (envelopeCounter == 0) {
+            envelopeDelayLine.pushSample(static_cast<int>(i), envelope);
+        }
     }
+    envelopeCounter++;
+    envelopeCounter %= envelopeDelayLineDownsampleRatio;
 }
 
 void DelayLineInternal::popSample (std::vector<float>& sample, bool updateReadPointer)
@@ -69,7 +80,9 @@ void DelayLineInternal::popSample (std::vector<float>& sample, bool updateReadPo
         }
         for (unsigned i = 0; i < spec.numChannels; ++i) {
             sample[i] = delayLine.popSample(static_cast<int>(i), l, updateReadPointer);
-            envelopeDelayLine.popSample(static_cast<int>(i), l, updateReadPointer);
+            if (envelopeCounter == 0) {
+                envelopeDelayLine.popSample(static_cast<int>(i), l, updateReadPointer);
+            }
         }
         lengthFader.tick();
     }
@@ -77,9 +90,9 @@ void DelayLineInternal::popSample (std::vector<float>& sample, bool updateReadPo
 
 void DelayLineInternal::getEnvelope (float proportion, float& left, float& right)
 {
-    left = envelopeDelayLine.popSample(0, delayLine.getDelay() * proportion, false);
+    left = envelopeDelayLine.popSample(0, delayLine.getDelay() * proportion / envelopeDelayLineDownsampleRatio, false);
     if (spec.numChannels > 1) {
-        right = envelopeDelayLine.popSample(1, delayLine.getDelay() * proportion, false);
+        right = envelopeDelayLine.popSample(1, delayLine.getDelay() * proportion / envelopeDelayLineDownsampleRatio, false);
     } else {
         right = left;
     }
