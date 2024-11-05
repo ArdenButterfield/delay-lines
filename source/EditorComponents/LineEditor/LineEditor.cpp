@@ -50,6 +50,8 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     feedbackSlider.setRange(0,120);
     feedbackSlider.setSuffix("%");
 
+    panSlider.setRange(-1, 1);
+
     for (auto slider : {
              &timeEnvelopeFollowSlider,
              &gainEnvelopeFollowSlider}) {
@@ -70,7 +72,8 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
              &feedbackSlider,
              &modDepthSlider,
              &modRateSlider,
-             &distortionSlider
+             &distortionSlider,
+             &panSlider
          }) {
         addAndMakeVisible(slider);
         slider->addListener(this);
@@ -84,6 +87,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     modDepthSlider.setModKey({ModulatableKey::line, graphLine, MOD_DEPTH_ID, modDepthSlider.getNormalisableRange()});
     modRateSlider.setModKey({ModulatableKey::line, graphLine, MOD_RATE_ID, modRateSlider.getNormalisableRange()});
     distortionSlider.setModKey({ModulatableKey::line, graphLine, DISTORTION_ID, distortionSlider.getNormalisableRange()});
+    panSlider.setModKey({ModulatableKey::line, graphLine, PAN_PARAMETER_ID, panSlider.getNormalisableRange()});
 
     addAndMakeVisible(lengthEditor);
 
@@ -109,6 +113,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
 
     gainLabel.setText("GAIN", juce::dontSendNotification);
     feedbackLabel.setText("FEEDBACK", juce::dontSendNotification);
+    panLabel.setText("PAN", juce::dontSendNotification);
     modLabel.setText("MOD", juce::dontSendNotification);
     modDepthLabel.setText("depth", juce::dontSendNotification);
     modRateLabel.setText("rate", juce::dontSendNotification);
@@ -122,6 +127,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     for (auto label : {
              &gainLabel,
              &feedbackLabel,
+             &panLabel,
              &modLabel,
              &modDepthLabel,
              &modRateLabel,
@@ -182,13 +188,17 @@ void LineEditor::resized()
 
     lengthEditor.setBounds(firstColumnInner.withTop(invertButton.getBottom() + 2).withHeight(80));
 
-    auto gainAndFeedbackArea = firstColumnInner.withTop(lengthEditor.getBottom()).withHeight(50);
-    auto gainArea = gainAndFeedbackArea.withWidth(gainAndFeedbackArea.getWidth() / 2);
-    auto feedbackArea = gainAndFeedbackArea.withTrimmedLeft(gainArea.getRight());
+    auto gainAndFeedbackArea = firstColumnInner.withTop(lengthEditor.getBottom()).withBottom(usableArea.getBottom());
+    auto gainArea = gainAndFeedbackArea.withWidth(gainAndFeedbackArea.getWidth() / 3);
+    auto feedbackArea = gainAndFeedbackArea.withLeft(gainArea.getRight()).withWidth(gainAndFeedbackArea.getWidth() / 3);
+    auto panArea = gainAndFeedbackArea.withLeft(feedbackArea.getRight());
+
     gainLabel.setBounds(gainArea.withHeight(12));
     feedbackLabel.setBounds(feedbackArea.withHeight(12));
+    panLabel.setBounds(panArea.withHeight(12));
     gainSlider.setBounds(gainArea.withTop(gainLabel.getBottom()));
     feedbackSlider.setBounds(feedbackArea.withTop(feedbackLabel.getBottom()));
+    panSlider.setBounds(panArea.withTop(panLabel.getBottom()));
 
     auto secondColumnInner = secondColumn.reduced(5);
     auto gutter = 5;
@@ -298,6 +308,8 @@ void LineEditor::sliderValueChanged (juce::Slider* slider)
         line->parameters.gainEnvelopeFollow = gainEnvelopeFollowSlider.getValue();
     } else if (slider == &feedbackSlider) {
         line->parameters.feedback = feedbackSlider.getValue();
+    } else if (slider == &panSlider) {
+        line->parameters.pan = panSlider.getValue();
     }
 }
 
@@ -315,6 +327,7 @@ void LineEditor::timerCallback()
     hiCutSlider.setValue(line->parameters.hiCut, juce::dontSendNotification);
     gainSlider.setValue(line->parameters.gain, juce::dontSendNotification);
     feedbackSlider.setValue(line->parameters.feedback, juce::dontSendNotification);
+    panSlider.setValue(line->parameters.pan, juce::dontSendNotification);
     invertButton.setToggleState(line->parameters.invert, juce::dontSendNotification);
     muteButton.setToggleState(line->parameters.isMuted(), juce::dontSendNotification);
     stagnateButton.setToggleState(line->parameters.isStagnated(), juce::dontSendNotification);

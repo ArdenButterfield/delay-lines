@@ -50,6 +50,7 @@ public:
     juce::Slider gainEnvelopeFollowSlider;
 
     CompactSlider feedbackSlider;
+    CompactSlider panSlider;
 
     static const juce::Rectangle<int> getDesiredBounds() {
         return {0,0,300,260};
@@ -59,6 +60,7 @@ private:
     juce::TextButton pasteButton;
 
     juce::Label gainLabel;
+    juce::Label panLabel;
     juce::Label feedbackLabel;
     juce::Label modLabel;
     juce::Label modRateLabel;

@@ -210,6 +210,7 @@ struct Parameters {
     juce::AudioParameterBool invert;
     juce::AudioParameterFloat gainEnvelopeFollow;
     juce::AudioParameterFloat feedback;
+    juce::AudioParameterFloat pan;
 
     std::vector<juce::RangedAudioParameter*> params {
         &muteBypass,
@@ -223,7 +224,8 @@ struct Parameters {
         &gain,
         &invert,
         &gainEnvelopeFollow,
-        &feedback
+        &feedback,
+        &pan
     };
 
     bool modulateIfPossible(ModulatableKey& key, float newValue);

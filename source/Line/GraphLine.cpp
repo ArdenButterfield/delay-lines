@@ -50,11 +50,15 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec& spec)
     modOscillator = std::make_unique<ModOscillator>(spec, parameters.modRate.get(), parameters.modDepth.get());
     delayLineInternal = std::make_unique<DelayLineInternal>(spec, targetLength, spec.sampleRate * 5, modOscillator.get());
 
+    gain.reset(spec.sampleRate, 0.02);
+    pan.reset(spec.sampleRate, 0.02);
     gain.setCurrentAndTargetValue(parameters.gain);
+    pan.setCurrentAndTargetValue(parameters.pan);
 
     lossmodel.clear();
     lossFilters.clear();
     currentLossState.clear();
+
     for (unsigned i = 0; i < spec.numChannels; ++i) {
         lossmodel.push_back(std::make_unique<LossModel>(spec.sampleRate));
         lossmodel.back()->setParameters(0.1, 0);
@@ -170,11 +174,22 @@ void GraphLine::popSample ()
             currentLossState[channel] = lossFilters[channel].processSample(0,v);
         }
     }
+
+    auto panAmount = pan.getNextValue();
+
     for (unsigned channel = 0; channel < numChannels; ++channel) {
         auto s = val[channel] * gainVal;
         if (!std::isfinite(s)) {
             s = 0;
         }
+
+        if (numChannels > 1) {
+            s *= (channel == 0) ? juce::dsp::FastMathApproximations::cos((panAmount + 1) * juce::MathConstants<float>::pi * 0.25f) /
+                                      juce::dsp::FastMathApproximations::cos(juce::MathConstants<float>::pi * 0.25f) :
+                                juce::dsp::FastMathApproximations::sin((panAmount + 1) * juce::MathConstants<float>::pi * 0.25f) /
+                                    juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * 0.25f);
+        }
+
         s = parameters.distortion > 0 ? distortSample(channel, s) : s;
         s *= parameters.invert ? -1 : 1;
 
@@ -340,6 +355,7 @@ void GraphLine::parameterValueChanged (int parameterIndex, float newValue)
 void GraphLine::recalculateParameters()
 {
     gain.setTargetValue(parameters.gain);
+    pan.setTargetValue(parameters.pan);
     modOscillator->setDepth(parameters.modDepth);
     modOscillator->setFrequency(parameters.modRate);
 

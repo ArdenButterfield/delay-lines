@@ -94,7 +94,8 @@ Parameters::Parameters() : muteBypass(MUTE_BYPASS_ID, "mute bypass", {"none", "m
                            gain(GAIN_ID, "gain", 0.f, 2.f, 1.f),
                            invert(INVERT_ID, "invert", false),
                            gainEnvelopeFollow(GAIN_ENVELOPE_FOLLOW_ID, "gain envelope follow", -1.f, 1.f, 0.f),
-                           feedback(FEEDBACK_ID, "feedback", 0.f, 120.f, 0.f)
+                           feedback(FEEDBACK_ID, "feedback", 0.f, 120.f, 0.f),
+                           pan(juce::ParameterID(PAN_PARAMETER_ID), "pan", -1.f, 1.f, 0.f)
 {}
 
 

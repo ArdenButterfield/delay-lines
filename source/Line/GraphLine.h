@@ -137,6 +137,7 @@ private:
     float sampleRate;
 
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> gain;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> pan;
 
     float distortSample(unsigned channel, float samp) const;
     std::vector<float> lastSample;
