@@ -95,7 +95,7 @@ public:
 
     const int identifier;
 
-    std::set<GraphPoint*> realOutputs;
+    std::unordered_set<GraphPoint*> realOutputs;
     void exportToXml(juce::XmlElement* parent);
     bool importFromXml(DelayGraph* dg, juce::XmlElement* parent);
 
