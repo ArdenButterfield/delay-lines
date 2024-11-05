@@ -188,6 +188,7 @@ void GraphLine::popSample ()
             panLevels[i] = 1;
         }
     }
+    previousPanAmount = panAmount;
 
     for (unsigned channel = 0; channel < numChannels; ++channel) {
         auto s = sampleVal[channel] * gainVal;
