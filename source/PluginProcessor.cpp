@@ -50,7 +50,6 @@ PluginProcessor::PluginProcessor()
       parameters(*this, nullptr, juce::Identifier("DELAY-LINE-PARAMETERS"), makeParameters()),
         modulationEngine(parameters, makeModulationIds(), delayGraph)
 {
-    std::cout << "plugin processor\n";
     parameters.addParameterListener(MIX_PARAM_ID, this);
     parameters.addParameterListener(STRETCH_TIME_ID, this);
     parameters.addParameterListener(CLEAR_PARAM_ID, this);

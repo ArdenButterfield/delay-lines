@@ -5,7 +5,6 @@
 #include "MidiReceiver.h"
 MidiReceiver::MidiReceiver()
 {
-    std::cout << "midi receiver\n";
     auto midiInputs = juce::MidiInput::getAvailableDevices();
 
     lastInputIndex = -1;
@@ -43,13 +42,11 @@ void MidiReceiver::setMidiInput (int index)
 
     deviceManager.addMidiInputDeviceCallback (newInput.identifier, this);
 
-    std::cout << "midi input set to " << newInput.name << "\n";
     lastInputIndex = index;
 }
 
 void MidiReceiver::handleIncomingMidiMessage (juce::MidiInput* source, const juce::MidiMessage& message)
 {
-    std::cout << message.getDescription() << "\n";
     for (auto& listener : listeners) {
         listener->noteCallback(message);
     }
