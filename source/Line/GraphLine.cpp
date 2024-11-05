@@ -139,7 +139,7 @@ float GraphLine::distortSample (unsigned channel, float samp) const
             return distortionAmount * wet + (1 - distortionAmount) * samp;
         case 2:
             // wavefold
-            wet = sin(samp * (distortionAmount * 5 + 1));
+            wet = juce::dsp::FastMathApproximations::sin(samp * (distortionAmount * 5 + 1));
             return distortionAmount * wet + (1 - distortionAmount) * samp;
         case 3:
             // bitcrush
