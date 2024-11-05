@@ -184,13 +184,20 @@ void GraphLine::popSample ()
         }
 
         if (numChannels > 1) {
+#if true
             s *= (channel == 0) ? juce::dsp::FastMathApproximations::cos((panAmount + 1) * juce::MathConstants<float>::pi * 0.25f) /
                                       juce::dsp::FastMathApproximations::cos(juce::MathConstants<float>::pi * 0.25f) :
                                 juce::dsp::FastMathApproximations::sin((panAmount + 1) * juce::MathConstants<float>::pi * 0.25f) /
                                     juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * 0.25f);
+#else
+            s = parameters.distortion > 0 ? distortSample(channel, s) : s;
+            s *= (channel == 0) ? (
+                          panAmount > 0 ? (juce::dsp::FastMathApproximations::cos(panAmount * juce::MathConstants<float>::pi) + 1) * 0.5f : 1.f
+                          ) : (
+                          panAmount < 0 ? (juce::dsp::FastMathApproximations::cos(panAmount * juce::MathConstants<float>::pi) + 1) * 0.5f : 1.f
+                          );
+#endif
         }
-
-        s = parameters.distortion > 0 ? distortSample(channel, s) : s;
         s *= parameters.invert ? -1 : 1;
 
         s = parameters.loCut > 5 ? loCutFilters[channel].processSingleSampleRaw(s) : s;
