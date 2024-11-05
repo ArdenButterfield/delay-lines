@@ -44,6 +44,7 @@ juce::Colour GraphLine::getRandomColour()
 void GraphLine::prepareToPlay (juce::dsp::ProcessSpec& spec)
 {
     numChannels = spec.numChannels;
+    sampleVal.resize(numChannels);
     sampleRate = static_cast<float>(spec.sampleRate);
 
     auto targetLength = parameters.length.getLengthInSamples(sampleRate, 120);
@@ -105,13 +106,11 @@ void GraphLine::pushSample (std::vector<float>& sample)
         return;
     }
 
-    auto val = std::vector<float>(numChannels);
-
     for (unsigned channel = 0; channel < numChannels; ++channel) {
-        val[channel] = sample[channel] + parameters.feedback / 100 * lastSample[channel];
+        sampleVal[channel] = sample[channel] + parameters.feedback / 100 * lastSample[channel];
     }
 
-    delayLineInternal->pushSample(val);
+    delayLineInternal->pushSample(sampleVal);
 }
 
 float GraphLine::distortSample (unsigned channel, float samp) const
@@ -157,9 +156,7 @@ void GraphLine::popSample ()
         return;
     }
 
-    auto val = std::vector<float>(numChannels);
-
-    delayLineInternal->popSample(val, !parameters.isStagnated());
+    delayLineInternal->popSample(sampleVal, !parameters.isStagnated());
 
     auto gainVal = gain.getNextValue();
     if (parameters.distortionType.getIndex() == 4) {
@@ -178,7 +175,7 @@ void GraphLine::popSample ()
     auto panAmount = pan.getNextValue();
 
     for (unsigned channel = 0; channel < numChannels; ++channel) {
-        auto s = val[channel] * gainVal;
+        auto s = sampleVal[channel] * gainVal;
         if (!std::isfinite(s)) {
             s = 0;
         }

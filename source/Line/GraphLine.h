@@ -148,6 +148,7 @@ private:
     std::vector<std::unique_ptr<LossModel>> lossmodel;
     std::vector<juce::dsp::BallisticsFilter<float>> lossFilters;
     std::vector<float> currentLossState;
+    std::vector<float> sampleVal;
 };
 
 #endif //DELAYLINES_GRAPHLINE_H
