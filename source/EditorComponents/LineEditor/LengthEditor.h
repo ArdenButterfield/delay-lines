@@ -39,6 +39,7 @@ private:
     CompactSlider millisecondsSlider;
     CompactSlider hertzSlider;
     CompactSlider noteSlider;
+    CompactSlider midiShiftSlider;
     PitchCompactSlider pitchSlider;
 
     CompactSlider beatNumerator;
@@ -46,6 +47,9 @@ private:
 
     DelayGraph& delayGraph;
     const int& graphLine;
+
+    juce::Label midiTrackNote;
+    juce::Label transposeLabel;
 };
 
 #endif //DELAYLINES_LENGTHEDITOR_H

@@ -36,7 +36,7 @@ void PresetBrowser::paint(juce::Graphics &g)
 void PresetBrowser::resized()
 {
     titleLabel.setBounds(getLocalBounds().withWidth(90));
-    presetMenu.setBounds(getLocalBounds().reduced(3).withLeft(titleLabel.getRight()));
+    presetMenu.setBounds(getLocalBounds().withLeft(titleLabel.getRight()).reduced(3));
 }
 
 void PresetBrowser::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)

@@ -7,6 +7,8 @@
 
 LengthEditor::LengthEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, const int& _line) : delayGraph(_delayGraph), graphLine(_line)
 {
+    transposeLabel.setText("Shift:", juce::dontSendNotification);
+
     startTimerHz(60);
     unitSelector.addItemList({"ms", "Samples", "Hz", "Pitch", "Beat", "MIDI track"}, 1); // offset must start at 1: 0 is reserved for undefined
     unitSelector.addListener(this);
@@ -25,6 +27,8 @@ LengthEditor::LengthEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph
     beatNumerator.setNormalisableRange({1, 32, 1, 0.6});
     beatDenominator.setNormalisableRange({1, 32, 1, 0.6});
 
+    midiShiftSlider.setNormalisableRange({-36, 36, 1, 1});
+
     addAndMakeVisible(unitSelector);
 
     for (auto slider : {
@@ -32,7 +36,9 @@ LengthEditor::LengthEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph
              &millisecondsSlider,
              &hertzSlider,
              &beatNumerator,
-             &beatDenominator}) {
+             &beatDenominator,
+             &midiShiftSlider
+         }) {
         addAndMakeVisible(slider);
         slider->addListener(this);
         slider->setMappingEngine(&me);
@@ -45,7 +51,7 @@ LengthEditor::LengthEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph
     pitchSlider.setModKey({ModulatableKey::line, graphLine, "pitch", pitchSlider.getNormalisableRange()});
     beatNumerator.setModKey({ModulatableKey::line, graphLine, "numerator", beatNumerator.getNormalisableRange()});
     beatDenominator.setModKey({ModulatableKey::line, graphLine, "denominator", beatDenominator.getNormalisableRange()});
-
+    midiShiftSlider.setModKey({ModulatableKey::line, graphLine, "midiTrackPitchShift", midiShiftSlider.getNormalisableRange()});
 
     addAndMakeVisible(pitchSlider);
     pitchSlider.addListener(this);
@@ -56,6 +62,9 @@ LengthEditor::LengthEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph
 
     updateSliders();
     updateUnitSelector();
+
+    addAndMakeVisible(transposeLabel);
+    addAndMakeVisible(midiTrackNote);
 }
 
 void LengthEditor::resized()
@@ -73,6 +82,9 @@ void LengthEditor::resized()
     beatNumerator.setBounds(sliderZone.withWidth(sliderZone.getWidth() / 2));
     beatDenominator.setBounds(beatNumerator.getBounds().withX(beatNumerator.getRight()));
 
+    midiTrackNote.setBounds(sliderZone.withWidth(30));
+    transposeLabel.setBounds(sliderZone.withLeft(midiTrackNote.getRight()).withWidth(50));
+    midiShiftSlider.setBounds(sliderZone.withLeft(transposeLabel.getRight()));
 }
 
 void LengthEditor::paint (juce::Graphics& g)
@@ -109,6 +121,8 @@ void LengthEditor::sliderValueChanged (juce::Slider* slider)
         auto n = static_cast<int>(std::round(beatNumerator.getValue()));
         auto d = static_cast<int>(std::round(beatDenominator.getValue()));
         line->parameters.length.setBeat(n, d);
+    } else if (slider == &midiShiftSlider) {
+        line->parameters.length.setMidiTrackPitchShift(midiShiftSlider.getValue());
     }
 }
 
@@ -140,12 +154,16 @@ void LengthEditor::updateSliders()
         default: break;
     }
 
+    midiTrackNote.setText(juce::MidiMessage::getMidiNoteName(
+        line->parameters.length.getMidiTrackNote(), true, true, 4), juce::dontSendNotification);
+
     samplesSlider.setValue(line->parameters.length.getSamplesLength(), juce::dontSendNotification);
     millisecondsSlider.setValue(line->parameters.length.getMillisecondsLength(), juce::dontSendNotification);
     hertzSlider.setValue(line->parameters.length.getHertz(), juce::dontSendNotification);
     pitchSlider.setValue(line->parameters.length.getMidiNote(), juce::dontSendNotification);
     beatNumerator.setValue(line->parameters.length.getNumerator(), juce::dontSendNotification);
     beatDenominator.setValue(line->parameters.length.getDenominator(), juce::dontSendNotification);
+    midiShiftSlider.setValue(line->parameters.length.getMidiTrackPitchShift(), juce::dontSendNotification);
 }
 void LengthEditor::updateUnitSelector()
 {
@@ -160,8 +178,12 @@ void LengthEditor::updateUnitSelector()
     pitchSlider.setVisible(false);
     beatNumerator.setVisible(false);
     beatDenominator.setVisible(false);
+    midiShiftSlider.setVisible(false);
 
     bpmTapper.setVisible(false);
+
+    transposeLabel.setVisible(false);
+    midiTrackNote.setVisible(false);
 
     switch (unitSelector.getSelectedId())
     {
@@ -188,6 +210,9 @@ void LengthEditor::updateUnitSelector()
             line->parameters.length.setMode(DelayLength::beat);
             break;
         case 6:
+            midiShiftSlider.setVisible(true);
+            midiTrackNote.setVisible(true);
+            transposeLabel.setVisible(true);
             line->parameters.length.setMode(DelayLength::midiTrack);
         default: break;
     }

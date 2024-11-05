@@ -47,10 +47,12 @@ void MidiReceiver::setMidiInput (int index)
 
 void MidiReceiver::handleIncomingMidiMessage (juce::MidiInput* source, const juce::MidiMessage& message)
 {
+    std::cout << message.getDescription() << "\n";
     for (auto& listener : listeners) {
         listener->noteCallback(message);
     }
 }
+
 int MidiReceiver::getInputIndex() {
     if (lastInputIndex >= juce::MidiInput::getAvailableDevices().size()) {
         lastInputIndex = 0;

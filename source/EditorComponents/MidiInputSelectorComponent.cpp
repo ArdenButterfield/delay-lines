@@ -3,12 +3,19 @@
 //
 
 #include "MidiInputSelectorComponent.h"
+#include "DelayLinesLookAndFeel.h"
+
 
 MidiInputSelectorComponent::MidiInputSelectorComponent(MidiReceiver& mr) : receiver(mr)
 {
-    midiInputLabel.setText("Midi Input device", juce::dontSendNotification);
     addAndMakeVisible(midiInputLabel);
     addAndMakeVisible(midiInputList);
+
+    midiInputLabel.setText("MIDI device", juce::dontSendNotification);
+    midiInputLabel.setFont(juce::Font(DelayLinesLookAndFeel::getMonoFont()).withHeight(16.0f));
+    midiInputLabel.setColour(juce::Label::textColourId, juce::Colours::black);
+    midiInputLabel.setJustificationType(juce::Justification::centredLeft);
+
 
     auto midiInputs = juce::MidiInput::getAvailableDevices();
     midiInputList.setTextWhenNoChoicesAvailable ("No MIDI Inputs Enabled");
@@ -30,13 +37,13 @@ MidiInputSelectorComponent::~MidiInputSelectorComponent()
 }
 void MidiInputSelectorComponent::paint (juce::Graphics& g)
 {
-    g.setColour(juce::Colours::magenta);
+    g.setColour(juce::Colours::lightgrey);
     g.fillAll();
 }
 void MidiInputSelectorComponent::resized()
 {
-    midiInputLabel.setBounds(getLocalBounds().withWidth(20));
-    midiInputList.setBounds(getLocalBounds().withTrimmedLeft(midiInputLabel.getRight()));
+    midiInputLabel.setBounds(getLocalBounds().withWidth(90));
+    midiInputList.setBounds(getLocalBounds().withTrimmedLeft(midiInputLabel.getRight()).reduced(3));
 }
 
 void MidiInputSelectorComponent::setMidiInput (int index)

@@ -20,6 +20,7 @@ void DelayLength::exportToXml (juce::XmlElement* parent)
     delayLength->setAttribute("pitch", midiNote);
     delayLength->setAttribute("numerator", beatLength[0]);
     delayLength->setAttribute("denominator", beatLength[1]);
+    delayLength->setAttribute("midiTrackPitchShift", midiTrackPitchShift);
 }
 
 bool DelayLength::importFromXml (juce::XmlElement* parent)
@@ -33,6 +34,7 @@ bool DelayLength::importFromXml (juce::XmlElement* parent)
         midiNote = static_cast<float>(delayLength->getDoubleAttribute("pitch", midiNote));
         beatLength[0] = static_cast<float>(delayLength->getDoubleAttribute("numerator", beatLength[0]));
         beatLength[1] = static_cast<float>(delayLength->getDoubleAttribute("denominator", beatLength[1]));
+        midiTrackPitchShift = static_cast<float>(delayLength->getDoubleAttribute("midiTrackPitchShift", midiTrackPitchShift));
         return true;
     }
     return false;
@@ -51,8 +53,10 @@ bool DelayLength::modulateIfPossible (ModulatableKey& key, float newValue)
         setBeat(key.range.convertFrom0to1(newValue), getDenominator());
     } else if (key.parameterId == juce::Identifier("denominator")) {
         setBeat(getNumerator(), key.range.convertFrom0to1(newValue));
+    } else if (key.parameterId == juce::Identifier("midiTrackPitchShift")) {
+        setMidiTrackPitchShift(key.range.convertFrom0to1(newValue));
     } else {
-        return false;
+            return false;
     }
     return true;
 }
@@ -71,6 +75,8 @@ bool DelayLength::getModulationValue (ModulatableKey& key, float& val)
         val = key.range.convertTo0to1(getNumerator());
     } else if (key.parameterId == juce::Identifier("denominator")) {
         val = key.range.convertTo0to1(getDenominator());
+    } else if (key.parameterId == juce::Identifier("midiTrackPitchShift")) {
+        val = key.range.convertTo0to1(getMidiTrackPitchShift());
     } else {
         return false;
     }

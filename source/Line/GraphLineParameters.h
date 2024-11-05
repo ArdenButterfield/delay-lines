@@ -43,7 +43,9 @@ struct DelayLength {
                        * 60 // seconds / minute
                        * samplerate; // samples / second
             case midiTrack:
-                return samplerate / static_cast<float>(juce::MidiMessage::getMidiNoteInHertz(static_cast<int>(std::round(midiTrackNote))));
+                return samplerate / static_cast<float>(
+                           juce::MidiMessage::getMidiNoteInHertz(static_cast<int>(std::round(midiTrackNote)))
+                           * std::pow(2.f, midiTrackPitchShift / 12.f));
             default: return 0;
         }
     }
@@ -106,6 +108,10 @@ struct DelayLength {
         midiTrackNote = static_cast<float>(n);
     }
 
+    void setMidiTrackPitchShift(float s) {
+        midiTrackPitchShift = s;
+    }
+
     void setBeat(int numerator, int denominator) {
         beatLength[0] = static_cast<float>(numerator);
         beatLength[1] = static_cast<float>(denominator);
@@ -128,6 +134,14 @@ struct DelayLength {
         return static_cast<int>(std::round(midiNote));
     }
 
+    float getMidiTrackPitchShift() {
+        return midiTrackPitchShift;
+    }
+
+    [[nodiscard]] int getMidiTrackNote() const {
+        return static_cast<int>(std::round(midiTrackNote));
+    }
+
     [[nodiscard]] int getNumerator() const {
         return static_cast<int>(std::round(beatLength[0]));
     }
@@ -148,13 +162,14 @@ struct DelayLength {
 private:
     Mode mode;
 
-    float samplesLength;
-    float millisecondsLength;
+    float samplesLength = 100;
+    float millisecondsLength = 500;
     float hertz;
-    float midiNote;
+    float midiNote = 40;
     float midiTrackNote{};
-    std::array<float, 2> beatLength;
+    std::array<float, 2> beatLength{1,4};
 
+    float midiTrackPitchShift = 0;
 };
 
 
