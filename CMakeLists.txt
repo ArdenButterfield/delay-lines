@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.24.1)
 
 # This tells cmake we have goodies in the /cmake folder
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/callgrind_benchmark")
 include (PamplejuceVersion)
 
 # Configures universal binaries and decides which version of macOS to support
@@ -167,3 +168,5 @@ include(Benchmarks)
 
 # Pass some config to GA (like our PRODUCT_NAME)
 include(GitHubENV)
+
+include(callgrind)

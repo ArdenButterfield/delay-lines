@@ -32,6 +32,11 @@ public:
         depthParam = depth;
         recalculateDepth(oscillator.getFrequency(), depth);
     }
+
+    float getDepth() const {
+        return depthParam;
+    }
+
     float tick()
     {
         currentValue = oscillator.processSample(0);

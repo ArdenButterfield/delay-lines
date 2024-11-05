@@ -50,7 +50,7 @@ void DelayLineInternal::popSample (std::vector<float>& sample, bool updateReadPo
     if (juce::approximatelyEqual(stretchTime, 0.f)) {
         float firstLength, firstLevel, secondLength, secondLevel;
         lengthFader.getNextValue(firstLength, firstLevel, secondLength, secondLevel);
-        if (modOscillator) {
+        if (modOscillator && !juce::approximatelyEqual(modOscillator->getDepth(), 0.f)) {
             auto mod = modOscillator->tick();
             firstLength *= mod;
             secondLength *= mod;
@@ -64,7 +64,7 @@ void DelayLineInternal::popSample (std::vector<float>& sample, bool updateReadPo
     } else {
         auto l = length.getNextValue();
 
-        if (modOscillator) {
+        if (modOscillator && !juce::approximatelyEqual(modOscillator->getDepth(), 0.f)) {
             l *= modOscillator->tick();
         }
         for (unsigned i = 0; i < spec.numChannels; ++i) {
