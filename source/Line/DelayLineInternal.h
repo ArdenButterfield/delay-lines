@@ -34,7 +34,7 @@ public:
     void setStretchTime(float stretchTime);
 private:
     const juce::dsp::ProcessSpec spec;
-    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Lagrange3rd> delayLine;
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Thiran> delayLine;
 
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::None> envelopeDelayLine;
     juce::dsp::BallisticsFilter<float> envelopeFilter;

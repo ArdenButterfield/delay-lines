@@ -204,7 +204,6 @@ void GraphLine::popSample ()
         s = parameters.hiCut < 19999 ? hiCutFilters[channel].processSingleSampleRaw(s) : s;
 
         s = std::min(std::max(s, -5.f), 5.f);
-
 #if false
         float gain;
 
