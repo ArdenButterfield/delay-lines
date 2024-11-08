@@ -37,7 +37,7 @@ void DelayLinesLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, i
 
 void DelayLinesLookAndFeel::drawToggleButton (juce::Graphics& g , juce::ToggleButton& b, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
 {
-    g.setFont(getMonoFont());
+    g.setFont(juce::Font(getMonoFont()).withHeight(10));
     LookAndFeel_V4::drawToggleButton (g, b, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
 }
 

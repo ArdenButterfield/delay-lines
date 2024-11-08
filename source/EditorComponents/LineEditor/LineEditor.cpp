@@ -30,8 +30,6 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     loCutSlider.setNormalisableRange(filterRange);
     hiCutSlider.setNormalisableRange(filterRange);
 
-    loCutSlider.numDecimalPlacesToDisplay = 1;
-    hiCutSlider.numDecimalPlacesToDisplay = 1;
     gainSlider.setRange(0,2);
 
     gainEnvelopeFollowSlider.setRange(-1,1);
@@ -78,7 +76,10 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
         addAndMakeVisible(slider);
         slider->addListener(this);
         slider->setMappingEngine(&mappingEngine);
+        slider->setFontHeight(15);
+        slider->setNumDecimalPlacesToDisplay(2);
     }
+    feedbackSlider.setNumDecimalPlacesToDisplay(1);
 
     loCutSlider.setModKey({ModulatableKey::line, graphLine, LOCUT_ID, loCutSlider.getNormalisableRange()});
     hiCutSlider.setModKey({ModulatableKey::line, graphLine, HICUT_ID, hiCutSlider.getNormalisableRange()});
@@ -121,9 +122,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     filterLoLabel.setText("lo", juce::dontSendNotification);
     filterHiLabel.setText("hi", juce::dontSendNotification);
 
-    filterLoLabel.setJustificationType(juce::Justification::centredBottom);
-    filterLabel.setJustificationType(juce::Justification::centredBottom);
-    filterHiLabel.setJustificationType(juce::Justification::centredBottom);
+
     for (auto label : {
              &gainLabel,
              &feedbackLabel,
@@ -137,7 +136,12 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
          }) {
         addAndMakeVisible(label);
         label->setColour(juce::Label::ColourIds::textColourId, juce::Colours::black);
+        label->setJustificationType(juce::Justification::centred);
     }
+
+    filterLoLabel.setJustificationType(juce::Justification::centredBottom);
+    filterLabel.setJustificationType(juce::Justification::centredBottom);
+    filterHiLabel.setJustificationType(juce::Justification::centredBottom);
 
     addAndMakeVisible(distortionTypeSelector);
     distortionTypeSelector.addItemList(DISTORTION_TYPE_OPTIONS, 1);
@@ -145,10 +149,15 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     startTimerHz(60);
 
     gainSlider.setColour(juce::Slider::ColourIds::textBoxTextColourId, juce::Colours::black);
-    gainSlider.numDecimalPlacesToDisplay = 2;
+    gainSlider.setNumDecimalPlacesToDisplay(2);
+    loCutSlider.setNumDecimalPlacesToDisplay(1);
+    hiCutSlider.setNumDecimalPlacesToDisplay(1);
     feedbackSlider.setColour(juce::Slider::ColourIds::textBoxTextColourId, juce::Colours::black);
 
     setBroughtToFrontOnMouseClick(true);
+
+    modLabel.setFont(modLabel.getFont().withHeight(19));
+    filterLabel.setFont(modLabel.getFont().withHeight(19));
 }
 
 LineEditor::~LineEditor() {
@@ -169,6 +178,7 @@ void LineEditor::resized()
     firstColumn = firstColumn.withTrimmedRight(1);
     secondColumn = secondColumn.withTrimmedLeft(1);
     columnGutter = firstColumn.withRight(secondColumn.getX()).withLeft(firstColumn.getRight());
+    columnGutter.setTop(columnGutter.getY() - 4);
 
     copyButton.setBounds(topBar.withTrimmedTop(2).withTrimmedLeft(2).withTrimmedBottom(2));
     copyButton.changeWidthToFitText();
@@ -180,17 +190,18 @@ void LineEditor::resized()
 
     auto firstColumnInner = firstColumn.withSize(firstColumn.getWidth() - 4, firstColumn.getHeight() - 4);
 
-    const auto buttonHeight = 20;
-    bypassButton.setBounds(firstColumnInner.withHeight(buttonHeight));
-    muteButton.setBounds(firstColumnInner.withTop(bypassButton.getBottom() + 2).withHeight(buttonHeight));
-    stagnateButton.setBounds(firstColumnInner.withTop(muteButton.getBottom() + 2).withHeight(buttonHeight));
-    invertButton.setBounds(firstColumnInner.withTop(stagnateButton.getBottom() + 2).withHeight(buttonHeight));
+    const auto buttonHeight = 18;
+    buttonArea = firstColumnInner.withHeight(buttonHeight * 2);
+    bypassButton.setBounds(buttonArea.withWidth(buttonArea.getWidth() / 2).withHeight(buttonArea.getHeight() / 2));
+    muteButton.setBounds(bypassButton.getBounds().withBottomY(buttonArea.getBottom()));
+    stagnateButton.setBounds(bypassButton.getBounds().withRightX(buttonArea.getRight()));
+    invertButton.setBounds(stagnateButton.getBounds().withBottomY(buttonArea.getBottom()));
 
-    lengthEditor.setBounds(firstColumnInner.withTop(invertButton.getBottom() + 2).withHeight(80));
+    lengthEditor.setBounds(firstColumnInner.withTop(buttonArea.getBottom() + 5).withHeight(80));
 
-    auto gainAndFeedbackArea = firstColumnInner.withTop(lengthEditor.getBottom()).withBottom(usableArea.getBottom());
-    auto gainArea = gainAndFeedbackArea.withWidth(gainAndFeedbackArea.getWidth() / 3);
-    auto panArea = gainAndFeedbackArea.withLeft(gainArea.getRight()).withWidth(gainAndFeedbackArea.getWidth() / 3);
+    auto gainAndFeedbackArea = firstColumnInner.withTop(lengthEditor.getBottom() + 5).withBottom(usableArea.getBottom());
+    auto gainArea = gainAndFeedbackArea.withWidth(gainAndFeedbackArea.getWidth() * 0.28);
+    auto panArea = gainAndFeedbackArea.withLeft(gainArea.getRight()).withWidth(gainAndFeedbackArea.getWidth() * 0.28);
     auto feedbackArea = gainAndFeedbackArea.withLeft(panArea.getRight());
 
     gainLabel.setBounds(gainArea.withHeight(12));
@@ -235,7 +246,7 @@ void LineEditor::resized()
 
     // Distortion
     {
-        distortionTypeSelector.setBounds(distortionArea.withHeight(40).withBottomY(distortionArea.getBottom()));
+        distortionTypeSelector.setBounds(distortionArea.withHeight(distortionArea.getHeight() / 2).withBottomY(distortionArea.getBottom()));
         distortionSlider.setBounds(distortionArea.withBottom(distortionTypeSelector.getY()));
         distortionVisualizer.setBounds(distortionSlider.getBounds());
     }
@@ -266,8 +277,13 @@ void LineEditor::paint (juce::Graphics& g)
 {
     auto line = delayGraph.getLine(graphLine);
     if (line) {
-        g.setColour(line->getColor().withLightness(0.95f));
+        auto backgorundColour = line->getColor().withLightness(0.95f);
+        g.setColour(backgorundColour);
         g.fillAll();
+        g.setColour(line->getColor().withLightness(0.85f));
+        g.fillRect(buttonArea);
+        g.setColour(backgorundColour);
+        g.fillRect(invertButton.getBounds());
         textureArea (g, topBar);
         g.setColour (line->getColor());
         bypassButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, line->getColor());
@@ -280,6 +296,10 @@ void LineEditor::paint (juce::Graphics& g)
         g.setColour(juce::Colours::black.withAlpha(0.2f));
 
         g.drawRect(getLocalBounds(), 3);
+        g.setColour(line->getColor().withLightness(0.85f));
+        g.drawVerticalLine(gainSlider.getRight(), gainSlider.getY(), gainSlider.getBottom());
+        g.drawVerticalLine(panSlider.getRight(), panSlider.getY(), panSlider.getBottom());
+
     }
 
 }

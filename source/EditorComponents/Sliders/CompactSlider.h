@@ -26,7 +26,7 @@ public:
     void labelTextChanged(juce::Label *labelThatHasChanged) override {}
     void editorShown(juce::Label * label, juce::TextEditor & textEditor) override;
     void editorHidden(juce::Label * label, juce::TextEditor & textEditor) override;
-    int numDecimalPlacesToDisplay;
+    void setFontHeight(float height);
 private:
     juce::String suffix;
     juce::Label valueLabel;

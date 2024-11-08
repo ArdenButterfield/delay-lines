@@ -8,6 +8,7 @@
 CompactSlider::CompactSlider()
     : suffix("")
 {
+    setNumDecimalPlacesToDisplay(2);
     setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     addAndMakeVisible(valueLabel);
@@ -17,10 +18,10 @@ CompactSlider::CompactSlider()
     valueLabel.setFont(
         juce::Font(DelayLinesLookAndFeel::getMonoFont()).withPointHeight(15));
     valueLabel.setColour(juce::Label::textColourId, juce::Colours::black);
-    numDecimalPlacesToDisplay = 0;
     valueLabel.setColour(juce::Label::backgroundWhenEditingColourId, juce::Colours::white.withAlpha(0.5f));
     valueLabel.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
     valueLabel.setColour(juce::Label::outlineWhenEditingColourId, juce::Colours::black.withAlpha(0.2f));
+    valueLabel.setJustificationType(juce::Justification::centred);
 }
 
 void CompactSlider::setSuffix (const juce::String& _suffix)
@@ -68,5 +69,9 @@ void CompactSlider::editorHidden (juce::Label* label, juce::TextEditor& textEdit
 
 juce::String CompactSlider::getDisplayText (double rawValue)
 {
-    return juce::String(rawValue, numDecimalPlacesToDisplay) + suffix;
+    return juce::String(rawValue, getNumDecimalPlacesToDisplay()) + suffix;
+}
+void CompactSlider::setFontHeight (float height)
+{
+    valueLabel.setFont(valueLabel.getFont().withHeight(height));
 }

@@ -13,7 +13,7 @@ LengthEditor::LengthEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph
     unitSelector.addItemList({"ms", "Samples", "Hz", "Pitch", "Beat", "MIDI track"}, 1); // offset must start at 1: 0 is reserved for undefined
     unitSelector.addListener(this);
 
-    samplesSlider.setNormalisableRange({0,200});
+    samplesSlider.setNormalisableRange({1,200});
     samplesSlider.setSkewFactorFromMidPoint(30);
 
     millisecondsSlider.setNormalisableRange({0,5000});

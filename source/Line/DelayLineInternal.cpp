@@ -38,6 +38,8 @@ void DelayLineInternal::setTargetLength (float l)
         l = std::round(l / tickLength) * tickLength;
     }
 
+    l -= 1;
+
     auto target = std::min(std::max(0.f, l), static_cast<float>(delayLine.getMaximumDelayInSamples() - 1));
     length.setTarget(target);
     lengthFader.setTarget(target);

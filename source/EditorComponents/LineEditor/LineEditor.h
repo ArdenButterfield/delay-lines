@@ -53,7 +53,7 @@ public:
     CompactSlider panSlider;
 
     static const juce::Rectangle<int> getDesiredBounds() {
-        return {0,0,300,260};
+        return {0,0,330,235};
     }
 private:
     juce::TextButton copyButton;
@@ -78,7 +78,7 @@ private:
     juce::Rectangle<int> modArea;
     juce::Rectangle<int> filterArea;
     juce::Rectangle<int> distortionArea;
-
+    juce::Rectangle<int> buttonArea;
     juce::Rectangle<int> usableArea;
 
     juce::ComponentDragger dragger;

@@ -52,7 +52,7 @@ void ModKnob::paint (juce::Graphics& g)
 void ModKnob::resized()
 {
     slider->setBounds(getLocalBounds().withHeight(getHeight() - 20));
-    mapButton->setBounds(getLocalBounds().withTrimmedTop(getHeight() - 30));
+    mapButton->setBounds(getLocalBounds().withTop(slider->getBottom() - 4));
     unmapButton->setBounds(mapButton->getBounds());
     mappingLabel.setBounds(unmapButton->getBounds());
 }
