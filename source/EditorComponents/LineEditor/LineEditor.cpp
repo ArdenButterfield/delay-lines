@@ -111,7 +111,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
         button->addListener(this);
     }
 
-    gainLabel.setText("GAIN", juce::dontSendNotification);
+    gainLabel.setText("DRIVE", juce::dontSendNotification);
     feedbackLabel.setText("FEEDBACK", juce::dontSendNotification);
     panLabel.setText("PAN", juce::dontSendNotification);
     modLabel.setText("MOD", juce::dontSendNotification);
@@ -190,8 +190,8 @@ void LineEditor::resized()
 
     auto gainAndFeedbackArea = firstColumnInner.withTop(lengthEditor.getBottom()).withBottom(usableArea.getBottom());
     auto gainArea = gainAndFeedbackArea.withWidth(gainAndFeedbackArea.getWidth() / 3);
-    auto feedbackArea = gainAndFeedbackArea.withLeft(gainArea.getRight()).withWidth(gainAndFeedbackArea.getWidth() / 3);
-    auto panArea = gainAndFeedbackArea.withLeft(feedbackArea.getRight());
+    auto panArea = gainAndFeedbackArea.withLeft(gainArea.getRight()).withWidth(gainAndFeedbackArea.getWidth() / 3);
+    auto feedbackArea = gainAndFeedbackArea.withLeft(panArea.getRight());
 
     gainLabel.setBounds(gainArea.withHeight(12));
     feedbackLabel.setBounds(feedbackArea.withHeight(12));
