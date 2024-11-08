@@ -108,12 +108,25 @@ void GraphLine::calculateInternalLength()
 
 void GraphLine::pushSample (std::vector<float>& sample)
 {
+    auto gainVal = gain.getNextValue();
+    auto panAmount = pan.getNextValue();
+    if (!juce::approximatelyEqual(panAmount, previousPanAmount) && panLevels.size() > 1) {
+        panLevels[0] = juce::dsp::FastMathApproximations::cos((panAmount + 1) * juce::MathConstants<float>::pi * 0.25f) /
+                       juce::dsp::FastMathApproximations::cos(juce::MathConstants<float>::pi * 0.25f);
+        panLevels[1] = juce::dsp::FastMathApproximations::sin((panAmount + 1) * juce::MathConstants<float>::pi * 0.25f) /
+                       juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * 0.25f);
+        for (unsigned i = 2; i < panLevels.size(); ++i) {
+            panLevels[i] = 1;
+        }
+    }
+    previousPanAmount = panAmount;
+
     if ((!prepared) || (parameters.isMuted()) || (parameters.isStagnated())) {
         return;
     }
 
     for (unsigned channel = 0; channel < numChannels; ++channel) {
-        sampleVal[channel] = sample[channel] + parameters.feedback / 100 * lastSample[channel];
+        sampleVal[channel] = (sample[channel] * gainVal * panLevels[channel]) + (parameters.feedback / 100 * lastSample[channel]);
     }
 
     delayLineInternal->pushSample(sampleVal);
@@ -164,7 +177,6 @@ void GraphLine::popSample ()
 
     delayLineInternal->popSample(sampleVal, !parameters.isStagnated());
 
-    auto gainVal = gain.getNextValue();
     if (parameters.distortionType.getIndex() == 4) {
         // mono
         auto v = lossmodel[0]->tick() ? 0.f : 1.f;
@@ -178,27 +190,15 @@ void GraphLine::popSample ()
         }
     }
 
-    auto panAmount = pan.getNextValue();
-    if (!juce::approximatelyEqual(panAmount, previousPanAmount) && panLevels.size() > 1) {
-        panLevels[0] = juce::dsp::FastMathApproximations::cos((panAmount + 1) * juce::MathConstants<float>::pi * 0.25f) /
-                       juce::dsp::FastMathApproximations::cos(juce::MathConstants<float>::pi * 0.25f);
-        panLevels[1] = juce::dsp::FastMathApproximations::sin((panAmount + 1) * juce::MathConstants<float>::pi * 0.25f) /
-                       juce::dsp::FastMathApproximations::sin(juce::MathConstants<float>::pi * 0.25f);
-        for (unsigned i = 2; i < panLevels.size(); ++i) {
-            panLevels[i] = 1;
-        }
-    }
-    previousPanAmount = panAmount;
 
     for (unsigned channel = 0; channel < numChannels; ++channel) {
-        auto s = sampleVal[channel] * gainVal;
+        auto s = sampleVal[channel];
         if (!std::isfinite(s)) {
             s = 0;
         }
 
         s = parameters.distortion > 0 ? distortSample(channel, s) : s;
 
-        s *= panLevels[channel];
         s *= parameters.invert ? -1 : 1;
 
         s = parameters.loCut > 5 ? loCutFilters[channel].processSingleSampleRaw(s) : s;
