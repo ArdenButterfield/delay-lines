@@ -20,6 +20,10 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 
     setLookAndFeel(&delayLinesLookAndFeel);
 
+    copyXmlButton.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+    pasteXmlButton.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+    clearLinesButton.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+
     copyXmlButton.addListener(this);
     pasteXmlButton.addListener(this);
     modulatorOverlayButton.addListener(this);
