@@ -15,6 +15,8 @@ TitleGraphic::TitleGraphic()
     stretch = 0;
     manualLink.setButtonText("manual");
     manualLink.setURL(juce::URL("https://github.com/ArdenButterfield/delay-lines"));
+    manualLink.setFont(juce::Font(DelayLinesLookAndFeel::getMonoFont()).withHeight(10),
+        false, juce::Justification::topLeft);
     addAndMakeVisible(manualLink);
 }
 TitleGraphic::~TitleGraphic()
@@ -63,7 +65,5 @@ void TitleGraphic::mouseExit (const juce::MouseEvent& event)
 }
 void TitleGraphic::resized()
 {
-    manualLink.setBounds(getLocalBounds());
-    manualLink.setFont(juce::Font(DelayLinesLookAndFeel::getMonoFont()).withHeight(10),
-        false, juce::Justification::bottomRight);
+    manualLink.setBounds(getLocalBounds().withTop(getBottom() - 20));
 }
