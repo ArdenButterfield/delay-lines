@@ -144,8 +144,6 @@ TEST_CASE("Import XML", "[importxml]")
     auto data = juce::MemoryBlock();
     p.getStateInformation(data);
     auto xml = p.getXmlFromBinary(data.begin(), data.getSize());
-    std::cout << xmlElement->toString();
-    std::cout << xml->toString();
     // REQUIRE( xmlElement->isEquivalentTo(xml.get(), true));
 }
 
@@ -161,7 +159,6 @@ TEST_CASE( "set preset", "[setpreset]")
     p.presetMenu.setSelectedId(2, juce::NotificationType::sendNotificationSync);
     auto finalXml = juce::XmlElement("plugin-state");
     testPlugin.delayGraph.exportToXml(&finalXml);
-    // std::cout << finalXml.toString();
     auto desired = juce::parseXML(R"(<?xml version="1.0" encoding="UTF-8"?>
                    <plugin-state>
                    <graph>
@@ -356,6 +353,60 @@ TEST_CASE("modulation", "[mod]")
     p.modulationEngine.setParameterValue(4, 0.7f);
     REQUIRE(juce::approximatelyEqual(p.modulationEngine.getParameterValue(4), 0.7f));
     REQUIRE(juce::approximatelyEqual(p.delayGraph.getLines()[0]->parameters.loCut.convertTo0to1(p.delayGraph.getLines()[0]->parameters.loCut), 0.7f));
+}
+
+TEST_CASE("sample delay", "[sampledelay]")
+{
+    // This lets us use JUCE's MessageManager without leaking.
+    // PluginProcessor might need this if you use the APVTS for example.
+    // You'll also need it for tests that rely on juce::Graphics, juce::Timer, etc.
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+    PluginProcessor p;
+    const auto samplesPerBlock = 512;
+    p.prepareToPlay(44100, samplesPerBlock);
+
+    for (auto sampleDelayLength : {5.0, 1.0, 10.0, 100.0}) {
+        auto xmlText = juce::String(R"(<?xml version="1.0" encoding="UTF-8"?> <plugin-state apvts="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#13;&#10;&#13;&#10;&lt;DELAY-LINE-PARAMETERS&gt;&#13;&#10;  &lt;PARAM id=&quot;clear&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mix&quot; value=&quot;100.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod0&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod1&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod2&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod3&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod4&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod5&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod6&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod7&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod8&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod9&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;stretchtime&quot; value=&quot;0.09999999403953552&quot;/&gt;&#13;&#10;&lt;/DELAY-LINE-PARAMETERS&gt;&#13;&#10;"><graph><points><point id="1" x="0.0" y="0.0" type="1"/><point id="2" x="100.0" y="100.0" type="2"/></points><lines><line id="1" color="ff64a758" start="1" end="2"><parameters mutebypass="0.0" lengthenvelopefollow="0.5" moddepth="0.0" modrate="0.03010033443570137" distortion="0.0" distortiontype="0.0" hicut="1.0" locut="0.0" gain="0.5" invert="0.0" gainenvelopefollow="0.5" feedback="0.0" pan="0.5"><delayLength mode="1" samples=")")
+                       + juce::String(sampleDelayLength)
+                       + juce::String(R"(" milliseconds="500.0" hertz="10.0" pitch="100.0" numerator="1.0" denominator="4.0" midiTrackPitchShift="0.0"/></parameters></line></lines></graph><mod-mapping/></plugin-state>)");
+
+        auto xml = juce::parseXML(xmlText);
+        REQUIRE(xml);
+        auto data = juce::MemoryBlock();
+        p.copyXmlToBinary(*xml, data);
+        p.setStateInformation(data.begin(), data.getSize());
+        auto buffer = juce::AudioBuffer<float>(p.getTotalNumInputChannels(), samplesPerBlock);
+        REQUIRE(juce::approximatelyEqual(p.delayGraph.getLines()[0]->parameters.length.getSamplesLength(), static_cast<float>(sampleDelayLength)));
+        auto midiBuffer = juce::MidiBuffer();
+        buffer.clear();
+        // flush a bunch
+        for (auto i = 0; i < 100; ++i) {
+            p.processBlock(buffer, midiBuffer);
+            for (auto channel = 0; channel < buffer.getNumChannels(); ++channel) {
+                auto minMax = buffer.findMinMax(channel, 0, buffer.getNumSamples());
+                REQUIRE(juce::approximatelyEqual(minMax.getStart(), 0.f));
+                REQUIRE(juce::approximatelyEqual(minMax.getEnd(), 0.f));
+            }
+        }
+        buffer.setSample(0, 10, 1);
+        p.processBlock(buffer, midiBuffer);
+        for (int i = 0; i < buffer.getNumSamples(); ++i) {
+            if (juce::approximatelyEqual(static_cast<double>(i), 10 + sampleDelayLength)) {
+                REQUIRE(juce::approximatelyEqual(buffer.getSample(0, i), 1.f));
+            } else {
+                REQUIRE(juce::approximatelyEqual(buffer.getSample(0, i), 0.f));
+            }
+        }
+        buffer.clear();
+        for (auto i = 0; i < 100; ++i) {
+            p.processBlock(buffer, midiBuffer);
+            for (auto channel = 0; channel < buffer.getNumChannels(); ++channel) {
+                auto minMax = buffer.findMinMax(channel, 0, buffer.getNumSamples());
+                REQUIRE(juce::approximatelyEqual(minMax.getStart(), 0.f));
+                REQUIRE(juce::approximatelyEqual(minMax.getEnd(), 0.f));
+            }
+        }
+    }
 }
 
 #ifdef PAMPLEJUCE_IPP

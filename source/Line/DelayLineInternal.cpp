@@ -38,7 +38,7 @@ void DelayLineInternal::setTargetLength (float l)
         l = std::round(l / tickLength) * tickLength;
     }
 
-    l -= 1;
+    // l -= 1;
 
     auto target = std::min(std::max(0.f, l), static_cast<float>(delayLine.getMaximumDelayInSamples() - 1));
     length.setTarget(target);
@@ -78,7 +78,7 @@ void DelayLineInternal::popSample (std::vector<float>& sample, bool updateReadPo
                               juce::approximatelyEqual(secondLength, delayLine.getDelay()) ? -1 : secondLength,
                               updateReadPointer) * secondLevel;
             if (envelopeCounter == 0) {
-                envelopeDelayLine.popSample(static_cast<int>(i), firstLength, updateReadPointer);
+                envelopeDelayLine.popSample(static_cast<int>(i), firstLength / envelopeDelayLineDownsampleRatio, updateReadPointer);
             }
         }
         length.getNextValue();
@@ -91,7 +91,7 @@ void DelayLineInternal::popSample (std::vector<float>& sample, bool updateReadPo
         for (unsigned i = 0; i < spec.numChannels; ++i) {
             sample[i] = delayLine.popSample(static_cast<int>(i), juce::approximatelyEqual(l, delayLine.getDelay()) ? -1 : l, updateReadPointer);
             if (envelopeCounter == 0) {
-                envelopeDelayLine.popSample(static_cast<int>(i), l, updateReadPointer);
+                envelopeDelayLine.popSample(static_cast<int>(i), l / envelopeDelayLineDownsampleRatio, updateReadPointer);
             }
         }
         lengthFader.tick();
