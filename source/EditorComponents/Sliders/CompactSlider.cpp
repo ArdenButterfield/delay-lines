@@ -50,8 +50,11 @@ void CompactSlider::mouseUp (const juce::MouseEvent& event)
 
 void CompactSlider::resized()
 {
-    juce::Slider::resized();
     valueLabel.setBounds(getLocalBounds().withTrimmedBottom(4));
+    auto widthScalar = 1.f;
+    valueLabel.setFont(valueLabel.getFont().withHeight(std::min(
+        valueLabel.getHeight() * 1.f,
+        static_cast<float>(valueLabel.getWidth()) / (getMaximum() > 999 ? 3.5f : (getMaximum() > 99 ? 3.f : 2.f)))));
     ModulatableSlider::resized();
 }
 

@@ -14,6 +14,9 @@ PluginEditor::PluginEditor (PluginProcessor& p)
       stretchTimeAttachment(p.getValueTreeState(), STRETCH_TIME_ID, stretchTimeSlider),
       midiInputSelector(processorRef.midiReceiver)
 {
+    mixSlider.setNumDecimalPlacesToDisplay(1);
+    mixSlider.setSuffix("%");
+    stretchTimeSlider.setSuffix("\"");
     modulationMappingEngine.setModulationEngine(&processorRef.modulationEngine);
 
     modKnobs.setMappingEngine(&modulationMappingEngine);
