@@ -7,7 +7,9 @@
 
 LengthEditor::LengthEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, const int& _line) : delayGraph(_delayGraph), graphLine(_line)
 {
-    transposeLabel.setText("Shift:", juce::dontSendNotification);
+    transposeLabel.setText("shift:", juce::dontSendNotification);
+    transposeLabel.setColour(juce::Label::textColourId, juce::Colours::black);
+    midiTrackNote.setColour(juce::Label::textColourId, juce::Colours::black);
 
     startTimerHz(60);
     unitSelector.addItemList({"ms", "Samples", "Hz", "Pitch", "Beat", "MIDI track"}, 1); // offset must start at 1: 0 is reserved for undefined

@@ -33,7 +33,7 @@ void TitleGraphic::paint (juce::Graphics& g)
 
     const auto step = 20.f + stretch * 10;
 
-    g.setFont(juce::Font(DelayLinesLookAndFeel::getMonoFont()).withHeight(22));
+    g.setFont(juce::Font(DelayLinesLookAndFeel::getLogoFont()).withHeight(22));
 
     auto textBounds = getLocalBounds().reduced(10);
     for (auto i = 1; i < 5; ++i) {

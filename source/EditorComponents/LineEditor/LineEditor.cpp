@@ -224,9 +224,11 @@ void LineEditor::resized()
         auto labelHeights = 20;
         modDepthLabel.setBounds(modArea.withWidth(thirdWidth).withHeight(labelHeights));
         modRateLabel.setBounds(modDepthLabel.getBounds().withRightX(modArea.getRight()));
-        modLabel.setBounds(modRateLabel.getBounds().withX(modDepthLabel.getRight()).withRight(modRateLabel.getX()));
+        modLabel.setBounds(modRateLabel.getBounds().withX(modDepthLabel.getRight())
+                                .withRight(modRateLabel.getX()));
 
-        modDepthSlider.setBounds(modArea.withWidth(modArea.getWidth() / 2).withTrimmedTop(labelHeights));
+        modDepthSlider.setBounds(modArea.withWidth(modArea.getWidth() / 2)
+                                      .withTrimmedTop(labelHeights));
         modRateSlider.setBounds(modDepthSlider.getBounds().withRightX(modArea.getRight()));
     }
 
@@ -238,15 +240,20 @@ void LineEditor::resized()
         auto labelHeights = 20;
         filterLoLabel.setBounds(filterArea.withWidth(thirdWidth).withHeight(labelHeights));
         filterHiLabel.setBounds(filterLoLabel.getBounds().withRightX(filterArea.getRight()));
-        filterLabel.setBounds(filterLoLabel.getBounds().withX(filterLoLabel.getRight()).withRight(filterHiLabel.getX()));
+        filterLabel.setBounds(filterLoLabel.getBounds()
+                                   .withX(filterLoLabel.getRight())
+                                   .withRight(filterHiLabel.getX()));
 
-        loCutSlider.setBounds(filterArea.withWidth(filterArea.getWidth() / 2).withTrimmedTop(labelHeights));
+        loCutSlider.setBounds(filterArea.withWidth(filterArea.getWidth() / 2)
+                                   .withTrimmedTop(labelHeights));
         hiCutSlider.setBounds(loCutSlider.getBounds().withRightX(filterArea.getRight()));
     }
 
     // Distortion
     {
-        distortionTypeSelector.setBounds(distortionArea.withHeight(distortionArea.getHeight() / 2).withBottomY(distortionArea.getBottom()));
+        distortionTypeSelector.setBounds(distortionArea
+                                              .withHeight(distortionArea.getHeight() / 2)
+                                              .withBottomY(distortionArea.getBottom()));
         distortionSlider.setBounds(distortionArea.withBottom(distortionTypeSelector.getY()));
         distortionVisualizer.setBounds(distortionSlider.getBounds());
     }
@@ -362,7 +369,7 @@ void LineEditor::timerCallback()
 
 void LineEditor::mouseDown (const juce::MouseEvent& event)
 {
-    if (topBar.contains(event.getPosition()) && canBeDragged) {
+    if (/*topBar.contains(event.getPosition()) &&*/ canBeDragged) {
         dragger.startDraggingComponent(this, event);
         dragging = true;
     }

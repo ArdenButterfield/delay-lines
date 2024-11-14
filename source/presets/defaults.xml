@@ -1,24 +1,7 @@
 R"=====(
 <presets>
     <preset name="init">
-        <plugin-state>
-            <graph>
-                <points>
-                    <point id="1" x="0.0" y="0.0" type="1"/>
-                    <point id="2" x="100.0" y="100.0" type="2"/>
-                </points>
-                <lines>
-                    <line id="1" color="ff8fe800" start="1" end="2">
-                        <parameters mutebypass="0.0" lengthenvelopefollow="0.5" moddepth="0.0" modrate="0.03010033443570137"
-                                    distortion="0.0" hicut="1.0" locut="0.0" gain="0.5" invert="0.0"
-                                    gainenvelopefollow="0.5" feedback="0.0">
-                            <delayLength mode="0" samples="0.0" milliseconds="500.0" hertz="10.0" pitch="100.0"
-                                         numerator="1.0" denominator="4.0"/>
-                        </parameters>
-                    </line>
-                </lines>
-            </graph>
-        </plugin-state>
+        <?xml version="1.0" encoding="UTF-8"?> <plugin-state apvts="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#13;&#10;&#13;&#10;&lt;DELAY-LINE-PARAMETERS&gt;&#13;&#10;  &lt;PARAM id=&quot;clear&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mix&quot; value=&quot;50.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod0&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod1&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod2&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod3&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod4&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod5&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod6&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod7&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod8&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;mod9&quot; value=&quot;0.0&quot;/&gt;&#13;&#10;  &lt;PARAM id=&quot;stretchtime&quot; value=&quot;0.09999999403953552&quot;/&gt;&#13;&#10;&lt;/DELAY-LINE-PARAMETERS&gt;&#13;&#10;"><graph><points><point id="1" x="121.0" y="196.0" type="1"/><point id="2" x="508.0" y="198.0" type="2"/></points><lines><line id="1" color="ff8fe800" start="1" end="2"><parameters mutebypass="0.0" lengthenvelopefollow="0.5" moddepth="0.0" modrate="0.03010033443570137" distortion="0.0" distortiontype="0.0" hicut="1.0" locut="0.0" gain="0.5" invert="0.0" gainenvelopefollow="0.5" feedback="0.0" pan="0.5"><delayLength mode="0" samples="0.0" milliseconds="1368.269897460938" hertz="10.0" pitch="100.0" numerator="1.0" denominator="4.0" midiTrackPitchShift="0.0"/></parameters></line></lines></graph><mod-mapping/></plugin-state>
     </preset>
     <preset name="triangle">
         <plugin-state>

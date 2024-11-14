@@ -16,6 +16,10 @@ public:
     static juce::Typeface::Ptr getMonoFont() {
         return juce::Typeface::createSystemTypefaceFor(BinaryData::SonoRegular_ttf, BinaryData::SonoRegular_ttfSize);
     }
+    static juce::Typeface::Ptr getLogoFont() {
+        return juce::Typeface::createSystemTypefaceFor(BinaryData::riffic_bold_ttf, BinaryData::riffic_bold_ttfSize);
+    }
+
     void drawToggleButton(juce::Graphics &, juce::ToggleButton &, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
     void drawButtonBackground(juce::Graphics &, juce::Button &, const juce::Colour &backgroundColour, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
     juce::Font getTextButtonFont(juce::TextButton &, int buttonHeight) override;
@@ -25,6 +29,7 @@ public:
     static void drawGraphPaperBackround(juce::Graphics& g, juce::Point<float> offset, juce::Component* component);
     static const float getGraphPaperGridSize() { return 20.f; }
     static void drawAdvancingDashedLine(juce::Graphics& g, juce::Line<float> line, float speed /* pixels per second */, float thickness);
+
 };
 
 #endif //DELAYLINES_DELAYLINESLOOKANDFEEL_H
