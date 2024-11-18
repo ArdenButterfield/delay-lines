@@ -1,4 +1,4 @@
-**# Echo Location user manual
+# Echo Location user manual
 
 Echo Location is an experimental delay effect, designed to let you realize your wildest tape delay dreams. From filters to flangers, resonators to reverbs, it's all delay, and it's all here in Echo Location.
 
