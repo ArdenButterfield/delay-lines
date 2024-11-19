@@ -14,7 +14,7 @@ include(PamplejuceMacOS)
 # This is the internal name of the project and the name of JUCE's shared code target
 # Note: This cannot have spaces (it may be 2024, but you can't have it all!)
 # Worry not, JUCE's PRODUCT_NAME can have spaces (and is what DAWs display)
-set(PROJECT_NAME "Delaylines")
+set(PROJECT_NAME "EchoLocation")
 
 # Worry not, JUCE's PRODUCT_NAME can have spaces (and is what DAWs will display)
 # You can also just have it be the same thing as PROJECT_NAME
@@ -22,7 +22,7 @@ set(PROJECT_NAME "Delaylines")
 #   set(PROJECT_NAME "MyPlugin_v${MAJOR_VERSION}")
 # Doing so enables major versions to show up in IDEs and DAWs as separate plugins
 # allowing you to change parameters and behavior without breaking existing user projects
-set(PRODUCT_NAME "Delay Lines")
+set(PRODUCT_NAME "Echo Location")
 
 # Change me! Used for the MacOS bundle name and Installers
 set(COMPANY_NAME "Wildergarden")
@@ -124,7 +124,7 @@ target_compile_definitions(SharedCode
     VERSION="${CURRENT_VERSION}"
 
     # JucePlugin_Name is for some reason doesn't use the nicer PRODUCT_NAME
-    PRODUCT_NAME_WITHOUT_VERSION="Delaylines"
+    PRODUCT_NAME_WITHOUT_VERSION="Echolocation"
 )
 
 #add_library(my_warning_flags INTERFACE)

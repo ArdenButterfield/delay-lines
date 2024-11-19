@@ -398,7 +398,7 @@ TEST_CASE("sample delay", "[sampledelay]")
             }
         }
         buffer.clear();
-        for (auto i = 0; i < 100; ++i) {
+        for (auto i = 0; i < 10000; ++i) {
             p.processBlock(buffer, midiBuffer);
             for (auto channel = 0; channel < buffer.getNumChannels(); ++channel) {
                 auto minMax = buffer.findMinMax(channel, 0, buffer.getNumSamples());
