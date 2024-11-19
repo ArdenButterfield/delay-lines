@@ -159,8 +159,9 @@ jobs:
       if: ${{ matrix.name == 'macOS' }}
       run: |
         # Each plugin must be code signed
-        codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ${{ env.VST3_PATH }} --deep --strict --options=runtime --timestamp
-        codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ${{ env.AU_PATH }} --deep --strict --options=runtime --timestamp
+        ls ./Builds/EchoLocation_artefacts/Release/VST3
+        codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ./${{ env.VST3_PATH }} --deep --strict --options=runtime --timestamp
+        codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ./${{ env.AU_PATH }} --deep --strict --options=runtime --timestamp
 
     - name: Import installer Certificates (macOS)
       uses: apple-actions/import-codesign-certs@v1
