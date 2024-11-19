@@ -159,8 +159,8 @@ jobs:
       if: ${{ matrix.name == 'macOS' }}
       run: |
         # Each plugin must be code signed
-        codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ${{ env.VST3_PATH }} --deep --strict --options=runtime --timestamp
-        codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ${{ env.AU_PATH }} --deep --strict --options=runtime --timestamp
+        codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v "${{ env.VST3_PATH }}" --deep --strict --options=runtime --timestamp
+        codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v "${{ env.AU_PATH }}" --deep --strict --options=runtime --timestamp
 
     - name: Import installer Certificates (macOS)
       uses: apple-actions/import-codesign-certs@v1
@@ -194,7 +194,7 @@ jobs:
         packagesbuild packaging/EchoLocation.pkgproj
         productsign --sign "${{ secrets.DEVELOPER_ID_INSTALLER}}" packaging/build/EchoLocation.pkg packaging/build/EchoLocationSigned.pkg
         mv packaging/build/EchoLocationSigned.pkg packaging/build/EchoLocation.pkg 
-        appdmg packaging/dmg.json packaging/${{ env.PRODUCT_NAME}}.dmg
+        appdmg packaging/dmg.json "packaging/${{ env.PRODUCT_NAME}}.dmg"
 
     - name: Import dmg Certificates (macOS)
       uses: apple-actions/import-codesign-certs@v1
@@ -207,9 +207,9 @@ jobs:
     - name: sign and notarize dmg (macOS)
       if: ${{ matrix.name == 'macOS' }}
       run: |
-        codesign -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" --timestamp -i com.wildergarden.wildergarden --force packaging/${{ env.PRODUCT_NAME }}.dmg
-        xcrun notarytool submit packaging/${{ env.PRODUCT_NAME }}.dmg --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
-        xcrun stapler staple packaging/${{ env.PRODUCT_NAME }}.dmg
+        codesign -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" --timestamp -i com.wildergarden.wildergarden --force "packaging/${{ env.PRODUCT_NAME }}.dmg"
+        xcrun notarytool submit "packaging/${{ env.PRODUCT_NAME }}.dmg" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
+        xcrun stapler staple "packaging/${{ env.PRODUCT_NAME }}.dmg"
 
     - name: Zip
       if: ${{ matrix.name == 'Linux' }}
