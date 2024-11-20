@@ -10,11 +10,12 @@
 class ModMapButton : public juce::ToggleButton
 {
 public:
-    ModMapButton(juce::Colour _splashColour, const juce::String& buttonText) : ToggleButton(buttonText), splashColour(_splashColour) {}
+    ModMapButton(juce::Colour _splashColour, const juce::String& buttonText);
     ~ModMapButton() = default;
 private:
     void paintButton(juce::Graphics &, bool, bool) override;
     juce::Colour splashColour;
+    juce::Font font;
 };
 
 #endif //DELAYLINES_MODMAPBUTTON_H

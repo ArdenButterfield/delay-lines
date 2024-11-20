@@ -14,6 +14,8 @@ PluginEditor::PluginEditor (PluginProcessor& p)
       stretchTimeAttachment(p.getValueTreeState(), STRETCH_TIME_ID, stretchTimeSlider),
       midiInputSelector(processorRef.midiReceiver)
 {
+    juce::Typeface::clearTypefaceCache();
+    juce::Typeface::setTypefaceCacheSize(10);
     mixSlider.setNumDecimalPlacesToDisplay(1);
     mixSlider.setSuffix("%");
     stretchTimeSlider.setSuffix("\"");

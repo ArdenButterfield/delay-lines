@@ -16,6 +16,8 @@ DelayLinesLookAndFeel::DelayLinesLookAndFeel()
     setColour(juce::ComboBox::ColourIds::backgroundColourId, juce::Colours::grey.withAlpha(0.2f));
     setColour(juce::ComboBox::ColourIds::textColourId, juce::Colours::black);
     setColour(juce::Slider::ColourIds::textBoxTextColourId, juce::Colours::black);
+    monoTypeface = getMonoFont();
+    logoTypeface = getLogoFont();
 
 }
 void DelayLinesLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
@@ -37,17 +39,17 @@ void DelayLinesLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, i
 
 void DelayLinesLookAndFeel::drawToggleButton (juce::Graphics& g , juce::ToggleButton& b, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
 {
-    g.setFont(juce::Font(getMonoFont()).withHeight(10));
+    g.setFont(juce::Font(monoTypeface).withHeight(10));
     LookAndFeel_V4::drawToggleButton (g, b, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
 }
 
 juce::Font DelayLinesLookAndFeel::getPopupMenuFont()
 {
-    return juce::Font(getMonoFont()).withHeight(17.0f);
+    return juce::Font(monoTypeface).withHeight(17.0f);
 }
 juce::Font DelayLinesLookAndFeel::getComboBoxFont (juce::ComboBox& box)
 {
-    return juce::Font(getMonoFont()).withHeight(juce::jmin (16.0f, (float) box.getHeight() * 0.85f));
+    return juce::Font(monoTypeface).withHeight(juce::jmin (16.0f, (float) box.getHeight() * 0.85f));
 
 }
 void DelayLinesLookAndFeel::drawGraphPaperBackround (juce::Graphics& g, juce::Point<float> offset, juce::Component* component)
@@ -79,7 +81,7 @@ void DelayLinesLookAndFeel::drawButtonBackground (juce::Graphics& g, juce::Butto
 }
 juce::Font DelayLinesLookAndFeel::getTextButtonFont (juce::TextButton&, int buttonHeight)
 {
-    return getMonoFont();
+    return monoTypeface;
 }
 
 void DelayLinesLookAndFeel::drawAdvancingDashedLine (juce::Graphics& g, juce::Line<float> line, float speed, float thickness)

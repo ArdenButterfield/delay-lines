@@ -5,7 +5,7 @@
 #include "TitleGraphic.h"
 #include "DelayLinesLookAndFeel.h"
 
-TitleGraphic::TitleGraphic()
+TitleGraphic::TitleGraphic() : font(juce::Font(DelayLinesLookAndFeel::getLogoFont()).withHeight(22))
 {
     startTimerHz(60);
     mouseInteractFilter.setAttackTime(3000);
@@ -33,7 +33,7 @@ void TitleGraphic::paint (juce::Graphics& g)
 
     const auto step = 20.f + stretch * 10;
 
-    g.setFont(juce::Font(DelayLinesLookAndFeel::getLogoFont()).withHeight(22));
+    g.setFont(font);
 
     auto textBounds = getLocalBounds().reduced(10);
     for (auto i = 1; i < 5; ++i) {

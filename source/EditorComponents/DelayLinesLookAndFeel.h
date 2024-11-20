@@ -30,6 +30,9 @@ public:
     static const float getGraphPaperGridSize() { return 20.f; }
     static void drawAdvancingDashedLine(juce::Graphics& g, juce::Line<float> line, float speed /* pixels per second */, float thickness);
 
+private:
+    juce::Typeface::Ptr monoTypeface;
+    juce::Typeface::Ptr logoTypeface;
 };
 
 #endif //DELAYLINES_DELAYLINESLOOKANDFEEL_H

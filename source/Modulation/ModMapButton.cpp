@@ -5,6 +5,9 @@
 #include "ModMapButton.h"
 #include "../EditorComponents/DelayLinesLookAndFeel.h"
 
+ModMapButton::ModMapButton (juce::Colour _splashColour, const juce::String& buttonText)
+    : ToggleButton(buttonText), splashColour(_splashColour), font(DelayLinesLookAndFeel::getMonoFont()) {}
+
 void ModMapButton::paintButton (juce::Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
 {
     auto backgroundColor = juce::Colours::lightgrey;
@@ -21,6 +24,6 @@ void ModMapButton::paintButton (juce::Graphics& g, bool shouldDrawButtonAsHighli
     g.setColour(juce::Colours::darkgrey);
     g.drawRoundedRectangle(getLocalBounds().reduced(2).toFloat(), 3, 2);
     g.setColour(juce::Colours::black);
-    g.setFont(juce::Font(DelayLinesLookAndFeel::getMonoFont()).withHeight(shouldDrawButtonAsHighlighted ? 13 : 12));
+    g.setFont(font.withHeight(shouldDrawButtonAsHighlighted ? 13 : 12));
     g.drawText(getButtonText(), getLocalBounds(), juce::Justification::centred);
 }

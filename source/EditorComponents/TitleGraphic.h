@@ -23,6 +23,8 @@ private:
     float stretch;
     juce::HyperlinkButton manualLink;
     void resized() override;
+
+    juce::Font font;
 };
 
 #endif //DELAYLINES_TITLEGRAPHIC_H
