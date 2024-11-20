@@ -211,6 +211,7 @@ jobs:
         codesign -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" --timestamp -i com.wildergarden.wildergarden --force "packaging/${{ env.PRODUCT_NAME }}.dmg"
         xcrun notarytool submit "packaging/${{ env.PRODUCT_NAME }}.dmg" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
         xcrun stapler staple "packaging/${{ env.PRODUCT_NAME }}.dmg"
+        mv packaging/${{ env.PRODUCT_NAME }}.dmg packaging/${{ env.ARTIFACT_NAME }}.dmg
 
     - name: Zip
       if: ${{ matrix.name == 'Linux' }}
