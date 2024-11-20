@@ -1220,7 +1220,7 @@
 						<key>LANGUAGE</key>
 						<string>English</string>
 						<key>VALUE</key>
-						<string>Echo Location</string>
+						<string>EchoLocation</string>
 					</dict>
 				</array>
 			</dict>
@@ -1414,7 +1414,7 @@
 				</dict>
 			</array>
 			<key>NAME</key>
-			<string>Echo Location</string>
+			<string>EchoLocation</string>
 			<key>PAYLOAD_ONLY</key>
 			<false/>
 			<key>TREAT_MISSING_PRESENTATION_DOCUMENTS_AS_WARNING</key>
