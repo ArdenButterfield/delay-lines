@@ -5,7 +5,7 @@
 #include "TitleGraphic.h"
 #include "DelayLinesLookAndFeel.h"
 
-TitleGraphic::TitleGraphic() : font(juce::Font(DelayLinesLookAndFeel::getLogoFont()).withHeight(22))
+TitleGraphic::TitleGraphic() : font(juce::Font(DelayLinesLookAndFeel::getLogoFont()).withHeight(25))
 {
     startTimerHz(60);
     mouseInteractFilter.setAttackTime(3000);
@@ -13,10 +13,11 @@ TitleGraphic::TitleGraphic() : font(juce::Font(DelayLinesLookAndFeel::getLogoFon
     mouseInteractFilter.prepare({60, 512, 1});
     mouseInteractFilter.reset(0);
     stretch = 0;
-    manualLink.setButtonText("manual");
+    manualLink.setButtonText("Wildergarden - 2024");
     manualLink.setURL(juce::URL("https://github.com/ArdenButterfield/delay-lines"));
-    manualLink.setFont(juce::Font(DelayLinesLookAndFeel::getMonoFont()).withHeight(10),
+    manualLink.setFont(juce::Font(DelayLinesLookAndFeel::getMonoFont()).withHeight(12),
         false, juce::Justification::topLeft);
+    manualLink.setColour(juce::HyperlinkButton::ColourIds::textColourId, juce::Colours::blue);
     addAndMakeVisible(manualLink);
 }
 TitleGraphic::~TitleGraphic()
@@ -35,7 +36,7 @@ void TitleGraphic::paint (juce::Graphics& g)
 
     g.setFont(font);
 
-    auto textBounds = getLocalBounds().reduced(10);
+    auto textBounds = getLocalBounds().withBottom(manualLink.getY() + 5).reduced(10);
     for (auto i = 1; i < 5; ++i) {
         g.setColour(juce::Colours::white.withAlpha(0.2f * (5 - i) * 0.2f));
         g.drawText("ECHO", textBounds.translated(step * i, step * i * 0.1f * (1 + 4 * stretch)), juce::Justification::topLeft);

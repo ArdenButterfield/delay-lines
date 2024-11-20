@@ -52,9 +52,13 @@ void CompactSlider::resized()
 {
     valueLabel.setBounds(getLocalBounds().withTrimmedBottom(4));
     auto widthScalar = 1.f;
+    float numCharacters = floor(std::log10(getMaximum())) + 1;
+    numCharacters += getMinimum() < 0 ? 1 : 0;
+    numCharacters += suffix.length();
+    numCharacters += getNumDecimalPlacesToDisplay() + 1;
     valueLabel.setFont(valueLabel.getFont().withHeight(std::min(
         valueLabel.getHeight() * 1.f,
-        static_cast<float>(valueLabel.getWidth()) / (getMaximum() > 999 ? 3.5f : (getMaximum() > 99 ? 3.f : 2.f)))));
+        static_cast<float>(valueLabel.getWidth()) * 1.5f / (numCharacters))));
     ModulatableSlider::resized();
 }
 

@@ -54,11 +54,13 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(titleGraphic);
 
     mixLabel.setText("Mix", juce::dontSendNotification);
-    stretchLabel.setText("Stretch speed", juce::dontSendNotification);
+    stretchLabel.setText("Stretch\nspeed", juce::dontSendNotification);
     mixLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::black);
     stretchLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::black);
     addAndMakeVisible(mixLabel);
     addAndMakeVisible(stretchLabel);
+    stretchLabel.setJustificationType(juce::Justification::centred);
+    mixLabel.setJustificationType(juce::Justification::centred);
 
     setResizable(true, false);
     setResizeLimits(500,500,10000,10000);
@@ -87,10 +89,10 @@ void PluginEditor::resized()
     switchInterface.setBounds(topStrip.withX(titleGraphic.getRight() + 10).withWidth(topStrip.getHeight() / 2));
     mixArea = topStrip.withWidth(60).withRightX(topStrip.getRight());
     mixSlider.setBounds(mixArea.withHeight(stretchArea.getHeight() / 2));
-    mixLabel.setBounds(mixArea.withTrimmedTop(mixSlider.getBottom()));
+    mixLabel.setBounds(mixArea.withTop(mixSlider.getBottom()));
     stretchArea = mixArea.withRightX(mixSlider.getX() - 10);
     stretchTimeSlider.setBounds(stretchArea.withHeight(stretchArea.getHeight() / 2));
-    stretchLabel.setBounds(stretchArea.withTrimmedTop(stretchTimeSlider.getBottom()));
+    stretchLabel.setBounds(stretchArea.withTop(stretchTimeSlider.getBottom()));
 
     auto presetBrowserArea = topStrip.withX(switchInterface.getRight() + 10)
                                  .withHeight(topStrip.getHeight() / 2)
