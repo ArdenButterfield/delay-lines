@@ -180,7 +180,7 @@ jobs:
         # sudo hdiutil detach /Volumes/Packages\ 1.2.10/Install\ Packages.pkg
 
     - name: Python 3.11 (macos)
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       if: ${{ matrix.name == 'macOS' }}
       with:
         python-version: '3.11'
