@@ -10,9 +10,14 @@ GraphLineModule::GraphLineModule(ModulationMappingEngine& me, DelayGraph& dg, co
 
     addAndMakeVisible(inputSelector);
     addAndMakeVisible(outputSelector);
+    addAndMakeVisible(deleteLineButton);
 
     inputSelector.addListener(this);
     outputSelector.addListener(this);
+    deleteLineButton.addListener(this);
+    deleteLineButton.setButtonText("Delete Line");
+
+    deleteLineButton.setColour(juce::TextButton::ColourIds::textColourOffId, juce::Colours::black);
 
     rebuildPointSelectors();
     startTimerHz(15);
@@ -24,8 +29,17 @@ GraphLineModule::~GraphLineModule()
 void GraphLineModule::resized()
 {
     lineEditor->setBounds(LineEditor::getDesiredBounds().withPosition(padding * 2, padding * 2));
-    inputSelector.setBounds({padding * 2, lineEditor->getBottom() + 2, getWidth() - 2 * padding, 20});
-    outputSelector.setBounds({padding * 2, inputSelector.getBottom() + 2, getWidth() - 2 * padding, 20});
+    auto bottomArea = getLocalBounds().reduced(2)
+                          .withTop(lineEditor->getBottom() + 2)
+                          .withTrimmedLeft(padding * 2);
+    deleteLineButton.setBounds(bottomArea
+                                    .withWidth(100)
+                                    .withRightX(bottomArea.getRight()));
+    inputSelector.setBounds(bottomArea.withRight(deleteLineButton.getX() - 2)
+                                 .withHeight(bottomArea.getHeight() / 2));
+    outputSelector.setBounds(bottomArea.withRight(deleteLineButton.getX() - 2)
+                                  .withHeight(bottomArea.getHeight() / 2).withBottomY(bottomArea.getBottom()));
+
 }
 
 void GraphLineModule::paint (juce::Graphics& g)
@@ -94,4 +108,14 @@ void GraphLineModule::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
             }
         }
     }
+}
+void GraphLineModule::buttonClicked (juce::Button* b)
+{
+    if (b == &deleteLineButton) {
+        delayGraph.deleteLine(delayGraph.getLine(lineID));
+    }
+}
+
+void GraphLineModule::buttonStateChanged (juce::Button*)
+{
 }

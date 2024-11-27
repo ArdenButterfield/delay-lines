@@ -50,7 +50,6 @@ void CompactSlider::mouseUp (const juce::MouseEvent& event)
 
 void CompactSlider::resized()
 {
-    std::cout << "resized\n";
     valueLabel.setBounds(getLocalBounds().withTrimmedBottom(4));
     auto widthScalar = 1.f;
     float numCharacters = floor(std::log10(getMaximum())) + 1;
@@ -59,7 +58,6 @@ void CompactSlider::resized()
     numCharacters += getNumDecimalPlacesToDisplay() + 1;
     auto heightConstrainer = valueLabel.getHeight() * 1.f;
     auto widthConstrainer = static_cast<float>(valueLabel.getWidth()) * 1.5f / (numCharacters);
-    std::cout << heightConstrainer << " " << widthConstrainer << "\n";
     valueLabel.setFont(valueLabel.getFont().withHeight(std::min(heightConstrainer, widthConstrainer)));
     ModulatableSlider::resized();
 }

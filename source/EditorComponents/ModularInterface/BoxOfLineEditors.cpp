@@ -38,6 +38,7 @@ void BoxOfLineEditors::removeLine (int identifier)
 {
     std::erase_if(lineModules, [&identifier](auto& l) { return identifier == l->getIdentifier();});
     setSize(getWidth(), minimumHeight);
+    resized();
 }
 
 void BoxOfLineEditors::paint (juce::Graphics& g)

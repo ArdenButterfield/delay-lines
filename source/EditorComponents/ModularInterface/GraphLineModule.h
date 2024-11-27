@@ -9,7 +9,7 @@
 #include "../../DelayGraph.h"
 #include "../../Modulation/ModulationMappingEngine.h"
 #include "../LineEditor/LineEditor.h"
-class GraphLineModule : public juce::Component, public juce::Timer, public juce::ComboBox::Listener
+class GraphLineModule : public juce::Component, public juce::Timer, public juce::ComboBox::Listener, juce::Button::Listener
 {
 public:
     GraphLineModule(ModulationMappingEngine& me, DelayGraph& delayGraph, const int& line);
@@ -24,6 +24,8 @@ private:
     void timerCallback() override;
     void rebuildPointSelectors();
     void comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) override;
+    void buttonClicked(juce::Button *) override;
+    void buttonStateChanged(juce::Button *) override;
 
     juce::ComboBox inputSelector;
     juce::ComboBox outputSelector;
@@ -31,6 +33,7 @@ private:
     juce::String makeComboboxNameForId(int id);
     DelayGraph& delayGraph;
 
+    juce::TextButton deleteLineButton;
     const int lineID;
 };
 
