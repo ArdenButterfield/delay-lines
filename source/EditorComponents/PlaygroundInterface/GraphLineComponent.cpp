@@ -241,7 +241,7 @@ void GraphLineComponent::mouseUp (const juce::MouseEvent& event)
         // lineEditor.reset();
     } else if (event.mouseWasClicked() && event.mods.isShiftDown()) {
         delayGraph.activeLine->toggleEnabled();
-    } else if (event.mouseWasClicked() && event.mods.isRightButtonDown()) {
+    } else if (event.mouseWasClicked() && (event.mods.isRightButtonDown() || event.mods.isCtrlDown())) {
         delayGraph.interactionState = DelayGraph::none;
         delayGraph.deleteLine(delayGraph.activeLine);
     } else if (event.mouseWasClicked()) {

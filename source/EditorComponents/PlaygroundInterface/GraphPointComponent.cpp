@@ -190,7 +190,7 @@ void GraphPointComponent::mouseDrag (const juce::MouseEvent& event)
 
 void GraphPointComponent::mouseUp (const juce::MouseEvent& event)
 {
-    if (event.mouseWasClicked() && event.mods.isRightButtonDown()) {
+    if (event.mouseWasClicked() && (event.mods.isRightButtonDown() || event.mods.isCtrlDown())) {
         auto point = delayGraph.getPoint(identifier);
         delayGraph.deletePoint(point);
         return;
