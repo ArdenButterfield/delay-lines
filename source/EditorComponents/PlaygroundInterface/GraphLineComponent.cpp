@@ -47,23 +47,16 @@ void GraphLineComponent::paint (juce::Graphics& g)
     startPoint = *(line->start) + playgroundInterface->getGlobalOffset();
     endPoint = *(line->end) + playgroundInterface->getGlobalOffset();
 
-    if (line->parameters.isMuted()) {
-        g.setColour(isHovered ? juce::Colours::black.withAlpha(0.3f) : juce::Colours::black.withAlpha(0.1f));
-        if (lineLoopsBack) {
-            g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
-        } else {
-            if (linesSharingSpace.size() == 1) {
-            }
-        }
-        return;
-    }
+    const auto mutedColor = isHovered ? juce::Colours::black.withAlpha(0.5f) : juce::Colours::black.withAlpha(0.3f);
 
     auto color = line->parameters.isBypassed() ? juce::Colours::black : line->getColor();
     auto lineColourWithHover = isHovered ? color.withMultipliedLightness(1.5) : color;
     g.setColour(lineColourWithHover);
-
     if (lineLoopsBack) {
-        if (line->parameters.isBypassed()) {
+        if (line->parameters.isMuted()) {
+            g.setColour(mutedColor);
+            g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
+        } else if (line->parameters.isBypassed()) {
             g.drawEllipse(startPoint.x - radius, startPoint.y - radius, 2 * radius, 2 * radius, 3);
         } else {
             auto linePath = juce::Path();
@@ -88,13 +81,17 @@ void GraphLineComponent::paint (juce::Graphics& g)
     } else {
         makeEnvelopePaths(line->parameters.isBypassed(), lineWidth.processSample(0, isHovered ? 1.5 : 1));
         if (linesSharingSpace.size() == 1) {
-            g.setColour(lineColourWithHover);
-            g.fillPath(leftLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
-            g.fillPath(rightLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
-            g.setColour(lineColourWithHover.withMultipliedBrightness(0.5f));
-            g.fillPath(innerLeftPath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
-            g.fillPath(innerRightPath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
-
+            if (line->parameters.isMuted()) {
+                g.setColour(mutedColor);
+                g.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 4);
+            } else {
+                g.setColour(lineColourWithHover);
+                g.fillPath(leftLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
+                g.fillPath(rightLinePath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
+                g.setColour(lineColourWithHover.withMultipliedBrightness(0.5f));
+                g.fillPath(innerLeftPath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
+                g.fillPath(innerRightPath, makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
+            }
         } else if (linesSharingSpace.size() > 1) {
             const float numMiddleLines = linesSharingSpace.size() - 2;
             auto idPosition = std::find(linesSharingSpace.begin(), linesSharingSpace.end(), id);
@@ -112,30 +109,44 @@ void GraphLineComponent::paint (juce::Graphics& g)
                 path.closeSubPath();
                 auto transform = makeTransform(startPoint + line->start->offset,
                     endPoint + line->end->offset, line->isGoingBackwards());
-                g.setColour(lineColourWithHover);
+                g.setColour(line->parameters.isMuted() ? mutedColor : lineColourWithHover);
                 g.fillPath(path, transform);
-                g.setColour(line->parameters.isBypassed() ? juce::Colours::white : color.withMultipliedBrightness(0.5f));
-                juce::Point<float> p0 = {0, (lowY + highY) / 2};
-                juce::Point<float> p1 = {1, (lowY + highY) / 2};
-                DelayLinesLookAndFeel::drawAdvancingDashedLine(g, {p0.transformedBy(transform), p1.transformedBy(transform)}, line->parameters.isStagnated() ? 0 : 0.5, 6);
+                if (!line->parameters.isMuted()) {
+                    g.setColour(line->parameters.isBypassed() ? juce::Colours::white : color.withMultipliedBrightness(0.5f));
+                    juce::Point<float> p0 = {0, (lowY + highY) / 2};
+                    juce::Point<float> p1 = {1, (lowY + highY) / 2};
+                    DelayLinesLookAndFeel::drawAdvancingDashedLine(g, {p0.transformedBy(transform), p1.transformedBy(transform)}, line->parameters.isStagnated() ? 0 : 0.5, 6);
+                }
             } else if ((id == linesSharingSpace[0]) == line->isGoingBackwards()) {
                 auto transform = juce::AffineTransform()
                                      .translated(0, numMiddleLines * preTransformInnerLineWidth * 0.5f)
                                      .followedBy(makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 0));
 
-                g.setColour(lineColourWithHover);
+                if (line->parameters.isMuted()) {
+                    g.setColour(mutedColor);
+                } else {
+                    g.setColour(lineColourWithHover);
+                }
                 g.fillPath(leftLinePath, transform);
-                g.setColour(lineColourWithHover.withMultipliedBrightness(0.5f));
-                g.fillPath(innerLeftPath, transform);
+                if (!line->parameters.isMuted()) {
+                    g.setColour(lineColourWithHover.withMultipliedBrightness(0.5f));
+                    g.fillPath(innerLeftPath, transform);
+                }
             } else {
                 auto transform = juce::AffineTransform()
                                      .translated(0, numMiddleLines * preTransformInnerLineWidth * 0.5f)
                                      .followedBy(makeTransform(startPoint + line->start->offset, endPoint + line->end->offset, 1));
 
-                g.setColour(lineColourWithHover);
+                if (line->parameters.isMuted()) {
+                    g.setColour(mutedColor);
+                } else {
+                    g.setColour(lineColourWithHover);
+                }
                 g.fillPath(rightLinePath, transform);
-                g.setColour(lineColourWithHover.withMultipliedBrightness(0.5f));
-                g.fillPath(innerRightPath, transform);
+                if (!line->parameters.isMuted()) {
+                    g.setColour(lineColourWithHover.withMultipliedBrightness(0.5f));
+                    g.fillPath(innerRightPath, transform);
+                }
             }
         }
     }
