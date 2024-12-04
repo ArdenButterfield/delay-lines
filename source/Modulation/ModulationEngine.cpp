@@ -44,6 +44,16 @@ void ModulationEngine::setParameterValue (unsigned int index, float value)
 //    p->endChangeGesture();
 }
 
+void ModulationEngine::setParameterValue (const ModulatableKey& modKey, float value)
+{
+    for (auto index = 0; index < paramIds.size(); ++index) {
+        if (mappings[index] && mappings[index]->getName() == modKey.getName()) {
+            setParameterValue(index, value);
+        }
+    }
+}
+
+
 float ModulationEngine::getParameterValue (unsigned int index)
 {
     auto p = treeState.getParameter(paramIds[index]);
@@ -70,7 +80,7 @@ bool ModulationEngine::isMapped (unsigned int index)
 
 void ModulationEngine::timerCallback()
 {
-    setParametersToInternalState();
+    // setParametersToInternalState();
 }
 
 void ModulationEngine::setParametersToInternalState()

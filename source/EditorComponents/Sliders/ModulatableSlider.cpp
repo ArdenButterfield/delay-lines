@@ -6,6 +6,7 @@
 #include "../../Modulation/ModOverlayButton.h"
 #include "../../Modulation/ModulatableKey.h"
 #include "../../Modulation/ModulationMappingEngine.h"
+#include "../../Modulation/ModulationEngine.h"
 
 ModulatableSlider::ModulatableSlider() : mappingEngine(nullptr)
 {
@@ -45,5 +46,11 @@ void ModulatableSlider::resized()
 {
     if (overlayButton) {
         overlayButton->setBounds(getLocalBounds());
+    }
+}
+void ModulatableSlider::valueChanged()
+{
+    if (mappingEngine && mappingEngine->modulationEngine && modKey) {
+        mappingEngine->modulationEngine->setParameterValue(*modKey,  modKey->range.convertTo0to1(getValue()));
     }
 }

@@ -20,6 +20,7 @@ public:
     float getParameterValue(unsigned int index);
     juce::String getNameOfMapping(unsigned int index);
     void setParameterValue(unsigned int index, float value);
+    void setParameterValue(const ModulatableKey& modKey, float value);
     void setMapping(unsigned int index, const ModulatableKey& key);
     void clearMapping(unsigned int index);
     bool isMapped(unsigned int index);

@@ -13,7 +13,7 @@ TitleGraphic::TitleGraphic() : font(juce::Font(DelayLinesLookAndFeel::getLogoFon
     mouseInteractFilter.prepare({60, 512, 1});
     mouseInteractFilter.reset(0);
     stretch = 0;
-    manualLink.setButtonText("Wildergarden - 2024");
+    manualLink.setButtonText("Wildergarden - 0.0.1");
     manualLink.setURL(juce::URL("https://github.com/ArdenButterfield/delay-lines"));
     manualLink.setFont(juce::Font(DelayLinesLookAndFeel::getMonoFont()).withHeight(12),
         false, juce::Justification::topLeft);

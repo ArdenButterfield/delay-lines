@@ -22,11 +22,11 @@ struct ModulatableKey
 
     juce::NormalisableRange<double> range;
 
-    float get(float modPosition) {
+    [[nodiscard]] float get(float modPosition) const {
         return range.convertFrom0to1(modPosition);
     }
 
-    juce::String getName() {
+    [[nodiscard]] juce::String getName() const {
         auto name = juce::String();
         name += (type == point) ? "point" : "line";
         name += " ";

@@ -25,6 +25,7 @@ private:
     ModulationMappingEngine* mappingEngine;
     std::unique_ptr<ModulatableKey> modKey;
     std::unique_ptr<ModOverlayButton> overlayButton;
+    void valueChanged() override;
 };
 
 #endif //DELAYLINES_MODULATABLESLIDER_H
