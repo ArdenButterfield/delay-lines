@@ -62,13 +62,23 @@ bool GraphPoint::importFromXml (juce::XmlElement* parent)
     }
 }
 
-bool GraphPoint::modulateIfPossible (ModulatableKey& key, float newValue)
+bool GraphPoint::modulateIfPossible (ModulatableKey& key, float newValue, bool* anythingChanged)
 {
-    if (key.parameterId == juce::Identifier("x")) {
-        this->x = key.get(newValue);
+    if (anythingChanged) {
+        *anythingChanged = false;
+    }
+    auto newValueScaled = key.get(newValue);
+    if (key.parameterId == juce::Identifier("x") && !juce::approximatelyEqual(this->x, newValueScaled)) {
+        this->x = newValueScaled;
+        if (anythingChanged) {
+            *anythingChanged = true;
+        }
         return true;
-    } else if (key.parameterId == juce::Identifier("y")) {
-        this->y = key.get(newValue);
+    } else if (key.parameterId == juce::Identifier("y") & !juce::approximatelyEqual(this->y, newValueScaled)) {
+        this->y = newValueScaled;
+        if (anythingChanged) {
+            *anythingChanged = true;
+        }
         return true;
     }
     return false;

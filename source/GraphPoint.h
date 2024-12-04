@@ -40,7 +40,7 @@ public:
     void exportToXml(juce::XmlElement* parent);
     bool importFromXml(juce::XmlElement* parent);
 
-    bool modulateIfPossible(ModulatableKey& key, float newValue);
+    bool modulateIfPossible(ModulatableKey& key, float newValue, bool* anythingChanged);
     bool getModulationValue(ModulatableKey& key, float& val);
 };
 

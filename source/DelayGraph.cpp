@@ -464,7 +464,11 @@ bool DelayGraph::modulateIfPossible (ModulatableKey& key, float newValue)
     if (key.type == ModulatableKey::point) {
         for (auto& point : points) {
             if (point->identifier == key.pointOrLineId) {
-                return point->modulateIfPossible(key, newValue);
+                bool anythingChanged;
+                auto result = point->modulateIfPossible(key, newValue, &anythingChanged);
+                if (anythingChanged) {
+                    bakeOffsets();
+                }
             }
         }
     } else if (key.type == ModulatableKey::line) {
