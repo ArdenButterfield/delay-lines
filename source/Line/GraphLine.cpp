@@ -148,8 +148,12 @@ float GraphLine::distortSample (unsigned channel, float samp) const
             return distortionAmount * wet + (1 - distortionAmount) * samp;
         case 1:
             // digital clip
-            wet = std::max(std::min(samp * 1 + distortionAmount, 1.f), -1.f);
-            return distortionAmount * wet + (1 - distortionAmount) * samp;
+            auto clipped = samp < -1 ? (distortionAmount * (samp + 1) - 1) :
+                                     samp > 1 ? (distortionAmount * (samp - 1) + 1) : samp;
+            auto folded = clipped > 0 ?
+                                      abs(fmod(clipped + 3.f, 4.f) - 2.f) - 1.f :
+                                      abs(fmod(1.f - clipped, 4.f) - 2.f) - 1.f;
+            return folded;
         case 2:
             // wavefold
             wet = juce::dsp::FastMathApproximations::sin(samp * (distortionAmount * 5 + 1));
