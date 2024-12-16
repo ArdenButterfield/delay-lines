@@ -6,10 +6,11 @@
 #define DELAYLINES_GRAPHLINE_H
 
 #include "GraphLineParameters.h"
+#include "GraphLineDistortion.h"
 #include "../GraphPoint.h"
 #include "../Modulation/ModulatableKey.h"
-#include "DelayLineInternal.h"
 
+#include "DelayLineInternal.h"
 #include "juce_dsp/juce_dsp.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 #include "juce_audio_processors/juce_audio_processors.h"
@@ -139,7 +140,7 @@ private:
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> gain;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> pan;
 
-    float distortSample(unsigned channel, float samp) const;
+    void distortSample();
     std::vector<float> lastSample;
     std::vector<juce::IIRFilter> loCutFilters;
     std::vector<juce::IIRFilter> hiCutFilters;
@@ -152,6 +153,9 @@ private:
 
     std::vector<float> panLevels;
     float previousPanAmount;
+    std::vector<float> previousSample;
+
+    GraphLineDistortion distorter;
 };
 
 #endif //DELAYLINES_GRAPHLINE_H

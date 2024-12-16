@@ -22,6 +22,7 @@ GraphLineModule::GraphLineModule(ModulationMappingEngine& me, DelayGraph& dg, co
     rebuildPointSelectors();
     startTimerHz(15);
 }
+
 GraphLineModule::~GraphLineModule()
 {
 }

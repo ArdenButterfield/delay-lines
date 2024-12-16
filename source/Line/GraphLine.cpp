@@ -82,6 +82,8 @@ void GraphLine::prepareToPlay (juce::dsp::ProcessSpec& spec)
     startTimerHz(60);
 
     lastSample.resize(numChannels, 0);
+
+    distorter.prepareToplay(spec);
     prepared = true;
 }
 
@@ -125,48 +127,12 @@ void GraphLine::pushSample (std::vector<float>& sample)
         return;
     }
 
+
     for (unsigned channel = 0; channel < numChannels; ++channel) {
         sampleVal[channel] = (sample[channel] * gainVal * panLevels[channel]) + (parameters.feedback / 100 * lastSample[channel]);
     }
 
     delayLineInternal->pushSample(sampleVal);
-}
-
-float GraphLine::distortSample (unsigned channel, float samp) const
-{
-    float wet, multiplier;
-    float distortionAmount = parameters.distortion;
-    if (juce::approximatelyEqual(distortionAmount, 0.f)) {
-        return samp;
-    }
-
-    switch (parameters.distortionType.getIndex())
-    {
-        case 0:
-            // analog clip
-            wet = juce::dsp::FastMathApproximations::tanh(samp * distortionAmount * 5);
-            return distortionAmount * wet + (1 - distortionAmount) * samp;
-        case 1:
-            // digital clip
-            wet = std::max(std::min(samp * 1 + distortionAmount, 1.f), -1.f);
-            return distortionAmount * wet + (1 - distortionAmount) * samp;
-        case 2:
-            // wavefold
-            wet = juce::dsp::FastMathApproximations::sin(samp * (distortionAmount * 5 + 1));
-            return distortionAmount * wet + (1 - distortionAmount) * samp;
-        case 3:
-            // bitcrush
-            multiplier = std::pow(2.f, 16 - 16 * distortionAmount);
-            return std::round(samp * multiplier) / multiplier;
-        case 4:
-            // packet loss
-            return currentLossState[channel] * samp;
-        case 5:
-            // packet loss stereo
-            return currentLossState[channel] * samp;
-        default:
-            return samp;
-    }
 }
 
 void GraphLine::popSample ()
@@ -190,14 +156,13 @@ void GraphLine::popSample ()
         }
     }
 
+    distorter.distortSample(sampleVal);
 
     for (unsigned channel = 0; channel < numChannels; ++channel) {
         auto s = sampleVal[channel];
         if (!std::isfinite(s)) {
             s = 0;
         }
-
-        s = parameters.distortion > 0 ? distortSample(channel, s) : s;
 
         s *= parameters.invert ? -1 : 1;
 
@@ -373,7 +338,12 @@ void GraphLine::recalculateParameters()
     for (auto& model : lossmodel) {
         model->setParameters(0.1, parameters.distortion);
     }
+
+    distorter.setDistortionAmount(parameters.distortion);
+    distorter.setDistortionThreshold(parameters.distortionThreshold);
+    distorter.setDistortionType(parameters.distortionType.getIndex());
 }
+
 void GraphLine::setStretchTime(float newStretchTime)
 {
     delayLineInternal->setStretchTime(newStretchTime);

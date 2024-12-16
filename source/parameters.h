@@ -35,6 +35,7 @@ const juce::String LENGTH_ENVELOPE_FOLLOW_ID = "lengthenvelopefollow";
 const juce::String MOD_DEPTH_ID = "moddepth";
 const juce::String MOD_RATE_ID = "modrate";
 const juce::String DISTORTION_ID = "distortion";
+const juce::String DISTORTION_THRESHOLD_ID = "distortionthreshold";
 const juce::String DISTORTION_TYPE_ID = "distortiontype";
 const juce::String HICUT_ID = "hicut";
 const juce::String LOCUT_ID = "locut";

@@ -203,6 +203,7 @@ struct Parameters {
     juce::AudioParameterFloat modDepth;
     juce::AudioParameterFloat modRate;
     juce::AudioParameterFloat distortion;
+    juce::AudioParameterFloat distortionThreshold;
     juce::AudioParameterChoice distortionType;
     juce::AudioParameterFloat hiCut;
     juce::AudioParameterFloat loCut;
@@ -218,6 +219,7 @@ struct Parameters {
         &modDepth,
         &modRate,
         &distortion,
+        &distortionThreshold,
         &distortionType,
         &hiCut,
         &loCut,

@@ -40,6 +40,7 @@ public:
     juce::Slider timeEnvelopeFollowSlider;
 
     CompactSlider distortionSlider;
+    CompactSlider distortionThresholdSlider;
     juce::ComboBox distortionTypeSelector;
 
     CompactSlider loCutSlider;

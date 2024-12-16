@@ -24,6 +24,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     modRateSlider.setNormalisableRange(modrateRange);
 
     distortionSlider.setRange(0, 1);
+    distortionThresholdSlider.setRange(-30, 0);
 
     auto filterRange = juce::NormalisableRange<double>(0,20000);
     filterRange.setSkewForCentre(500);
@@ -71,6 +72,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
              &modDepthSlider,
              &modRateSlider,
              &distortionSlider,
+             &distortionThresholdSlider,
              &panSlider
          }) {
         addAndMakeVisible(slider);
@@ -88,6 +90,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     modDepthSlider.setModKey({ModulatableKey::line, graphLine, MOD_DEPTH_ID, modDepthSlider.getNormalisableRange()});
     modRateSlider.setModKey({ModulatableKey::line, graphLine, MOD_RATE_ID, modRateSlider.getNormalisableRange()});
     distortionSlider.setModKey({ModulatableKey::line, graphLine, DISTORTION_ID, distortionSlider.getNormalisableRange()});
+    distortionThresholdSlider.setModKey({ModulatableKey::line, graphLine, DISTORTION_THRESHOLD_ID, distortionThresholdSlider.getNormalisableRange()});
     panSlider.setModKey({ModulatableKey::line, graphLine, PAN_PARAMETER_ID, panSlider.getNormalisableRange()});
 
     addAndMakeVisible(lengthEditor);
@@ -254,8 +257,10 @@ void LineEditor::resized()
         distortionTypeSelector.setBounds(distortionArea
                                               .withHeight(distortionArea.getHeight() / 2)
                                               .withBottomY(distortionArea.getBottom()));
-        distortionSlider.setBounds(distortionArea.withBottom(distortionTypeSelector.getY()));
-        distortionVisualizer.setBounds(distortionSlider.getBounds());
+        auto slidersArea = distortionArea.withBottom(distortionTypeSelector.getY());
+        distortionSlider.setBounds(slidersArea.withWidth(slidersArea.getWidth() / 2));
+        distortionThresholdSlider.setBounds(slidersArea.withTrimmedLeft(distortionSlider.getWidth()));
+        distortionVisualizer.setBounds(slidersArea);
     }
 }
 
@@ -327,6 +332,8 @@ void LineEditor::sliderValueChanged (juce::Slider* slider)
         line->parameters.modDepth = modDepthSlider.getValue();
     } else if (slider == &distortionSlider) {
         line->parameters.distortion = distortionSlider.getValue();
+    } else if (slider == &distortionThresholdSlider) {
+        line->parameters.distortionThreshold = distortionThresholdSlider.getValue();
     } else if (slider == &loCutSlider) {
         line->parameters.loCut = loCutSlider.getValue();
     } else if (slider == &hiCutSlider) {
@@ -350,6 +357,7 @@ void LineEditor::timerCallback()
     modDepthSlider.setValue(line->parameters.modDepth, juce::dontSendNotification);
     modRateSlider.setValue(line->parameters.modRate, juce::dontSendNotification);
     distortionSlider.setValue(line->parameters.distortion, juce::dontSendNotification);
+    distortionThresholdSlider.setValue(line->parameters.distortionThreshold, juce::dontSendNotification);
     loCutSlider.setValue(line->parameters.loCut, juce::dontSendNotification);
     hiCutSlider.setValue(line->parameters.hiCut, juce::dontSendNotification);
     gainSlider.setValue(line->parameters.gain, juce::dontSendNotification);

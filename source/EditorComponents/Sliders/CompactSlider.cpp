@@ -52,7 +52,7 @@ void CompactSlider::resized()
 {
     valueLabel.setBounds(getLocalBounds().withTrimmedBottom(4));
     auto widthScalar = 1.f;
-    float numCharacters = floor(std::log10(getMaximum())) + 1;
+    float numCharacters = floor(std::log10(std::max(std::abs(getMinimum()), std::abs(getMaximum())))) + 1;
     numCharacters += getMinimum() < 0 ? 1 : 0;
     numCharacters += suffix.length();
     numCharacters += getNumDecimalPlacesToDisplay() + 1;
