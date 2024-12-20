@@ -4,7 +4,8 @@
 
 #include "DistortionVisualizer.h"
 #include "juce_dsp/juce_dsp.h"
-DistortionVisualizer::DistortionVisualizer() : distortionAmount(0), distortionType(0), opacity(0.4f)
+DistortionVisualizer::DistortionVisualizer(DelayGraph& _delayGraph, const int& _line)
+    : opacity(0.4f), distortionType(0), distortionAmount(0), delayGraph(_delayGraph), line(_line)
 {
 }
 
@@ -21,6 +22,12 @@ void DistortionVisualizer::setDistortion (int type, float amount)
 
 void DistortionVisualizer::paint (juce::Graphics& g)
 {
+    auto graphLine = delayGraph.getLine(line);
+    if (!graphLine) {
+        return;
+    }
+    graphLine->getDistorter()->paintComponent(g, *this);
+
     for (auto i = 0; i < values[0].size(); ++i) {
         g.setColour(juce::Colours::black.withAlpha(opacity * std::min(std::max(0.f, abs(values[0][i])), 1.f)));
         g.drawVerticalLine(i,0,getHeight() / 2);

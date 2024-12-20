@@ -12,6 +12,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
       dragging(false),
       canBeDragged(_canBeDragged),
       modVisualizer(&_delayGraph, _line),
+      distortionVisualizer(delayGraph, graphLine),
       mappingEngine(me)
 {
     setLookAndFeel(&delayLinesLookAndFeel);

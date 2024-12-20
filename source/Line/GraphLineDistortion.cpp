@@ -3,17 +3,24 @@
 //
 
 #include "GraphLineDistortion.h"
+#include "GraphLine.h"
+
 void GraphLineDistortion::prepareToplay (juce::dsp::ProcessSpec& spec)
 {
     previousSample.resize(spec.numChannels);
     previousSample.clear();
+    envelope.prepare(spec);
 }
+
 void GraphLineDistortion::setDistortionAmount (float amount)
 {
     if (!juce::approximatelyEqual(amount, distortionAmount)) {
         distortionAmount = amount;
+        envelope.setAttackTime(100 * (1 - distortionAmount));
+        envelope.setReleaseTime(500 * (1 - distortionAmount));
     }
 }
+
 void GraphLineDistortion::setDistortionThreshold (float db)
 {
     if (!juce::approximatelyEqual(db, distortionThreshold)) {
@@ -21,10 +28,12 @@ void GraphLineDistortion::setDistortionThreshold (float db)
         distortionThresholdGain = juce::Decibels::decibelsToGain(db);
     }
 }
+
 void GraphLineDistortion::setDistortionType (int type)
 {
     distortionType = type;
 }
+
 void GraphLineDistortion::distortSample (std::vector<float>& sample)
 {
     for (auto& s : sample) {
@@ -39,31 +48,18 @@ void GraphLineDistortion::distortSample (std::vector<float>& sample)
             // analog clip
             channel = 0;
             for (auto& s : sample) {
-                s *= (1 + distortionAmount * random.nextFloat() - distortionAmount * 0.5);
-                s = tanhf(s / distortionThresholdGain) * distortionThresholdGain;
+                s = analogDistort(s);
             }
             break;
         case 1:
             // digital clip
             for (auto& s : sample) {
-                if (s < -distortionThresholdGain) {
-                    float scaledAmount = 10.f * std::pow(distortionAmount, 4.f);
-                    s = scaledAmount * (-s / distortionThresholdGain - 1);
-                    s = std::abs(std::fmod(s, 4.f) - 2.f);
-                    s *= distortionThresholdGain;
-                    s -= distortionThresholdGain;
-                    s *= -1;
-                } else if (s > distortionThresholdGain) {
-                    float scaledAmount = 10.f * std::pow(distortionAmount, 4.f);
-                    s = scaledAmount * (s / distortionThresholdGain - 1);
-                    s = std::abs(std::fmod(s, 4.f) - 2.f);
-                    s *= distortionThresholdGain;
-                    s -= distortionThresholdGain;
-                }
+                s = digitalDistort(s);
             }
-            /*
         case 2:
             // wavefold
+            /*
+
             wet = juce::dsp::FastMathApproximations::sin(samp * (distortionAmount * 5 + 1));
             return distortionAmount * wet + (1 - distortionAmount) * samp;
         case 3:
@@ -83,4 +79,56 @@ void GraphLineDistortion::distortSample (std::vector<float>& sample)
     for (int i = 0; i < sample.size(); ++i) {
         previousSample = sample;
     }
+}
+void GraphLineDistortion::paintComponent (juce::Graphics& g, juce::Component& c) const
+{
+    switch (distortionType) {
+        case 0: {
+            auto p = juce::Path();
+            p.startNewSubPath (0, 0);
+            for (float x = 0; x < c.getWidth(); x += 0.5)
+            {
+                auto t = (x - (c.getWidth() * 0.5f)) / static_cast<float> (c.getHeight());
+                p.lineTo (x, c.getHeight() * analogDistort (t) * 0.5f + c.getHeight() * 0.5f);
+            }
+            g.strokePath (p, { 4, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
+            break;
+        }
+        case 1: {
+            auto p = juce::Path();
+            p.startNewSubPath (0, 0);
+            for (float x = 0; x < c.getWidth(); x += 0.5)
+            {
+                auto t = (x - (c.getWidth() * 0.5f)) / static_cast<float> (c.getHeight());
+                p.lineTo (x, c.getHeight() * digitalDistort(t) * 0.5f + c.getHeight() * 0.5f);
+            }
+            g.strokePath (p, { 4, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
+            break;
+        }
+    }
+}
+float GraphLineDistortion::analogDistort (float sample) const
+{
+    // auto s = sample * (1 + distortionAmount * random.nextFloat() - distortionAmount * 0.5);
+    auto s = sample;
+    return tanhf(s / distortionThresholdGain) * distortionThresholdGain;
+}
+
+float GraphLineDistortion::digitalDistort (float s) const
+{
+    if (s < -distortionThresholdGain) {
+        float scaledAmount = 10.f * std::pow(distortionAmount, 4.f);
+        s = scaledAmount * (-s / distortionThresholdGain - 1);
+        s = std::abs(std::fmod(s, 4.f) - 2.f);
+        s *= distortionThresholdGain;
+        s -= distortionThresholdGain;
+        s *= -1;
+    } else if (s > distortionThresholdGain) {
+        float scaledAmount = 10.f * std::pow(distortionAmount, 4.f);
+        s = scaledAmount * (s / distortionThresholdGain - 1);
+        s = std::abs(std::fmod(s, 4.f) - 2.f);
+        s *= distortionThresholdGain;
+        s -= distortionThresholdGain;
+    }
+    return s;
 }

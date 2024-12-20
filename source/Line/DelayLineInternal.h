@@ -32,6 +32,8 @@ public:
     void clearLines();
 
     void setStretchTime(float stretchTime);
+
+    float getLookahead(float numSamples);
 private:
     const juce::dsp::ProcessSpec spec;
     const int envelopeDelayLineDownsampleRatio;

@@ -12,9 +12,10 @@ GraphLine::GraphLine(GraphPoint* _start, GraphPoint* _end, const int& id)
       editorAttached(false),
       prepared(false),
       identifier(id),
+      bpm(120),
       numChannels(0),
       sampleRate(0),
-      bpm(120)
+      distorter(*this)
 {
     color = getRandomColour();
 }
@@ -28,7 +29,8 @@ GraphLine::GraphLine (GraphPoint* _start, GraphPoint* _end, juce::XmlElement* el
       identifier(element->getIntAttribute("id")),
       color(juce::Colour::fromString(element->getStringAttribute("color"))),
       numChannels(0),
-      sampleRate(0)
+      sampleRate(0),
+      distorter(*this)
 
 {
 }
@@ -142,19 +144,6 @@ void GraphLine::popSample ()
     }
 
     delayLineInternal->popSample(sampleVal, !parameters.isStagnated());
-
-    if (parameters.distortionType.getIndex() == 4) {
-        // mono
-        auto v = lossmodel[0]->tick() ? 0.f : 1.f;
-        for (unsigned channel = 0; channel < numChannels; ++channel) {
-            currentLossState[channel] = lossFilters[channel].processSample(0,v);
-        }
-    } else if (parameters.distortionType.getIndex() == 5) {
-        for (unsigned channel = 0; channel < numChannels; ++channel) {
-            auto v = lossmodel[channel]->tick() ? 0.f : 1.f;
-            currentLossState[channel] = lossFilters[channel].processSample(0,v);
-        }
-    }
 
     distorter.distortSample(sampleVal);
 
@@ -347,4 +336,8 @@ void GraphLine::recalculateParameters()
 void GraphLine::setStretchTime(float newStretchTime)
 {
     delayLineInternal->setStretchTime(newStretchTime);
+}
+float GraphLine::getLookahead (float numSamples)
+{
+    return delayLineInternal->getLookahead(numSamples);
 }

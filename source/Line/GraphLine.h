@@ -122,6 +122,11 @@ public:
     }
 
     void setStretchTime(float newStretchTime);
+
+    float getLookahead(float numSamples);
+    const GraphLineDistortion* getDistorter() {
+        return &distorter;
+    }
 private:
     float bpm;
     void parameterValueChanged(int parameterIndex, float newValue) override;

@@ -89,7 +89,9 @@ void DelayLineInternal::popSample (std::vector<float>& sample, bool updateReadPo
             l *= modOscillator->tick();
         }
         for (unsigned i = 0; i < spec.numChannels; ++i) {
-            sample[i] = delayLine.popSample(static_cast<int>(i), juce::approximatelyEqual(l, delayLine.getDelay()) ? -1 : l, updateReadPointer);
+            sample[i] = delayLine.popSample(
+                static_cast<int>(i),
+                juce::approximatelyEqual(l, delayLine.getDelay()) ? -1 : l, updateReadPointer);
             if (envelopeCounter == 0) {
                 envelopeDelayLine.popSample(static_cast<int>(i), l / envelopeDelayLineDownsampleRatio, updateReadPointer);
             }
@@ -125,4 +127,15 @@ void DelayLineInternal::setStretchTime(float _stretchTime)
         stretchTime = _stretchTime;
         length.setRampLength(stretchTime);
     }
+}
+float DelayLineInternal::getLookahead (float numSamples)
+{
+    float amount = 0;
+    for (unsigned i = 0; i < spec.numChannels; ++i) {
+        amount += delayLine.popSample(
+            static_cast<int>(i),
+            std::max(1.f, length.getValueWithoutTicking() - numSamples), false);
+    }
+    amount /= static_cast<float>(spec.numChannels);
+    return amount;
 }
