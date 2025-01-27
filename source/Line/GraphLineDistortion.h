@@ -10,7 +10,7 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 class GraphLine;
 
-class GraphLineDistortion
+class GraphLineDistortion : public juce::Timer
 {
 public:
     GraphLineDistortion(const GraphLine& l)
@@ -35,8 +35,13 @@ private:
     float digitalDistort(float sample) const;
     const GraphLine& graphLine;
 
-    float gainReduction;
+    float minGainReduction; // used for graphing
+    float maxGainReduction;
+    float prevMinGainReduction;
+    float prevMaxGainReduction;
     float sampleRate;
+
+    void timerCallback() override;
 };
 
 #endif //ECHOLOCATION_GRAPHLINEDISTORTION_H

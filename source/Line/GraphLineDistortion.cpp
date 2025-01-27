@@ -10,6 +10,9 @@ void GraphLineDistortion::prepareToplay (juce::dsp::ProcessSpec& spec)
     previousSample.resize(spec.numChannels);
     previousSample.clear();
     envelope.prepare(spec);
+    minGainReduction = 1.f;
+    maxGainReduction = 0.f;
+    startTimerHz(60);
 }
 
 void GraphLineDistortion::setDistortionAmount (float amount)
@@ -58,14 +61,14 @@ void GraphLineDistortion::distortSample (std::vector<float>& sample)
             }
         case 2:
             // limiter
-            gainReduction = 0;
             for (int channel = 0; channel < sample.size(); ++channel) {
                 auto env = envelope.processSample(channel, sample[channel]);
                 auto gainScale = (env > distortionThresholdGain) ? (distortionThresholdGain / env) : 1;
                 sample[channel] *= gainScale;
-                gainReduction = std::max(gainReduction, gainScale);
+                auto gainReduction = 1 - gainScale;
+                maxGainReduction = std::max(gainReduction, maxGainReduction);
+                minGainReduction = std::min(gainReduction, minGainReduction);
             }
-            gainReduction = 1 - gainReduction;
             /*
 
             wet = juce::dsp::FastMathApproximations::sin(samp * (distortionAmount * 5 + 1));
@@ -114,7 +117,8 @@ void GraphLineDistortion::paintComponent (juce::Graphics& g, juce::Component& c)
             break;
         }
         case 2: {
-            g.fillRect(c.getLocalBounds().withWidth(c.getWidth() * std::min(std::max(gainReduction, 0.f), 1.f)));
+            g.fillRect(c.getLocalBounds().withWidth(c.getWidth() * std::min(std::max(prevMinGainReduction, 0.f), 1.f)).withRightX(c.getWidth()));
+            g.drawRect(c.getLocalBounds().withWidth(c.getWidth() * std::min(std::max(prevMaxGainReduction, 0.f), 1.f)).withRightX(c.getWidth()));
         }
     }
 }
@@ -142,4 +146,11 @@ float GraphLineDistortion::digitalDistort (float s) const
         s -= distortionThresholdGain;
     }
     return s;
+}
+void GraphLineDistortion::timerCallback()
+{
+    prevMinGainReduction = minGainReduction;
+    prevMaxGainReduction = maxGainReduction;
+    minGainReduction = 1.f;
+    maxGainReduction = 0.f;
 }
