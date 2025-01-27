@@ -35,6 +35,7 @@ private:
     float digitalDistort(float sample) const;
     const GraphLine& graphLine;
 
+    float gainReduction;
     float sampleRate;
 };
 

@@ -16,7 +16,7 @@ void GraphLineDistortion::setDistortionAmount (float amount)
 {
     if (!juce::approximatelyEqual(amount, distortionAmount)) {
         distortionAmount = amount;
-        envelope.setAttackTime(100 * (1 - distortionAmount));
+        envelope.setAttackTime(0);
         envelope.setReleaseTime(500 * (1 - distortionAmount));
     }
 }
@@ -57,7 +57,15 @@ void GraphLineDistortion::distortSample (std::vector<float>& sample)
                 s = digitalDistort(s);
             }
         case 2:
-            // wavefold
+            // limiter
+            gainReduction = 0;
+            for (int channel = 0; channel < sample.size(); ++channel) {
+                auto env = envelope.processSample(channel, sample[channel]);
+                auto gainScale = (env > distortionThresholdGain) ? (distortionThresholdGain / env) : 1;
+                sample[channel] *= gainScale;
+                gainReduction = std::max(gainReduction, gainScale);
+            }
+            gainReduction = 1 - gainReduction;
             /*
 
             wet = juce::dsp::FastMathApproximations::sin(samp * (distortionAmount * 5 + 1));
@@ -104,6 +112,9 @@ void GraphLineDistortion::paintComponent (juce::Graphics& g, juce::Component& c)
             }
             g.strokePath (p, { 4, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
             break;
+        }
+        case 2: {
+            g.fillRect(c.getLocalBounds().withWidth(c.getWidth() * std::min(std::max(gainReduction, 0.f), 1.f)));
         }
     }
 }
