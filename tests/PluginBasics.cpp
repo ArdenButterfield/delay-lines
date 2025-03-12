@@ -250,7 +250,8 @@ TEST_CASE("send audio", "[sendaudio]")
         delayGraph.processSample(sample);
     }
 
-    REQUIRE(((sample[0] > 0.5f) && (sample[1] > 0.5f)));
+    REQUIRE((juce::approximatelyEqual(sample[0], 1.f, juce::absoluteTolerance(0.3f)) &&
+              juce::approximatelyEqual(sample[1], 1.f, juce::absoluteTolerance(0.3f))));
 }
 
 TEST_CASE("delay line internal", "[delayinternal]")
@@ -341,7 +342,8 @@ TEST_CASE("global inputs", "[globalinputs]")
         delayGraph.processSample(sample);
     }
 
-    REQUIRE(((sample[0] > 0.5f) && (sample[1] > 0.5f)));
+    REQUIRE((juce::approximatelyEqual(sample[0], 1.f, juce::absoluteTolerance(0.4f))
+              && juce::approximatelyEqual(sample[1], 1.f, juce::absoluteTolerance(0.4f))));
 }
 
 TEST_CASE("modulation", "[mod]")
@@ -392,7 +394,7 @@ TEST_CASE("sample delay", "[sampledelay]")
         p.processBlock(buffer, midiBuffer);
         for (int i = 0; i < buffer.getNumSamples(); ++i) {
             if (juce::approximatelyEqual(static_cast<double>(i), 10 + sampleDelayLength)) {
-                REQUIRE((buffer.getSample(0, i) > 0.5f));
+                REQUIRE(juce::approximatelyEqual(buffer.getSample(0, i), 1.f, juce::absoluteTolerance(0.3f)));
             } else {
                 REQUIRE(juce::approximatelyEqual(buffer.getSample(0, i), 0.f));
             }

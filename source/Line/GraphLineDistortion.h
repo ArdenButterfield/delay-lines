@@ -31,8 +31,12 @@ private:
     std::vector<float> previousSample;
     juce::Random random;
     juce::dsp::BallisticsFilter<float> envelope;
-    float analogDistort(float sample) const;
-    float digitalDistort(float sample) const;
+    juce::dsp::BallisticsFilter<float> gateEnvelope;
+    void analogDistort(std::vector<float>& sample);
+    void limiterDistort(std::vector<float>& sample);
+    void sineDistort(std::vector<float>& sample);
+    void gateDistort(std::vector<float>& sample, float chaos);
+
     const GraphLine& graphLine;
 
     float minGainReduction; // used for graphing

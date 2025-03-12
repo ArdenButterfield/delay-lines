@@ -9,18 +9,27 @@ void GraphLineDistortion::prepareToplay (juce::dsp::ProcessSpec& spec)
 {
     previousSample.resize(spec.numChannels);
     previousSample.clear();
+
     envelope.prepare(spec);
+    gateEnvelope.prepare(spec);
+
     minGainReduction = 1.f;
     maxGainReduction = 0.f;
     startTimerHz(60);
+
+    gateEnvelope.setAttackTime(0);
+    gateEnvelope.setReleaseTime(100);
+
+    envelope.setAttackTime(0);
+    envelope.setReleaseTime(250);
 }
 
 void GraphLineDistortion::setDistortionAmount (float amount)
 {
     if (!juce::approximatelyEqual(amount, distortionAmount)) {
         distortionAmount = amount;
-        envelope.setAttackTime(0);
         envelope.setReleaseTime(500 * (1 - distortionAmount));
+        gateEnvelope.setReleaseTime(500 * (1 - distortionAmount));
     }
 }
 
@@ -39,51 +48,30 @@ void GraphLineDistortion::setDistortionType (int type)
 
 void GraphLineDistortion::distortSample (std::vector<float>& sample)
 {
+
     for (auto& s : sample) {
         if (!std::isfinite(s)) {
             s = 0;
         }
     }
-    int channel;
+
     switch (distortionType)
     {
         case 0:
-            // analog clip
-            channel = 0;
-            for (auto& s : sample) {
-                s = analogDistort(s);
-            }
+            limiterDistort(sample);
             break;
         case 1:
-            // digital clip
-            for (auto& s : sample) {
-                s = digitalDistort(s);
-            }
+            analogDistort(sample);
+            break;
         case 2:
-            // limiter
-            for (int channel = 0; channel < sample.size(); ++channel) {
-                auto env = envelope.processSample(channel, sample[channel]);
-                auto gainScale = (env > distortionThresholdGain) ? (distortionThresholdGain / env) : 1;
-                sample[channel] *= gainScale;
-                auto gainReduction = 1 - gainScale;
-                maxGainReduction = std::max(gainReduction, maxGainReduction);
-                minGainReduction = std::min(gainReduction, minGainReduction);
-            }
-            /*
-
-            wet = juce::dsp::FastMathApproximations::sin(samp * (distortionAmount * 5 + 1));
-            return distortionAmount * wet + (1 - distortionAmount) * samp;
+            sineDistort(sample);
+            break;
         case 3:
-            // bitcrush
-            multiplier = std::pow(2.f, 16 - 16 * distortionAmount);
-            return std::round(samp * multiplier) / multiplier;
+            gateDistort(sample, 0);
+            break;
         case 4:
-            // packet loss
-            return currentLossState[channel] * samp;
-        case 5:
-            // packet loss stereo
-            return currentLossState[channel] * samp;
-*/
+            gateDistort(sample, 1.f);
+            break;
         default:
             break;
     }
@@ -91,9 +79,11 @@ void GraphLineDistortion::distortSample (std::vector<float>& sample)
         previousSample = sample;
     }
 }
+
 void GraphLineDistortion::paintComponent (juce::Graphics& g, juce::Component& c) const
 {
     switch (distortionType) {
+/*
         case 0: {
             auto p = juce::Path();
             p.startNewSubPath (0, 0);
@@ -116,19 +106,50 @@ void GraphLineDistortion::paintComponent (juce::Graphics& g, juce::Component& c)
             g.strokePath (p, { 4, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
             break;
         }
-        case 2: {
+*/
+        case 0: case 3: case 4: {
             g.fillRect(c.getLocalBounds().withWidth(c.getWidth() * std::min(std::max(prevMinGainReduction, 0.f), 1.f)).withRightX(c.getWidth()));
             g.drawRect(c.getLocalBounds().withWidth(c.getWidth() * std::min(std::max(prevMaxGainReduction, 0.f), 1.f)).withRightX(c.getWidth()));
         }
     }
 }
-float GraphLineDistortion::analogDistort (float sample) const
+void GraphLineDistortion::analogDistort (std::vector<float>& sample)
 {
-    // auto s = sample * (1 + distortionAmount * random.nextFloat() - distortionAmount * 0.5);
-    auto s = sample;
-    return tanhf(s / distortionThresholdGain) * distortionThresholdGain;
+    for (auto& s : sample) {
+        s = tanh (s / distortionThresholdGain) * distortionThresholdGain;
+    }
 }
 
+void GraphLineDistortion::limiterDistort (std::vector<float>& sample) {
+    for (int channel = 0; channel < sample.size(); ++channel) {
+        auto env = envelope.processSample(channel, sample[channel]);
+        auto gainScale = (env > distortionThresholdGain) ? (distortionThresholdGain / env) : 1;
+        sample[channel] *= gainScale;
+        auto gainReduction = 1 - gainScale;
+        maxGainReduction = std::max(gainReduction, maxGainReduction);
+        minGainReduction = std::min(gainReduction, minGainReduction);
+    }
+}
+
+void GraphLineDistortion::sineDistort (std::vector<float>& sample) {
+    for (auto& s : sample) {
+        s = sin (s / distortionThresholdGain) * distortionThresholdGain;
+    }
+}
+
+void GraphLineDistortion::gateDistort (std::vector<float>& sample, float chaos) {
+    for (int channel = 0; channel < sample.size(); ++channel) {
+        auto env = envelope.processSample (channel, sample[channel]);
+        auto gainScale = (env > distortionThresholdGain || juce::approximatelyEqual (distortionThresholdGain, 0.f)) ? 1 : (env / distortionThresholdGain);
+        sample[channel] *= gainScale;
+        sample[channel] = tanh(sample[channel]);
+        auto gainReduction = 1 - gainScale;
+        maxGainReduction = std::max (gainReduction, maxGainReduction);
+        minGainReduction = std::min (gainReduction, minGainReduction);
+    }
+}
+
+/*
 float GraphLineDistortion::digitalDistort (float s) const
 {
     if (s < -distortionThresholdGain) {
@@ -147,6 +168,8 @@ float GraphLineDistortion::digitalDistort (float s) const
     }
     return s;
 }
+*/
+
 void GraphLineDistortion::timerCallback()
 {
     prevMinGainReduction = minGainReduction;
