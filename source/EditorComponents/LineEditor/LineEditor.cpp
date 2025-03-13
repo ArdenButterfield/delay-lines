@@ -25,6 +25,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     modRateSlider.setNormalisableRange(modrateRange);
 
     distortionSlider.setRange(0, 1);
+    distortionTypeSlider.setRange(0, 4);
     distortionThresholdSlider.setRange(-30, 0);
 
     auto filterRange = juce::NormalisableRange<double>(0,20000);
@@ -73,6 +74,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
              &modDepthSlider,
              &modRateSlider,
              &distortionSlider,
+             &distortionTypeSlider,
              &distortionThresholdSlider,
              &panSlider
          }) {
@@ -91,6 +93,7 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     modDepthSlider.setModKey({ModulatableKey::line, graphLine, MOD_DEPTH_ID, modDepthSlider.getNormalisableRange()});
     modRateSlider.setModKey({ModulatableKey::line, graphLine, MOD_RATE_ID, modRateSlider.getNormalisableRange()});
     distortionSlider.setModKey({ModulatableKey::line, graphLine, DISTORTION_ID, distortionSlider.getNormalisableRange()});
+    distortionTypeSlider.setModKey({ModulatableKey::line, graphLine, DISTORTION_TYPE_ID, distortionTypeSlider.getNormalisableRange()});
     distortionThresholdSlider.setModKey({ModulatableKey::line, graphLine, DISTORTION_THRESHOLD_ID, distortionThresholdSlider.getNormalisableRange()});
     panSlider.setModKey({ModulatableKey::line, graphLine, PAN_PARAMETER_ID, panSlider.getNormalisableRange()});
 
@@ -147,9 +150,6 @@ LineEditor::LineEditor (ModulationMappingEngine& me, DelayGraph& _delayGraph, co
     filterLabel.setJustificationType(juce::Justification::centredBottom);
     filterHiLabel.setJustificationType(juce::Justification::centredBottom);
 
-    addAndMakeVisible(distortionTypeSelector);
-    distortionTypeSelector.addItemList(DISTORTION_TYPE_OPTIONS, 1);
-    distortionTypeSelector.addListener(this);
     startTimerHz(60);
 
     gainSlider.setColour(juce::Slider::ColourIds::textBoxTextColourId, juce::Colours::black);
@@ -255,10 +255,10 @@ void LineEditor::resized()
 
     // Distortion
     {
-        distortionTypeSelector.setBounds(distortionArea
+        distortionTypeSlider.setBounds(distortionArea
                                               .withHeight(distortionArea.getHeight() / 2)
                                               .withBottomY(distortionArea.getBottom()));
-        auto slidersArea = distortionArea.withBottom(distortionTypeSelector.getY());
+        auto slidersArea = distortionArea.withBottom(distortionTypeSlider.getY());
         distortionSlider.setBounds(slidersArea.withWidth(slidersArea.getWidth() / 2));
         distortionThresholdSlider.setBounds(slidersArea.withTrimmedLeft(distortionSlider.getWidth()));
         distortionVisualizer.setBounds(slidersArea);
@@ -331,6 +331,8 @@ void LineEditor::sliderValueChanged (juce::Slider* slider)
         line->parameters.modRate = modRateSlider.getValue();
     } else if (slider == &modDepthSlider) {
         line->parameters.modDepth = modDepthSlider.getValue();
+    } else if (slider == &distortionTypeSlider) {
+        line->parameters.distortionType = distortionTypeSlider.getValue();
     } else if (slider == &distortionSlider) {
         line->parameters.distortion = distortionSlider.getValue();
     } else if (slider == &distortionThresholdSlider) {
@@ -372,7 +374,6 @@ void LineEditor::timerCallback()
     filterVisualizer.setFilters(
         line->parameters.loCut.convertTo0to1(line->parameters.loCut),
         line->parameters.hiCut.convertTo0to1(line->parameters.hiCut));
-    distortionTypeSelector.setSelectedId(line->parameters.distortionType + 1);
     distortionVisualizer.setDistortion(line->parameters.distortionType, line->parameters.distortion);
 }
 
@@ -432,16 +433,5 @@ void LineEditor::buttonClicked (juce::Button* button)
                 line->parameters.importFromXml(xml.get());
             }
         }
-    }
-}
-
-void LineEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
-{
-    auto line = delayGraph.getLine(graphLine);
-    if (!line) {
-        return;
-    }
-    if (comboBoxThatHasChanged == &distortionTypeSelector) {
-        line->parameters.distortionType = distortionTypeSelector.getSelectedItemIndex();
     }
 }

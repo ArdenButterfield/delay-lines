@@ -89,7 +89,7 @@ Parameters::Parameters() : muteBypass(MUTE_BYPASS_ID, "mute bypass", {"none", "m
                            modRate(MOD_RATE_ID, "mod rate", 0.1f, 30.f, 1.f),
                            distortion(DISTORTION_ID, "distortion", 0.f, 1.f, 0.f),
                            distortionThreshold(DISTORTION_THRESHOLD_ID, "distortion threshold", -30.f, 0.f, 0.f),
-                           distortionType(DISTORTION_TYPE_ID, "distortion type", DISTORTION_TYPE_OPTIONS, 0),
+                           distortionType(DISTORTION_TYPE_ID, "distortion type", 0.f, 4.f, 0.f),
                            hiCut(HICUT_ID, "hi cut", 0.f, 20000.f, 20000.f),
                            loCut(LOCUT_ID, "lo cut", 0.f, 20000.f, 0.f),
                            gain(GAIN_ID, "gain", 0.f, 2.f, 1.f),

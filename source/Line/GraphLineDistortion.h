@@ -20,18 +20,20 @@ public:
     void prepareToplay(juce::dsp::ProcessSpec& spec);
     void setDistortionAmount(float amount);
     void setDistortionThreshold(float db);
-    void setDistortionType(int type);
+    void setDistortionType(float type);
     void distortSample(std::vector<float>& sample);
     void paintComponent(juce::Graphics& g, juce::Component& c) const;
 private:
     float distortionAmount;
     float distortionThreshold;
     float distortionThresholdGain;
-    int distortionType;
+    float distortionType;
     std::vector<float> previousSample;
     juce::Random random;
     juce::dsp::BallisticsFilter<float> envelope;
     juce::dsp::BallisticsFilter<float> gateEnvelope;
+    juce::dsp::BallisticsFilter<float> gateTriggerEnvelope;
+
     void analogDistort(std::vector<float>& sample);
     void limiterDistort(std::vector<float>& sample);
     void sineDistort(std::vector<float>& sample);

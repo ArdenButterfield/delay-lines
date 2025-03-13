@@ -330,7 +330,7 @@ void GraphLine::recalculateParameters()
 
     distorter.setDistortionAmount(parameters.distortion);
     distorter.setDistortionThreshold(parameters.distortionThreshold);
-    distorter.setDistortionType(parameters.distortionType.getIndex());
+    distorter.setDistortionType(parameters.distortionType);
 }
 
 void GraphLine::setStretchTime(float newStretchTime)
