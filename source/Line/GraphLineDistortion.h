@@ -8,7 +8,51 @@
 #include "juce_dsp/juce_dsp.h"
 #include "juce_graphics/juce_graphics.h"
 #include "juce_gui_basics/juce_gui_basics.h"
+#include <vector>
+
 class GraphLine;
+
+struct GilbertElliottModel {
+    /**
+     This class keeps track of the packet loss. This simple two state Markov Chain model is able to emulate the loss of packets being transmitted over the internet. [1] Packets are generally lost in bursts, which is represented here by two states, a state with packet loss and a state without.
+
+     [1] G. Hasslinger and O. Hohlfeld, "The Gilbert-Elliott Model for Packet Loss in Real Time Services on the Internet," 14th GI/ITG Conference - Measurement, Modelling and Evalutation of Computer and Communication Systems, 2008, pp. 1-15.
+     */
+    float p;
+    float q;
+    bool in_loss_state;
+
+    GilbertElliottModel() : in_loss_state(false) {}
+
+    void setParameters(const float probability, const float length) {
+        // If there is a probabilty q of us leaving the loss each sample, we will stay
+        // in the loss state, on average, for (1 - q) / q (= sum(n:0->inf)n*q*(1-q)^n)
+        // samples. Solving for q, we get q = 1 / (samle_length + 1)
+        q = 1.0 / (length + 1.0);
+
+        // The eigenvector of this markov chain is [q, p], which means that we spend p/(q+p) of the time
+        // in the loss state and q/(q+p) of the time in the non-loss state. Since q is set by the length of
+        // loss, we need to set p to achieve the correct balance. Let r be the probability that we are in a
+        // loss state, if r = p/(q+p), then p = qr/(1-r).
+        if (probability == 1.0f) {
+            p = 1.0;
+        } else {
+            p = std::min(1.0f, q * probability / (1 - probability));
+        }
+    }
+
+    bool tick()
+    {
+        float random = ((float) rand()) / (float) RAND_MAX;
+        if (in_loss_state && (random < q)) {
+            in_loss_state = false;
+        } else if ((!in_loss_state) && (random < p)) {
+            in_loss_state = true;
+        }
+
+        return in_loss_state;
+    }
+};
 
 class GraphLineDistortion : public juce::Timer
 {
@@ -41,13 +85,16 @@ private:
 
     const GraphLine& graphLine;
 
-    float minGainReduction; // used for graphing
-    float maxGainReduction;
-    float prevMinGainReduction;
-    float prevMaxGainReduction;
-    float sampleRate;
+    float minGainReduction{}; // used for graphing
+    float maxGainReduction{};
+    float prevMinGainReduction{};
+    float prevMaxGainReduction{};
+    float sampleRate{};
+
+    std::vector<GilbertElliottModel> lossModel;
 
     void timerCallback() override;
+    float fs;
 };
 
 #endif //ECHOLOCATION_GRAPHLINEDISTORTION_H

@@ -7,6 +7,8 @@
 
 void GraphLineDistortion::prepareToplay (juce::dsp::ProcessSpec& spec)
 {
+    fs = spec.sampleRate;
+
     previousSample.resize(spec.numChannels);
     previousSample.clear();
 
@@ -26,6 +28,11 @@ void GraphLineDistortion::prepareToplay (juce::dsp::ProcessSpec& spec)
 
     gateTriggerEnvelope.setAttackTime(4);
     gateTriggerEnvelope.setReleaseTime(50);
+
+    lossModel.resize(spec.numChannels);
+    for (auto& model : lossModel) {
+        model.setParameters(0.1, spec.sampleRate * 0.1);
+    }
 }
 
 void GraphLineDistortion::setDistortionAmount (float amount)
@@ -59,10 +66,19 @@ void GraphLineDistortion::distortSample (std::vector<float>& sample)
         }
     }
 
+    for (auto& m : lossModel) {
+        m.setParameters(1 - 0.98 * distortionThresholdGain, fs * 0.1);
+    }
+
     for (unsigned channel = 0; channel < sample.size(); ++channel) {
         auto env = envelope.processSample(channel, sample[channel]);
-        auto gateEnv = gateTriggerEnvelope.processSample(channel,
-            gateEnvelope.processSample(channel, sample[channel]) > distortionThresholdGain ? 1.0 : 0.0);
+
+        auto amountRandomGate = std::min(std::max(0.f, distortionType - 3), 1.f);
+
+        auto envelopeIsHigh = (gateEnvelope.processSample(channel, sample[channel]) * (1 - amountRandomGate)) +
+                                      (lossModel[channel].tick() ? 2 * distortionThresholdGain : 0) * (amountRandomGate) > distortionThresholdGain ? 1.0 : 0.0;
+
+        auto gateEnv = gateTriggerEnvelope.processSample(channel, envelopeIsHigh);
 
         auto limiterSamp = sample[channel] * ((env > distortionThresholdGain) ? (distortionThresholdGain / env) : 1);
 
@@ -73,6 +89,7 @@ void GraphLineDistortion::distortSample (std::vector<float>& sample)
         auto sineDistortSamp = sin (sample[channel] / distortionThresholdGain) * distortionThresholdGain;
         sineDistortSamp =  distortionAmount * digitalDistortSamp + (1 - distortionAmount) * sineDistortSamp;
 
+
         auto gateDistortSamp = sample[channel] * gateEnv;
 
         if (distortionType < 1) {
@@ -82,7 +99,7 @@ void GraphLineDistortion::distortSample (std::vector<float>& sample)
         } else if (distortionType < 3) {
             sample[channel] = sineDistortSamp * (3 - distortionType) + gateDistortSamp * (distortionType - 2);
         } else if (distortionType <= 4) {
-            sample[channel] = gateDistortSamp * (4 - distortionType);
+            sample[channel] = gateDistortSamp;
         }
     }
 
