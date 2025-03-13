@@ -24,7 +24,7 @@ void GraphLineDistortion::prepareToplay (juce::dsp::ProcessSpec& spec)
     envelope.setAttackTime(0);
     envelope.setReleaseTime(250);
 
-    gateTriggerEnvelope.setAttackTime(0);
+    gateTriggerEnvelope.setAttackTime(4);
     gateTriggerEnvelope.setReleaseTime(50);
 }
 
@@ -33,7 +33,7 @@ void GraphLineDistortion::setDistortionAmount (float amount)
     if (!juce::approximatelyEqual(amount, distortionAmount)) {
         distortionAmount = amount;
         envelope.setReleaseTime(500 * (1 - distortionAmount));
-        gateTriggerEnvelope.setReleaseTime(1500 * distortionAmount);
+        gateTriggerEnvelope.setReleaseTime(800 * (1.001 -distortionAmount));
     }
 }
 
