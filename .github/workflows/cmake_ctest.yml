@@ -147,7 +147,7 @@ jobs:
         ${{ matrix.pluginval-binary }} --strictness-level 10 --verbose --validate "${{ env.VST3_PATH }}"
 
     - name: Import app Certificates (macOS)
-      uses: apple-actions/import-codesign-certs@v1
+      uses: apple-actions/import-codesign-certs@v3
       if: ${{ matrix.name == 'macOS' }}
       with:
         p12-file-base64: ${{ secrets.DEV_ID_APP_CERT }}
@@ -164,7 +164,7 @@ jobs:
         codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ${{ env.AU_PATH }} --deep --strict --options=runtime --timestamp
 
     - name: Import installer Certificates (macOS)
-      uses: apple-actions/import-codesign-certs@v1
+      uses: apple-actions/import-codesign-certs@v3
       if: ${{ matrix.name == 'macOS' }}
       with:
         p12-file-base64: ${{ secrets.DEV_ID_INSTALLER_CERT }}
@@ -198,7 +198,7 @@ jobs:
         appdmg packaging/dmg.json "packaging/${{ env.PRODUCT_NAME}}.dmg"
 
     - name: Import dmg Certificates (macOS)
-      uses: apple-actions/import-codesign-certs@v1
+      uses: apple-actions/import-codesign-certs@v3
       if: ${{ matrix.name == 'macOS' }}
       with:
         p12-file-base64: ${{ secrets.DEV_ID_APP_CERT }}
